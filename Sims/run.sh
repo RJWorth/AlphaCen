@@ -31,8 +31,8 @@ niter=100	# = number of iterations to run
 user='yes'	# which mercury version to use
 
 ### Write files.in
-./writefiles.sh $1		# for .for versions
-#./writefiles.bash $1	# for debugging.f vers
+#./writefiles.sh $1 		# for .for versions
+./writefiles.bash $1 $vers	# for debugging.f vers
 
 ### Range for iterations
 if [ $machine = chloe ]; then
