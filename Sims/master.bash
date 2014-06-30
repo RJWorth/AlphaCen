@@ -10,12 +10,14 @@
 
 machine=$(hostname -s)
 if [ $machine = shapiro ]; then
-	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7)
+#	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
+	Dirs=(SDir1)
 fi
 if [ $machine = spaatz ]; then
-	Dirs=(SDir1 SDir2 SDir3)
+	Dirs=(PDir1 PDir2 PDir3)
 fi
 if [ $machine = chloe ]; then
+#	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10)
 	Dirs=(CDir10)
 fi
 if [ $machine = nova ]; then

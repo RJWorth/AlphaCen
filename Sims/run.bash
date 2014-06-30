@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ############################################################################### 
 # Start time
 t1=$(date +%s)
@@ -27,8 +27,8 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=100	# = number of iterations to run
-user='yes'	# which mercury version to use
+niter=1		# = number of iterations to run
+user='yes'	# use user-defined forces?
 
 ### Write files.in
 ./writefiles.sh $1		# for .for versions
@@ -42,8 +42,8 @@ else
 	itrange=$(seq 1 $niter)	# go from x to y
 	timerange=$(seq $mintime $maxtime)
 fi
-echo '	itrange '$itrange
-echo '	timerange '$timerange
+echo 'itrange '$itrange
+echo 'timerange '$timerange
 ### Do iterations
 	for j in $itrange
 	do
@@ -51,12 +51,10 @@ echo '	timerange '$timerange
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
 	#### Randomize B and C parameters (a, e, i)
-	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax')'
+	#	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j',"'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax')'
 
 	# Write param.in file
 	./writeparam.bash $1 $mintime $output $step $mintime $user
-	# create empty summary.out file if there isn't one
-	python -c 'import AlphaCenModule; AlphaCenModule.InitSumFile("'$1'")'
 	# Compile mercury
 	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
 		#j in, to fix colors
@@ -64,6 +62,7 @@ echo '	timerange '$timerange
 	### Loop over time lengths
 	for k in $timerange; do
 
+		t3=$(date +%s)
 		#### Run mercury
 		cd $1/Out;	./merc_AC$1;	cd ../..
 
@@ -79,29 +78,31 @@ echo '	timerange '$timerange
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 
 		### Summarize iteration; write if stop conditions reached
-		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple")'
+		#python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'","'$j'","'$cent'",1e'$maxtime',1e'$k')'
 
 		# If stopfile=true, don't continue this simulation
 		stop=$(cat $1/stopfile.txt)
-		if [ $stop = 'True' ]; then
-			break
-		fi
+		#if [ $stop = 'True' ]; then
+		#	break
+		#fi
 
 		# Write param.dmp file for next timestep
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user
+	
+		t4=$(date +%s)
+		echo $1"	"$machine"	"$niter"	"$user"	"$(echo "$t4 - $t3"|bc )"	"$vers >> testtimes.txt
+
 	done	#timerange
-	bigstop=$(cat $1/bigstopfile.txt)
-	if [ $bigstop = 'True' ]; then
-		echo 'Bigstop reached! Proxima-like system.'
-		./email.sh $1 $j'/'$niter 'Proxima-like system!'
-		break
-	fi
+	#bigstop=$(cat $1/bigstopfile.txt)
+	#if [ $bigstop = 'True' ]; then
+	#	echo 'Bigstop reached! Prox-like system.'
+	#	#./email.sh $1" prox-like"
+	#	break
+	#fi
 done	#niter
 
 # Write stop time for this directory:
 t2=$(date +%s)
-
-echo $1"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
-
-./email.sh $1 $j'/'$niter 'AC finished'
+echo $1"	"$machine"	"$niter"	"$user"	"$(echo "$t2 - $t1"|bc )"	"$vers >> testtimes.txt
+./email.sh $1 $niter "AC done"
 

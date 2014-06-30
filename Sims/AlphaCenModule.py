@@ -1,24 +1,61 @@
 ###############################################################################
-### Function to count the number of lines in a file
-def file_len(fname):
-    with open(fname) as f:
-        for i, l in enumerate(f):
-            pass
-    return i + 1
+def FileLength(fname):
+	'''Function to count the number of lines in a file'''
+	import os
+
+	if os.path.getsize(fname)==0.:
+		i = -2
+	else:
+	    with open(fname) as f:
+	        for i, l in enumerate(f):
+	            pass
+
+	return i + 1
 
 ###############################################################################
-### Pick random parameters for the stars and make a new big.in
-def MakeBigRand(whichdir,whichtime, cent,
+def where(AList,AnElement):
+	'''Returns indices where AList==AnElement'''
+	inds=[]
+	for j in range(len(AList)):
+		if (AList[j]==AnElement):
+			inds=inds+[j]
+	
+	return inds
+
+############################################################################
+def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
+	'''Write big.in or small.in file'''
+
+	infile=open(WhichDir+'/In/'+filename+'.in','w')
+### Header
+	for i in range(len(Header)):
+		infile.write(Header[i])
+### Data
+	for i in range(len(names)):
+		infile.write(FirstLines[i])
+		infile.write("  "+xv[i][0]+"  "+xv[i][1]+"  "+xv[i][2]+"\n")
+		infile.write("  "+xv[i][3]+"  "+xv[i][4]+"  "+xv[i][5]+"\n")
+		infile.write(s[i])
+	infile.close()
+
+###############################################################################
+def MakeBigRand(WhichDir,WhichTime, cent,
 	aBmin, aBmax, eBmin, eBmax, iBmin, iBmax,
 	aCmin, aCmax, eCmin, eCmax, iCmin, iCmax):
+	'''Pick random parameters for the stars and make a new big.in'''
+
+	print('	MakeBigRand  '+WhichDir+'/In/big.in,                          '+
+		  str(WhichTime))
+
 ### Needed modules
+	import AlphaCenModule as AC
 	import numpy, os
 	from random import random, uniform
 	from math import pi, sin, cos
 #	from decimal import Decimal, getcontext
 #	getcontext().prec = 6
 
-### Constants/variables
+### Constants
 	AU   = 1.496e13			# cm/AU
 	day  = 24.*3600.		# s/day
 	MSun = 1.989e33			# g
@@ -26,105 +63,611 @@ def MakeBigRand(whichdir,whichtime, cent,
 	MC   = 0.123			# in MSun
 	rad  = 2*pi/360.		# multiply degrees by this to get radians
 
-	print('MakeBigRand '+whichdir+'/In/big.in, '+str(whichtime))
-
-### Pick random a, e, i for B and C
-#	aB = Decimal(uniform(aBmin, aBmax))
+### Pick random a, e, i and g, n, m for B and C
 	aB = uniform(aBmin, aBmax)
 	eB = uniform(eBmin, eBmax)
 	iB = uniform(iBmin, iBmax)
-	gB = uniform(0.0, 360.0)	#these had been converted to radians as written
-	nB = uniform(0.0, 360.0)	# not sure why? program wants degrees
-	mB = uniform(0.0, 360.0)
+	gB, nB, mB = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
 
 	eC = uniform(eCmin, eCmax)
 	iC = uniform(iCmin, iCmax)
-	gC = uniform(0.0, 360.0)
-	nC = uniform(0.0, 360.0)
-	mC = uniform(0.0, 360.0)
+	gC, nC, mC = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
 
-	aCfactor=aB*(1+eB)/(1-eC)
+	aCfactor = aB*(1+eB)/(1-eC)
 	aC = uniform(aCmin*aCfactor, aCmax*aCfactor)
 
-### Write big file
-	bigfile=open(whichdir+'/In/big.in','w')
-	bigfile.write(")O+_06 Big-body initial data  (WARNING: Do not delete this line!!)\n")
-	bigfile.write(") Lines beginning with `)' are ignored.\n")
-	bigfile.write(")---------------------------------------------------------------------\n")
-	bigfile.write("style (Cartesian, Asteroidal, Cometary) = Asteroidal\n")
-	bigfile.write(" epoch (in days) = 0.0\n")
-	bigfile.write(")---------------------------------------------------------------------\n")
+	aei = [[repr(aB), repr(eB), repr(iB), repr(gB), repr(nB), repr(mB)], 
+		   [repr(aC), repr(eC), repr(iC), repr(gC), repr(nC), repr(mC)]]
+
+### Read generic big.in file header	
+	BigHeadFile=open('BigHeader.txt','r')
+	BigHeader=BigHeadFile.readlines()
+	BigHeadFile.close()
+
+### First lines for each object
 	if (cent == 'A'):
-		bigfile.write('AlCenB      m=0.934\n')
+		BigFirstLines=(['AlCenB      m=0.934\n'])
+		names=['AlCenB']
 	if (cent == 'B'):
-		bigfile.write('AlCenA      m=1.105\n')
-	bigfile.write("  "+repr(aB)+"  "+repr(eB)+"  "+repr(iB)+"\n")
-	bigfile.write("  "+repr(gB)+"  "+repr(nB)+"  "+repr(mB)+"\n")
-	bigfile.write("  0.0  0.0  0.0\n")
+		BigFirstLines=(['AlCenA      m=1.105\n'])
+		names=['AlCenA']
+	BigFirstLines.append('PrxCen     m=0.123\n')
+	names.append('PrxCen')
 
-	bigfile.write('PrxCen     m=0.123\n')
-	bigfile.write("  "+repr(aC)+"  "+repr(eC)+"  "+repr(iC)+"\n")
-	bigfile.write("  "+repr(gC)+"  "+repr(nC)+"  "+repr(mC)+"\n")
-	bigfile.write("  0.0  0.0  0.0\n")
+### Spin
+### No spin for all objects
+	BigS=["  0.0  0.0  0.0\n" for i in range(len(BigFirstLines))]
 
-	bigfile.close()
+### Write big file
+	AC.WriteObjInFile(
+	WhichDir,names,'big',BigHeader,BigFirstLines,aei,BigS)
 
-	InParams=open(whichdir+'/InParams.txt','a')
-	if os.path.getsize(whichdir+'/InParams.txt')==0:
-		InParams.write('                 aB                  eB                  iB                  aC                  eC                  iC                 gB                  nB                  mB                  gC                  nC                  mC\n')
-	InParams.write(" ".join([repr(aB).rjust(19), repr(eB).rjust(19), repr(iB).rjust(19), repr(aC).rjust(19), repr(eC).rjust(19), repr(iC).rjust(19),
-	repr(gB).rjust(19), repr(nB).rjust(19), repr(mB).rjust(19), repr(gC).rjust(19), repr(nC).rjust(19), repr(mC).rjust(19),"\n"]))
+### Save initial parameters with full precision in InParams.txt
+	InParams=open(WhichDir+'/InParams.txt','a')
+	if os.path.getsize(WhichDir+'/InParams.txt')==0:
+		InParams.write('                 aB                  eB'+\
+		'                  iB                  aC                  eC'+\
+		'                  iC                 gB                  nB'+\
+		'                  mB                  gC                  nC'+\
+		'                  mC\n')
+	InParams.write(" ".join([repr(aB).rjust(19), repr(eB).rjust(19), 
+													repr(iB).rjust(19), 
+	repr(aC).rjust(19), repr(eC).rjust(19), repr(iC).rjust(19),
+	repr(gB).rjust(19), repr(nB).rjust(19), repr(mB).rjust(19), 
+	repr(gC).rjust(19), repr(nC).rjust(19), repr(mC).rjust(19),"\n"]))
 	InParams.close()
-
 
 ###############################################################################
-# A program to read the important bits and record in summary.txt
-def Summary(whichdir,whichtime,cent,tmax,ThisT):
-	import numpy, os, AlphaCenModule
-	from math import log10
+def InitParams(WhichDir):
+	'''Read initial orbital parameters'''
+
+### Modules needed
+	import numpy as np
 	from operator import add
-		
-	print('Summary '+whichdir+'/Out, '+whichtime)
+	import os 
+
+### Digits
+	iRnd =[1,3,1, 1,3,1]	# dec places to round starting a/e/i to, for B/C
+	iJst = map(add, [4,2,3, 5,2,4], iRnd) # iRnd+iJst = # char per entry
 
 ### Get input parameters (aei for B and C)
-	InParams=open(whichdir+'/InParams.txt','r')
-	InParams.seek(-300,2)
-	In2=InParams.readlines()[-1]
-	In=In2.split()[0:6]
-	In1=In2.split()[6:12]
-	rnd =[2,4,2]
-	rnd6=[1,3,1, 1,3,1]
-	space=map(add, [5,3,5, 6,3,5], rnd6)
-	In=[str(round(float(In[i]),rnd6[i])).rjust(space[i]) for i in range(6)]
-	InParams.close()
+	if os.path.getsize(WhichDir+'/InParams.txt')==0:
+		print('No InParams file!')
+		aeiIn=['-','-','-','-','-','-']
+	else:
+		InParamsFile=open(WhichDir+'/InParams.txt','r')
+		InParamsFile.seek(-300,2)
+		RawIn=InParamsFile.readlines()[-1]
+		InParamsFile.close()
+		aeiIn=RawIn.split()[0:6]	# aei for B, C
+#	gnmIn=RawIn.split()[6:12]	# angles for B, C
+	# spaces needed for initial parameters = max digits+1+dec points
+		aeiIn=[str(round(float(aeiIn[i]),iRnd[i])) for i in range(6)]
+	aeiIn=[aeiIn[i].rjust(iJst[i]) for i in range(6)]
+
+	return(aeiIn)
+
+###############################################################################
+def Elem(WhichDir):
+	'''Get final orbits from element.out'''
+
+### Modules needed
+	import numpy as np
+	from operator import add
+	import AlphaCenModule as AC
+
+### Constants
+	fRnd =[2,4,2]			# dec places to round final a/e/i to
 
 ### Get output parameters (aei for B and C) from AEI files
- 	element=open(whichdir+'/Out/element.out','r')
-	nelem=AlphaCenModule.file_len(whichdir+'/Out/element.out')
-	elem=element.readlines()
-	element.close()
+ 	ElemFile=open(WhichDir+'/Out/element.out','r')
+	nElem=AC.FileLength(WhichDir+'/Out/element.out')
+	elem=ElemFile.readlines()
+	ElemFile.close()
+### create vectors to hold a,e,i, x,y,z for CnB and Prx
+	jstB=map(add, [5,7,6],fRnd)		# digits+dec points
+	jstC=map(add, [9,7,6],fRnd)
+	B = ['-'.rjust(jstB[i]) for i in range(3)]
+	C = ['-'.rjust(jstC[i]) for i in range(3)]
 
-	jstB=map(add, [5,7,6],rnd)
-	jstC=map(add, [9,7,6],rnd)
-	CnB = ['-'.rjust(jstB[i]) for i in range(3)]
-	Prx = ['-'.rjust(jstC[i]) for i in range(3)]
-	if (nelem > 5):
+### if element file contains objects
+	if (nElem > 5):
+### if the first object is CnB, read its parameters
 		if (elem[5].split()[0] == 'AlCenB'):
-			CnB = elem[5].split()[1:4]
-			CnB=[str(round(float(CnB[i]),rnd[i])).rjust(jstB[i]) for i in range(3)]
+			B = elem[5].split()[1:4]
+			B = [str( round(float(B[i]),fRnd[i]) ).rjust(jstB[i]) 
+               for i in range(3)]
+### or if the first object is Prx, read its parameters
 		if (elem[5].split()[0] == 'PrxCen'):
-			Prx = elem[5].split()[1:4]
-			Prx=[str(round(float(Prx[i]),rnd[i])).rjust(jstC[i]) for i in range(3)]
-	if (nelem > 6):
+			C = elem[5].split()[1:4]
+			C = [str( round(float(C[i]),fRnd[i]) ).rjust(jstC[i]) 
+                 for i in range(3)]
+### do the same for the second element
+	if (nElem > 6):
 		if (elem[6].split()[0] == 'AlCenB'):
-			CnB = elem[6].split()[1:4]
-			CnB=[str(round(float(CnB[i]),rnd[i])).rjust(jstB[i]) for i in range(3)]
+			B = elem[6].split()[1:4]
+			B = [str( round(float(B[i]),fRnd[i]) ).rjust(jstB[i]) 
+                for i in range(3)]
 		if (elem[6].split()[0] == 'PrxCen'):
-			Prx = elem[6].split()[1:4]
-			Prx=[str(round(float(Prx[i]),rnd[i])).rjust(jstC[i]) for i in range(3)]
+			C = elem[6].split()[1:4]
+			C = [str( round(float(C[i]),fRnd[i]) ).rjust(jstC[i]) 
+                 for i in range(3)]
 
-### Get last timestep and object's fate from info.out
-	name,dest,time = AlphaCenModule.ReadInfo(whichdir)
+	return(B, C)
+
+###############################################################################
+def ReadAei(whichdir, filename, index1=-1, index2=0):
+	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
+
+	print('	ReadAei      '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+		   str(index1)+':'+str(index2))
+
+### Modules needed
+	import numpy as np
+
+### Get last positions for surviving objects
+	aeiFile=open(whichdir+'/Out/AeiOutFiles/'+filename+'.aei','r')
+	aei = aeiFile.readlines()
+	if index2!=0:
+		xv = aei[index1:index2]
+	else:
+		xv = aei[index1:]
+### Arrange xyz uvw data into array
+	xv = np.array([i.split()[6:12] for i in xv])
+
+### Convert from strings to floats
+	xv = xv.astype(np.float)
+
+	return(xv)
+
+###############################################################################
+def GetT(whichdir, filename, index1=-1, index2=0):
+	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
+
+	print('	GetT         '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+		   str(index1)+':'+str(index2))
+
+### Modules needed
+	import numpy as np
+
+### Get last positions for surviving objects
+	aeiFile=open(whichdir+'/Out/AeiOutFiles/'+filename+'.aei','r')
+	aei = aeiFile.readlines()
+	if index2!=0:
+		xv = aei[index1:index2]
+	else:
+		xv = aei[index1:]
+### Arrange xyz uvw data into array
+	t = np.array([i.split()[0] for i in xv])
+
+### Convert from strings to floats
+	t = t.astype(np.float)
+
+	return(t)
+
+###############################################################################
+def Distance(xv1, xv2):
+	'''Get distance between two points'''
+
+	r = (  (xv1[:,0]-xv2[:,0])**2
+		 + (xv1[:,1]-xv2[:,1])**2
+		 + (xv1[:,2]-xv2[:,2])**2	)**0.5
+
+	return(r)
+
+###############################################################################
+def XVtoR(xv):
+	'''Take xv vector(s), return r'''
+
+	r = ( xv[:,0]**2 + xv[:,1]**2 + xv[:,2]**2 )**0.5
+
+	return(r)
+
+###############################################################################
+def XVtoV(xv):
+	'''Take xv vector(s), return v'''
+
+	v = ( xv[:,3]**2 + xv[:,4]**2 + xv[:,5]**2 )**0.5
+
+	return(v)
+
+###############################################################################
+def RVtoA(r, v, mu):
+	'''Estimate a from v(r) function
+	where r is the distance between two stars, v is the relative velocity'''
+
+	a = 1/( 2/r -  v**2/mu )
+
+	return(a)
+
+###############################################################################
+def RAtoV(r, a, mu):
+	'''Estimate v from v(r) function
+	where r is the distance between two stars, v is the relative velocity'''
+
+	v = (mu*( 2/r -  1/a) )**0.5
+
+	return(v)
+
+###############################################################################
+def AUtoMKS(xv_AU):
+	'''Convert xv in AU, AU/day to mks'''
+
+	import numpy as np
+	from mks_constants import AU, day
+
+	xv_mks = np.zeros_like(xv_AU)
+	
+	if (len(np.shape(xv_AU))==3):
+		xv_mks[:,:,0:3] = xv_AU[:,:,0:3]*AU
+		xv_mks[:,:,3:6] = xv_AU[:,:,3:6]*AU/day
+	elif (len(np.shape(xv_AU))==2):
+		xv_mks[:,0:3] = xv_AU[:,0:3]*AU
+		xv_mks[:,3:6] = xv_AU[:,3:6]*AU/day
+
+	return(xv_mks)
+
+###############################################################################
+def FindCM(m, xv):
+	'''Take position and velocity data, 
+	give center of mass/momentum versions'''
+
+	from mks_constants import mSun	
+
+	print('	FindCM       m = '+str([('% 1.3g' % (i/mSun)) for i in m]))
+
+### Modules needed
+	from operator import add
+	import numpy as np
+
+### Constants
+	M = sum(m)
+
+### Number of timesteps being looked at
+	nobjs =xv.shape[0]
+	nsteps=xv.shape[1]
+
+### Create empty array with same shape
+	xvCM  = np.zeros_like(xv[0,:,:])
+
+### Calculate transforms
+	for j in range(nsteps):
+		for k in range(0,6):
+			xvCM[j,k] = (1/M)*(sum( m[:]*xv[:,j,k] ))
+
+	return(xvCM)
+
+###############################################################################
+def wrtCM(xv, xvCM):
+	'''Transform given coordinates to CM frame'''
+
+#	print('	wrtCM')
+
+### Modules needed
+	from operator import add
+	import numpy as np	
+
+### Constants
+#	mSun	= 1.9891e30		# kg
+#	m = m/mSun
+#	M = sum(m)
+
+### Number of timesteps being looked at
+	nobjs =xv.shape[0]
+	nsteps=xv.shape[1]
+
+### Create more empty arrays with same shape, to fill later
+	xv2CM = np.zeros_like(xv)
+
+### Transform B and C coordinates by adding the transform vectors
+	for i in range(nobjs):
+		for j in range(nsteps):
+			for k in range(6):
+				xv2CM[i,j,k] = xv[i,j,k]-xvCM[j,k]
+
+	return(xv2CM)
+
+###############################################################################
+def Kinetic(m, v):
+	'''Calculate kinetic energy
+	where r is the distance between two stars, v is the relative velocity'''
+
+	import numpy as np
+
+	K = [(1./2.)*m[i]*v[i,:]**2. for i in range(len(v[:,0]))]
+
+	return(np.array(K))
+
+###############################################################################
+def Potential(m1, m2, r):
+	'''Calculate potential energy of one object due to another
+	where r is the distance between two stars, v is the relative velocity'''
+
+	from mks_constants import G
+
+	U = -G*m1*m2/r
+	U = U/2.
+
+	return(U)
+
+###############################################################################
+def Eps(r, v, mu):
+	'''Calculate specific orbital energy
+	where r is the distance between two stars, v is the relative velocity'''
+
+	eps = v**2./2.-mu/r
+
+	return(eps)
+
+###############################################################################
+def mr(m):
+	'''Calculate reduced mass'''
+
+### Needed modules
+	import numpy as np
+
+	m_1  = [1./i for i in m]
+	mr_1 = sum(m_1)
+	mr   = 1./mr_1
+
+	return(mr)
+
+###############################################################################
+def h(r, v):
+	'''Calculate angular momentum'''
+
+### Needed modules
+	import numpy as np
+
+	h = np.cross(r,v)
+
+	return(np.array(h))
+
+###############################################################################
+def a(eps, mu):
+	'''Calculate semimajor axis of an object's orbit'''
+
+### Needed modules
+	import numpy as np
+
+	a = -mu/(2.*eps)
+
+	return(np.array(a))
+
+###############################################################################
+#def a(E, m, mu):
+#	'''Calculate semimajor axis of an object's orbit'''
+
+#	from mks_constants import G
+### Needed modules
+#	import numpy as np
+#	import AlphaCenModule as AC
+
+#	mr = AC.mr(m)	# reduced mass
+
+#	a = -mu/(2.*(E/mr))
+
+#	return(np.array(a))
+
+###############################################################################
+def e(a, eps, hbar, mu):
+	'''Calculate eccentricity of an object's orbit'''
+
+### Needed modules
+	import numpy as np
+
+#	print(2.*eps*hbar**2)
+#	print(mu**2)
+
+#	print(2.*eps*hbar**2/mu**2)
+	e = (1.+2.*eps*hbar**2/mu**2)**0.5
+
+	return(np.array(e))
+
+###############################################################################
+def i(hz, hbar):
+	'''Calculate inclination of an object's orbit (in degrees)'''
+
+### Needed modules
+	import numpy as np
+	from numpy import arccos, pi
+
+	i = arccos(hz/hbar)*180./pi
+
+	return(np.array(i))
+
+###############################################################################
+def GetFinalData(WhichDir,ThisT,mode):
+	'''A program to read the important bits and record in summary.txt'''
+
+	print('	GetFinalData '+WhichDir)
+
+### Needed modules
+	import numpy as np
+#	import os
+	import AlphaCenModule as AC
+#	from numpy import log10, sqrt, sin, pi
+#	from operator import add
+#	import subprocess
+#	import rvtest as rv
+	from mks_constants import G, mSun, AU, day, m, mu
+
+	assert (mode=='triple') | (mode=='binary')
+
+	if (mode == 'binary'):
+		m=[m[0], m[1], 0.]
+		filenames=['AlCenB']
+	elif (mode == 'triple'):
+		filenames=['AlCenB', 'PrxCen']
+
+### Number of objects
+	nobjs=len(filenames)+1
+### Number of timesteps
+	ntB=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[0]+'.aei')-4
+	if (mode == 'triple'):
+		ntC=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[1]+'.aei')-4
+	else:
+		ntC=0.
+	
+	t = AC.GetT(WhichDir, filenames[0], 4, ntB+4)
+
+	Bind = [4,ntB+4]
+	Cind = [4,ntC+4]
+
+############# Read in original x and v values ###########################
+### NOTATION:
+# 3D array: xvA = xv of all objects w.r.t. CMA (in AU units)
+# xvA[i,j,k] = xv of object i, time j, column k
+# Units are mks unless specified otherwise by tacking _AU on the end, 
+# then it's in the AU units that MERCURY outputs (x=AU, v=AU/day).
+
+# rAB = distance between A and B
+# rCMAB = distance of each star from the CM of A and B
+# vCMAB = speed of each star, w.r.t. the CM of A and B
+
+# xvI_J = xv of star I with respect to the center of mass of star(s) J
+# get output times
+	xvB_A_AU		= AC.ReadAei(WhichDir, filenames[0], Bind[0], Bind[1])
+	xvA_A_AU		= np.zeros_like(xvB_A_AU)
+	if (mode == 'triple'):
+		xvC_A_AU	= AC.ReadAei(WhichDir, filenames[1], Cind[0], Cind[1])
+### Combine three stars into a 3D array
+		xvA_AU=np.array([
+                np.concatenate((xvA_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
+                np.concatenate((xvB_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
+                np.concatenate((xvC_A_AU,np.zeros((max(ntB-ntC,0.),6))))])
+	else:
+### Or two stars, if just a binary system
+		xvA_AU=np.array([xvA_A_AU, xvB_A_AU])
+
+### 1st dimension of array should be the number of stars
+	assert(np.shape(xvA_AU)[0]) == nobjs
+##################### Convert to mks units ##############################
+	xvA = AC.AUtoMKS(xvA_AU)
+### Get distances between stars (== rAij_AU*AU), and rel. velocity
+	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
+	vAB = AC.XVtoV(xvA[1,:,:])
+######################## Binary system: #################################
+# CMAB = Center of momentum frame of A+B
+### Find the coordinates of the center of momentum
+	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,:,:]) 
+### Convert to center-of-momentum units
+	xvAB  = AC.wrtCM(xvA, xvCM_AB)
+### Get r, v in CM units
+	rCMAB = np.array([ AC.XVtoR(xvAB[i,:,:]) for i in range(nobjs) ])
+	vCMAB = np.array([ AC.XVtoV(xvAB[i,:,:]) for i in range(nobjs) ])
+########################## Energies #####################################
+# Get kinetic energy = (1/2)mv^2
+	KCMAB = AC.Kinetic(m[0:2],vCMAB[0:2,:])
+# Get potential energy = GMm/r
+	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB),
+					   AC.Potential(m[0],m[1], rAB) ])
+# Get total energy = K+U
+	ECMAB = KCMAB+UCMAB
+
+### This should be constant
+	EtotCMAB = np.sum(ECMAB, 0)
+### Check for consistency
+	EminAB = np.max(EtotCMAB)
+	EmaxAB = np.min(EtotCMAB)
+	dEAB   = (EmaxAB-EminAB)/EminAB
+#	assert dE<0.01
+	if dEAB<0.02:
+		print(' dEAB = '+ ('% 7.4g' % dEAB)+' - OK'  )
+	else:
+		print(' dEAB = '+('% 7.4g' % dEAB)+
+			  ' - large energy variation (AB)')
+
+### Get orbital parameters
+	# grav. paramater for binary
+	mu2 = G*(m[0]+m[1])
+	# specific orbital energy
+	eps = AC.Eps(rAB[0:(ntB)], vAB[0:(ntB)], mu2)
+	# semimajor axis
+	aAB = AC.a(eps, mu2)
+
+	# specific angular momentum (r x v) of B wrt A
+	hA     = AC.h( xvA[1,0:(ntB),0:3],  xvA[1,0:(ntB),3:6])
+	hbarA  = AC.XVtoR( hA[:,:])
+	# eccentricity
+	eAB = AC.e(aAB, eps, hbarA, mu2)
+	# inclination
+	iAB = AC.i(hA[:,2], hbarA)
+	print(' aB = '+('% 10.4g'%(aAB[-1]/AU))
+		 +', eB = '+('% 6.4g'%(eAB[-1]))
+		 +', iB = '+('% 6.4g'%(iAB[-1])))
+
+###################### Triple system: ###################################
+### Only relevant if B and C both survived
+	if (mode=='triple'):
+#		nobjs = 3
+		ind=min(ntB,ntC)
+# get output times
+#		LastxvB_A_AU = AC.ReadAei(WhichDir, filenames[0], ind-1, ind+4)
+#		LastxvA_A_AU = np.zeros_like(LastxvB_A_AU)
+#		LastxvC_A_AU = AC.ReadAei(WhichDir, filenames[1], ind-1, ind+4)
+### Combine three stars into a 3D array
+		xvA_Triple_AU=np.array([
+                 xvA_A_AU[0:ind,:], xvB_A_AU[0:ind,:], xvC_A_AU[0:ind,:]])
+### Convert to mks units
+		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
+### Find the coordinates of the center of momentum
+		xvCM_ABC = AC.FindCM(m, xvA_Triple) 
+### Convert to center-of-momentum units
+		xvABC  = AC.wrtCM(xvA_Triple, xvCM_ABC)
+### Get r, v in CM units
+		rCMABC = np.array([ AC.XVtoR(xvABC[i,:,:]) for i in range(nobjs) ])
+		vCMABC = np.array([ AC.XVtoV(xvABC[i,:,:]) for i in range(nobjs) ])
+### Get distances between stars
+		rAB_ABC = AC.Distance(xvABC[0,:,:], xvABC[1,:,:])
+		rBC_ABC = AC.Distance(xvABC[1,:,:], xvABC[2,:,:])
+		rAC_ABC = AC.Distance(xvABC[0,:,:], xvABC[2,:,:])
+########################## Energies #####################################
+### Calculate kinetic, potential, and total energies
+		KCMABC = AC.Kinetic(m, vCMABC)
+### Calculate a, e of orbit
+		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
+		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
+		UAC_CMABC = AC.Potential(m[1],m[2], rBC_ABC)
+		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
+                            UAB_CMABC+UBC_CMABC,
+                            UBC_CMABC+UAC_CMABC ])
+# Calculate total energy per object K+U
+		ECMABC = KCMABC+UCMABC
+# Calculate total energy in the system
+		EtotCMABC = np.sum(ECMABC, 0)
+### Check for consistency
+		EminABC = np.max(EtotCMABC)
+		EmaxABC = np.min(EtotCMABC)
+		dEABC   = (EmaxABC-EminABC)/EminABC
+#	assert dE<0.01
+		if dEABC>0.02:
+			print('dEABC = '+('% 7.4g' % dEABC)+
+				  ' - large energy variation')
+		else:
+			print('dEABC = '+ ('% 7.4g' % dEABC)+' - OK' )
+
+### Get orbital parameters
+		# dist. from C to CM(AB)
+		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
+		# vel. of C wrt CM(AB)
+		vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
+		# specific orbital energy
+		epsC  = AC.Eps(rC_AB, vC_AB, mu)
+		# semimajor axis
+		aC = AC.a(epsC, mu)
+
+		# specific angular momentum (r x v) of B wrt A
+		hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
+		hbarC = AC.XVtoR(hC[:,:])
+		eC    = AC.e(aC, epsC, hbarC, mu)
+		iC    = AC.i(hC[:,2], hbarC)
+		print(' aC = '+('% 10.4g'%(aC[-1]/AU))
+			 +', eC = '+('% 6.4g'%(eC[-1]))
+			 +', iC = '+('% 6.4g'%(iC[-1])) )
+
+########## Get object's fate and collision/ejection time from info.out #######
+	name,dest,time = AC.ReadInfo(WhichDir)
 	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
 	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
 
@@ -136,58 +679,272 @@ def Summary(whichdir,whichtime,cent,tmax,ThisT):
 			DestC = dest[j].rjust(8)
 			TimeC = time[j].rjust(13)
 
-### Arrange nicely
-	summary=In+CnB+Prx+[str(round(float(TimeB))).rjust(13),DestB,
-	str(round(float(TimeC))).rjust(13),DestC,'\n']
+### Ejected objects should have pos. energy, stable ones should be neg.
+	if ((DestC=='ejected') & (ECMABC[2,-1]<0.)):
+		print('C: Energy weirdness!!!')
+	if ((DestB=='ejected') & ( ECMAB[1,-1]<0.)):
+		print('B: Energy weirdness!!!')
 
-### Write to summary.out
-### but only if the simulation is ending
+	return 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
+			rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
+			aAB, eAB, iAB, aC, eC, iC,	\
+			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
 
-### Determine whether an object is missing and the run can be ended
-	Btime = (float(TimeB)==tmax)	# has either survived the max sim length?
-	Ctime = (float(TimeC)==tmax)	# or
-	Bdest = (DestB!='-'.rjust(8))	# has either been ejected etc?
-	Cdest = (DestC!='-'.rjust(8))	# (should be mutually exclusive)
+###############################################################################
+def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
+			wantsum=True,wantplot=False,mode='triple',cent='A'):
+	'''A program to read the important bits and record in summary.txt'''
+		
+	print('	Summary      '+WhichDir+',                          WhichTime = '+
+		  WhichTime)
 
-	stop=(Btime | Ctime | Bdest | Cdest)
-	print('1e'+str(int(log10(ThisT)))+', stop='+
-	str(Btime)[0]+str(Ctime)[0]+str(Bdest)[0]+str(Cdest)[0])
+### Needed modules
+	import numpy as np
+	import os
+	import AlphaCenModule as AC
+	from numpy import log10, sqrt, sin, pi
+	from operator import add
+	import subprocess
+#	import rvtest as rv
+	from mks_constants import G, mSun, AU, day, m, mu
 
-	StopFile=open(whichdir+'/stopfile.txt','w')
+	np.set_printoptions(precision=2)
+### Stellar masses
+	m = np.array(m)
+	mA, mB, mC = m[0], m[1], m[2]
+
+### Get initial parameters from 
+	aeiIn=AC.InitParams(WhichDir)
+
+### Get final orbits from element.out
+	B, C = AC.Elem(WhichDir)
+
+	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
+	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
+	aAB, eAB, iAB, aC, eC, iC,	\
+	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
+													WhichDir, ThisT, mode)
+
+##################################### Plot ################################
+### Make plots of sim
+	if ((machine != 'chloe') & (wantplot==True)):
+		AC.MakePlots(WhichDir, t, EtotCMAB, ECMAB, KCMAB, UCMAB, rAB, '_AB')
+		if (mode=='triple'):
+			AC.MakePlots(WhichDir, t[0:ind], 
+	    	   EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, '_ABC')
+
+#################################### Write ################################
+### Arrange data nicely
+	if ((wantsum==True) & (mode=='triple')):
+		summary=aeiIn+\
+			    [str(round(rAB[-1]/AU,2)).rjust(6)]			+\
+			    [('% 7.2g' % ECMAB[1,-1]).rjust(9)]		+\
+			    [str(round(aAB[-1]/AU,2)).rjust(7)]			+\
+			    [str(round(eAB[-1]   ,2)).rjust(5)]			+\
+			    [str(round(iAB[-1]   ,1)).rjust(6)]			+\
+			    [str(round(rCMAB[2,ntC-1]/AU,1)).rjust(9)]	+\
+			    [('% 7.2g' % ECMABC[2,-1]).rjust(9)]		+\
+			    [str(round( aC[-1]/AU,2)).rjust(9)]			+\
+			    [str(round( eC[-1]   ,2)).rjust(6)]			+\
+			    [str(round( iC[-1]   ,1)).rjust(6)]			+\
+		        [str(round(log10(float(TimeB)),5)).rjust(7)]			+\
+				[DestB]										+\
+			    [str(round(log10(float(TimeC)),5)).rjust(7)]			+\
+				[DestC]+['\n']
+		header='  aB    eB   iB     aC    eC    iC'+\
+			'    rBf       EBf'+\
+			'     aBf   eBf    iBf'+\
+			'       rCf       ECf'+\
+			'       aCf    eCf    iCf'+\
+			'   logtB    destB   logtC    destC\n'
+### Determine if simulation is ending, and write data if so	
+		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
+	                     rAB/AU, ECMAB[1,:], rCMAB[2,:]/AU, ECMABC[2,:],
+	                     TimeB, TimeC, DestB, DestC)
+	
+############################################################################
+def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
+                  rB, EB, rC, EC,
+                  TimeB, TimeC, DestB, DestC):
+	'''Determine if simulation is ending, and write data if so	'''
+
+### Needed modules
+	import numpy as np
+	import AlphaCenModule as AC
+	from numpy import log10, sqrt, sin, pi
+#	from operator import add
+#	import subprocess
+#	import rvtest as rv
+	from mks_constants import AU
+
+### Write to summary.out, but only if the simulation is ending:
+### Determine status of each star in each survival criterion,
+### i.e., whether an object is missing and the run can be ended
+	BtimeStat = (float(TimeB)==Tmax)# has either survived the max sim length?
+	CtimeStat = (float(TimeC)==Tmax)	# or
+	BdestStat = (DestB!='-'.rjust(8))	# has either been ejected etc?
+	CdestStat = (DestC!='-'.rjust(8))	
+
+### The stop conditions should be mutually exclusive
+	if (BtimeStat==BdestStat==True) | (CtimeStat==CdestStat==True):
+		print('Warning: possible stop condition conflict?')
+
+### 'Little' stop = combination of these checks
+	stop=(BtimeStat | CtimeStat | BdestStat | CdestStat)
+	print('	    stop = '+
+	str(BtimeStat)[0]+str(CtimeStat)[0]+str(BdestStat)[0]+str(CdestStat)[0]+
+	',               Time = 1e'+str(int(log10(ThisT)))+' yrs')
+
+### Write stop status to file for bash script to check
+	StopFile=open(WhichDir+'/stopfile.txt','w')
 	StopFile.write(str(stop)+'\n')
 	StopFile.close()
 
-### If a Proxima-like C was created, stop the series of runs
+### Prox's distance > this number (in AU) counts as 'prox-like'
+	pcut=2000.
+### If a Proxima-like C was created, stop the whole series of runs
 	bigstop=False
-	if (Btime & Ctime):
-		bigstop=float(Prx[0])>5000.	#test=0, usually 5000	
-		print('whichtime='+str(whichtime)+', bigstop='+str(bigstop))
-	
-	BigStopFile=open(whichdir+'/bigstopfile.txt','w')
+	if (BtimeStat & CtimeStat):
+		bigstop = (rC[-1] >= pcut) & (EC[-1] <= 0.)
+		# Also check for nonsensical energies
+#		if ( np.isinf(EA_ABC[-1]) | np.isnan(EA_ABC[-1]) | 
+#			 np.isinf(EB_ABC[-1]) | np.isnan(EB_ABC[-1]) | 
+#			 np.isinf(EC_ABC[-1]) | np.isnan(EC_ABC[-1])):
+#			bigstop = True
+#			print('Something weird here... Check energies.')
+### Weird circumstances that I want to stop and investigate:
+		if ( ((EB[-1]<0.) &      BdestStat)  | 
+			 ((EC[-1]<0.) &      CdestStat)  |
+			 ((EB[-1]>0.) & (not BdestStat)) | 
+			 ((EC[-1]>0.) & (not CdestStat)) ):
+			bigstop = True
+			print('	 bigstop fate/energy conflict')
+		if (np.isnan(EB[-1]) | np.isnan(EB[-1]) | 
+		    np.isinf(EB[-1]) | np.isinf(EB[-1])):
+			bigstop = True
+			print('	 bigstop energy error')
+	print('	 bigstop = '+str(bigstop)+',                             '+
+		  'WhichTime = '+str(WhichTime))
+
+
+### Write big stop status to file for bash script to check
+	BigStopFile=open(WhichDir+'/bigstopfile.txt','w')
 	BigStopFile.write(str(bigstop)+'\n')
 	BigStopFile.close()
 
-### write summary
-	sumpath=whichdir+'/summary.out'
-	if 'Good' in whichdir:
-		sumpath='Good/summary.out'		
+### Write summary to file
+	done=False
+#	if "Prx" not in WhichDir:
+	done=AC.WriteSummary(WhichDir,summary, summaryheader, stop, bigstop)
+
+############################################################################
+### Write summary to file
+def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
+
+#	print('	WriteSummary '+WhichDir)
+
+### Needed modules
+	import os 
+	import AlphaCenModule as AC
+
+	sumpath=WhichDir+'/summary.out'
 
 	if (stop==True | bigstop==True):
 		SumFile=open(sumpath, 'a')
 		if os.path.getsize(sumpath)==0:
-			SumFile.write('    aB     eB     iB      aC     eC     iC     '+\
-		'aB2         eB2      iB2         aC2         eC2      iC2          '+\
-		'  tB    destB            tC    destC\n')
-		SumFile.write(" ".join(summary))
+			SumFile.write(summaryheader)
+		strsum=" ".join(summary).strip()+'\n'
+		SumFile.write(strsum)
 		SumFile.close()
 
-############################################################################
-# A program to read the collision info from info.out
-def ReadInfo(whichdir):
-	import numpy, os, AlphaCenModule	
+	return(True)
 
- 	InfoFile=open(whichdir+'/Out/info.out','r')
-	InfoLen=AlphaCenModule.file_len(whichdir+'/Out/info.out')
+############################################################################
+def InitSumFile(WhichDir):
+	'''Create an empty summary.out file if there isn't one'''
+
+### Needed modules
+	import os 
+
+	sumpath=WhichDir+'/summary.out'
+
+	SumFile=open(sumpath, 'a')
+	if os.path.getsize(sumpath)==0:
+		SumFile.write('    aB     eB     iB      aC     eC     iC'+\
+		'         rBf          EBf         rCf          ECf'+\
+		'            tB    destB            tC    destC\n')
+	SumFile.close()
+############################################################################
+def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix=''):
+	'''Make plots of parameters from this run'''
+
+	print('	MakePlots    '+WhichDir)
+
+### Modules
+	from mks_constants import G, mSun, AU, day, m, mu
+	import numpy as np
+	from numpy import sin, pi
+	import matplotlib
+	matplotlib.use('Agg', warn=False)
+	import matplotlib.pyplot as plt
+
+	nobj= E.shape[0]
+
+# Plot energies of binary
+#rtest = np.array(range(19,37))*AU
+#normalization = np.array(range(-8,3))*1e37
+#Etest=np.empty( (len(normalization),len(rtest)) )
+#for i in range(len(normalization)):
+#	Etest[i,:] = normalization[i]/(rtest/np.max(rAB))
+
+#Ktest = np.min(KCMAB)/(rtest/np.max(rAB))
+#Utest = np.max(UCMAB)/(rtest/np.max(rAB))
+	c=('b','y','r')
+
+	plt.plot(rAB/AU,   Etot, 'k-')
+	for i in range(nobj):
+		plt.plot(rAB/AU, E[i,:], c[i]+'-',
+				 rAB/AU, U[i,:], c[i]+'--',
+				 rAB/AU, K[i,:], c[i]+'-.',
+				)
+#	plt.legend(('System total','A total','B total','A potential','A kinetic'),
+#	           'lower right')
+	plt.xlabel('A-B separation (AU)')
+	plt.ylabel('Energy (J)')
+	plt.title('Energies')
+	plt.savefig(WhichDir+'/EvsR'+suffix+'.png')
+	plt.clf()
+	
+# Plot energies over time
+	#Amp		= .205
+	#Freq	= 102.
+	#Phase	= 0.3
+	#Offset	= -1.05
+	#sinfit = (Amp*sin((2*pi/Freq)*t + Phase) + Offset)*1.e38
+	
+	plt.plot(t, Etot, 'k-')
+	for i in range(nobj):
+		plt.plot(t, E[i,:], c[i]+'-',
+				 t, U[i,:], c[i]+'--',
+				 t, K[i,:], c[i]+'-.',
+	        )
+	plt.xlabel('time (years)')
+	plt.ylabel('Energy (J)')
+	plt.title('Energies')
+	plt.xscale('log')
+	plt.savefig(WhichDir+'/EvsT'+suffix+'.png')
+	plt.clf()
+	
+############################################################################
+def ReadInfo(WhichDir):
+	'''A program to read the collision info from info.out'''
+
+#	import numpy, os
+#	import os 
+	import AlphaCenModule as AC
+
+ 	InfoFile=open(WhichDir+'/Out/info.out','r')
+	InfoLen=AC.FileLength(WhichDir+'/Out/info.out')
 	AllInfo=InfoFile.readlines()
 	InfoFile.close()
 
@@ -195,7 +952,7 @@ def ReadInfo(whichdir):
 	ends=where(AllInfo,"   Integration complete.\n")
 	nloops=len(ends)
 
-	# Read the last loop
+	# Read the last loop only
 	if (nloops == 1):	
 		want=[AllInfo[j] for j in range(start[0]+2,ends[0]-1)]
 	else:
@@ -218,20 +975,22 @@ def ReadInfo(whichdir):
 	return name,dest,time
 
 ###############################################################################
-# Read data from all directories and put in one file
+def SumAll(WhichDirs,cent,suffix=''):
+	'''Read data from all directories and put in one file'''
 
-def SumAll(whichdirs,cent):
-	import numpy, os, AlphaCenModule
+#	import numpy, os, AlphaCenModule
+	import os 
+	import AlphaCenModule as AC
 #	from random import random
 #	from math import pi, sin, cos
 	
-	print('SumAll SumAll.out: '+", ".join(whichdirs))
+	print('	SumAll SumAll.out: '+", ".join(WhichDirs))
 
-### Read in summary.out from each directory, compile into SumAll.out
+### Read in summary.out from each directory, compile and write to SumAll.out
 	Sum=[]
-	for j in range(len(whichdirs)):
- 		DirSumFile=open(whichdirs[j]+'/summary.out','r')
-		DirSumLen=AlphaCenModule.file_len(whichdirs[j]+'/summary.out')
+	for j in range(len(WhichDirs)):
+ 		DirSumFile=open(WhichDirs[j]+'/summary'+suffix+'.out','r')
+		DirSumLen=AC.FileLength(WhichDirs[j]+'/summary'+suffix+'.out')
 
 		DirSum=DirSumFile.readlines()
 		DirSum[0]='Dir '+DirSum[0]
@@ -243,17 +1002,16 @@ def SumAll(whichdirs,cent):
 			Sum=Sum+DirSum[1:]
 		DirSumFile.close()
 	
-	SumAll=open('SumAll.out','w')
+	SumAll=open('SumAll'+suffix+'.out','w')
 	for j in range(len(Sum)):
-#		print(Sum[j])
-		SumAll.write(Sum[j])
+		SumAll.write(Sum[j].rstrip()+'\n')
 	SumAll.close()
 
 ### Read in InParams.txt from each directory, compile into AllParams.txt
 	Par=[]
-	for j in range(len(whichdirs)):
- 		DirParFile=open(whichdirs[j]+'/InParams.txt','r')
-		DirParLen=AlphaCenModule.file_len(whichdirs[j]+'/InParams.txt')
+	for j in range(len(WhichDirs)):
+ 		DirParFile=open(WhichDirs[j]+'/InParams'+suffix+'.txt','r')
+		DirParLen=AC.FileLength(WhichDirs[j]+'/InParams'+suffix+'.txt')
 
 		DirPar=DirParFile.readlines()
 		DirPar[0]='Dir '+DirPar[0]
@@ -265,20 +1023,12 @@ def SumAll(whichdirs,cent):
 			Par=Par+DirPar[1:]
 		DirParFile.close()
 	
-	ParAll=open('AllParams.txt','w')
+	ParAll=open('AllParams'+suffix+'.txt','w')
 	for j in range(len(Par)):
 		ParAll.write(Par[j])
 	ParAll.close()
 
 ###############################################################################
-# Returns indices where AList==AnElement
-def where(AList,AnElement):
-	inds=[]
-	for j in range(len(AList)):
-		if (AList[j]==AnElement):
-			inds=inds+[j]
-	
-	return inds
 
 
 

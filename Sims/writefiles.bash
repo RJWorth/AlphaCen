@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ############################################################################### 
 
 echo ../In/big.in         >  $1/Out/files.in
@@ -8,7 +8,7 @@ echo ../In/param.in      >> $1/Out/files.in		#individual param.in
 echo xv.out               >> $1/Out/files.in
 echo ce.out               >> $1/Out/files.in
 echo info.out             >> $1/Out/files.in
-#echo runlog.out           >> $1/Out/files.in
+echo runlog.out           >> $1/Out/files.in
 echo big.dmp              >> $1/Out/files.in
 echo small.dmp            >> $1/Out/files.in
 echo param.dmp            >> $1/Out/files.in

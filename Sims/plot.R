@@ -1,28 +1,40 @@
 
-print('hi from R!')
+cat('hi from R!\n')
 
-runtype=1	#1 for run normally, 2 or 3 for run on saved files
+###1 for run normally, 2 or 3 for run on saved files
+runtype=1	
+
+### Calculate average runtime per sim
+if (runtype==1) source('CalcRunTime.R')
 
 ### Read in Summary.out, normal
 if(runtype==1) {prefix='Plots/'
-SumAll=read.table('SumAll.out', header=T, na.strings='-')	}
+	SumAll=read.table('SumAll.out', header=T, na.strings='-')	
+	SumAll061914=read.table('SumAll061914.out', header=T, na.strings='-')	
+	SumAll061714=read.table('SumAll061714.out', header=T, na.strings='-')
+
+	SumAll$tB=10^SumAll$logtB
+	SumAll$tC=10^SumAll$logtC
+		}
 if (runtype==2)	{
-prefix='Saved/1Gyr_AllI_NoGas/'
-SumAll=read.table(paste(prefix,'SumAll.out',sep=''), header=T,na.strings='-')}
+	prefix='Saved/1Gyr_AllI_NoGas/'
+	SumAll=read.table(paste(prefix,'SumAll.out',sep=''),
+		header=T,na.strings='-')}
 if (runtype==3)	{
-prefix='Saved/10Gyr_Tides/'
-SumAll=read.table(paste(prefix,'SumAll.out',sep=''), header=T,na.strings='-')}
+	prefix='Saved/10Gyr_Tides/'
+	SumAll=read.table(paste(prefix,'SumAll.out',sep=''),
+		header=T,na.strings='-')}
 
 
 # To correct a read-in bug that affected 8 sims
-print(dim(SumAll))
-SumAll=SumAll[SumAll$aB<30 & SumAll$aB>22,]
-print(dim(SumAll))
+#print(dim(SumAll))
+#SumAll=SumAll[SumAll$aB<30 & SumAll$aB>22,]
+#print(dim(SumAll))
 
 attach(SumAll)
 
-#aB2=abs(aB2)
-#aC2=abs(aC2)
+#rBf=abs(rBf)
+#rCf=abs(rCf)
 
 
 #lsummary(SumAll)
@@ -34,9 +46,9 @@ attach(SumAll)
 
 # make color indices
 #indB =   ncols-floor(log10(tB)-2)
-#	indB[eB2 >= 1.0] = 2
+#	indB[eBf >= 1.0] = 2
 #indC = 2*ncols+floor(log10(tC)-1)
-#	indC[eC2 >= 1.0] = 3*ncols-1
+#	indC[eCf >= 1.0] = 3*ncols-1
 #	indC[indC==-Inf] = 2*ncols+1
 
 # Define cut and max times
@@ -51,72 +63,95 @@ tmaxS=sub('\\+','',tmaxS)
 ### Color indices
 allcols=c('red','orange','yellow','darkblue','dodgerblue3','cyan')
 indB=replicate(length(aB),allcols[1])
-	indB[tB<tmax | eB2>1.0]=allcols[2]
+	indB[tB<tmax | EBf>0.]=allcols[2]
 	indB[tB<tcut]=allcols[3]
 indC=replicate(length(aC),allcols[4])
-	indC[tC<tmax | eC2>1.0]=allcols[5]
+	indC[tC<tmax | ECf>0.]=allcols[5]
 	indC[tC<tcut]=allcols[6]
 
 
-#	indB[tB==tm & eB2 <1.0] = 'red'
-#	indB[tB <tm | eB2>=1.0] = 'orange'
+#	indB[tB==tm & eBf <1.0] = 'red'
+#	indB[tB <tm | eBf>=1.0] = 'orange'
 #	indB[tB <1000]          = 'yellow'
-#	indC[tC==tm & eC2 <1.0] = 'blue'
-#	indC[tC <tm | eC2>=1.0] = 'cyan'
+#	indC[tC==tm & eCf <1.0] = 'blue'
+#	indC[tC <tm | eCf>=1.0] = 'cyan'
 #	indC[tC <1000]          = 'green'
 
 ind=tB
-	ind[ ((tB==tmax & eB2 <1.0) & (tC==tmax & eC2 <1.0)) ]='green'
-	ind[ ((tB <tmax | eB2>=1.0) & (tC==tmax & eC2 <1.0)) ]='orange'
-	ind[ ((tB==tmax & eB2 <1.0) & (tC <tmax | eC2>=1.0)) ]='red'
-	ind[ ((tB <tmax | eB2>=1.0) & (tC <tmax | eC2>=1.0)) ]='grey'
+	ind[ ((tB==tmax & EBf <0.) & (tC==tmax & ECf <0.)) ]='green'
+	ind[ ((tB <tmax | EBf>=0.) & (tC==tmax & ECf <0.)) ]='orange'
+	ind[ ((tB==tmax & EBf <0.) & (tC <tmax | ECf>=0.)) ]='red'
+	ind[ ((tB <tmax | EBf>=0.) & (tC <tmax | ECf>=0.)) ]='grey'
 
 # symbol indices
 pindB = replicate(length(tB),21)
-	pindB[(tB == tmax) & (eB2 < 1.0)] = 20
+	pindB[(tB == tmax) & (EBf <0.)] = 20
 pindC = replicate(length(tC),21)
-	pindC[(tC == tmax) & (eC2 < 1.0)] = 20
+	pindC[(tC == tmax) & (ECf <0.)] = 20
 
+### Indices for the outcomes of simulations, with 2nd set including old sims
 # survival index
-#surv=tB	
-	surv = (is.na(aB2)==F & is.na(aC2)==F & eC2<1.0)
-
+surv  = (is.na(rBf)==F & is.na(rCf)==F & eCf <1.)
+	 surv[is.na( surv)]=FALSE
+# survival index
+surv2 = (is.na(c(rBf,SumAll061914$rBf,SumAll061714$rBf))==F & 
+		 is.na(c(rCf,SumAll061914$rCf,SumAll061714$rCf))==F & 
+		 c(ECf,SumAll061914$ECf,SumAll061714$ECf) <0.)
+	surv2[is.na(surv2)]=FALSE
 # growth index (did C move outward?)
-grow = (aC2>aC & eC2<1.0)
-	grow[is.na(grow)]=FALSE
-prox = (aC2*(1+eC2)>10000 & !is.na(aC2))
-print(paste("% of sims with no ejection  =",signif(mean(surv)*100,2)))
-print(paste("% of sims where C moves out =",signif(mean(grow)*100,2)))
-print(paste("% of Proxima-like sims      =",signif(mean(prox)*100,2)))
+grow  = (surv  & rCf>aC)
+	 grow[is.na(grow)]=FALSE
+grow2 = (surv2 & 
+		c(aCf,SumAll061914$aCf,SumAll061714$rCf)>
+									c(aC,SumAll061914$aC,SumAll061714$rC))
+	grow2[is.na(grow2)]=FALSE
+#prox = (rCf*(1+eCf)>10000 & !is.na(rCf))
+prox  = (surv  & aCf>4000 & !is.na(aCf))
+prox2 = (surv2 & 
+		 c(aCf,SumAll061914$aCf,SumAll061714$rCf)>4000 & 
+		 !is.na(c(aCf,SumAll061914$aCf,SumAll061714$rCf)))
+
+### Write totals
+nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
+cat(paste(dim(SumAll)[1],'recent simulations\n'))
+cat(paste("% of sims with no ejection  =",signif(mean(surv)*100,2),'\n'))
+cat(paste("% of sims where C moves out =",signif(mean(grow)*100,2),'\n'))
+cat(paste("% of Proxima-like sims      =",signif(mean(prox)*100,2),'\n'))
+
+nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
+cat(paste(nsims,'completed simulations,',dim(SumAll)[1],'recent\n'))
+cat(paste("% of sims with no ejection  =",signif(mean(surv2)*100,2),'\n'))
+cat(paste("% of sims where C moves out =",signif(mean(grow2)*100,2),'\n'))
+cat(paste("% of Proxima-like sims      =",signif(mean(prox2)*100,2),'\n'))
 
 # change in B?
-bgrowth=abs(aB-aB2)/aB
-bgrowth[aB2<0]=NA
+bgrowth=abs(aB-rBf)/aB
+bgrowth[rBf<0]=NA
 
 # Point size index
 PtSz = replicate(length(surv),1)
 	PtSz[surv==T] = 10
 
 # Change index -- did parameters change by at least 1%?
-aBchange = rbind(aB[surv],aB2[surv],(aB2[surv]-aB[surv])/aB[surv]*100)
-aCchange = rbind(aC[surv],aC2[surv],(aC2[surv]-aC[surv])/aC[surv]*100)
+aBchange = rbind(aB[surv],rBf[surv],(rBf[surv]-aB[surv])/aB[surv]*100)
+aCchange = rbind(aC[surv],rCf[surv],(rCf[surv]-aC[surv])/aC[surv]*100)
 
-eBchange = rbind(eB[surv],eB2[surv],(eB2[surv]-eB[surv])/eB[surv]*100)
-eCchange = rbind(eC[surv],eC2[surv],(eC2[surv]-eC[surv])/eC[surv]*100)
+eBchange = rbind(eB[surv],eBf[surv],(eBf[surv]-eB[surv])/eB[surv]*100)
+eCchange = rbind(eC[surv],eCf[surv],(eCf[surv]-eC[surv])/eC[surv]*100)
 
-#iBchange = rbind(iB[surv],iB2[surv],(iB2[surv]-iB[surv])/iB[surv]*100)
-#iCchange = rbind(iC[surv],iC2[surv],(iC2[surv]-iC[surv])/iC[surv]*100)
-iBchange = rbind(iB[surv],iB2[surv],(iB2[surv]-iB[surv]))
-iCchange = rbind(iC[surv],iC2[surv],(iC2[surv]-iC[surv]))
+##iBchange = rbind(iB[surv],iB2[surv],(iB2[surv]-iB[surv])/iB[surv]*100)
+##iCchange = rbind(iC[surv],iC2[surv],(iC2[surv]-iC[surv])/iC[surv]*100)
+#iBchange = rbind(iB[surv],iB2[surv],(iB2[surv]-iB[surv]))
+#iCchange = rbind(iC[surv],iC2[surv],(iC2[surv]-iC[surv]))
 
 changes=rbind(round(aBchange[3,]),round(aCchange[3,]), round(eBchange[3,]),
-	round(eCchange[3,]), round(iBchange[3,]),round(iCchange[3,]))
-row.names(changes)=c('aB','aC','eB','eC','iB*','iC*')
+	round(eCchange[3,]) ) #, round(iBchange[3,]),round(iCchange[3,]))
+row.names(changes)=c('aB','aC','eB','eC') #,'iB*','iC*')
 #print(changes)
 
 ### destination-based color schemes
 dcol=rep('red',length(destC))
-	dcol[is.na(destB) & is.na(destC) & eC2>1.0]='magenta'
+	dcol[is.na(destB) & is.na(destC) & ECf>0.]='magenta'
 	dcol[destB=='ejected' & is.na(destC)    ]='green'
 	dcol[is.na(destB)     & destC=='ejected']='blue'
 	dcol[destB=='ejected' & destC=='ejected']='grey'
@@ -135,7 +170,15 @@ br=c(0,10^(mintime:log10(tmax)))
 						'blue','magenta'))} else
 	{tcol1=cut(tC,breaks=br,labels=c('red','yellow','green','cyan',
 						'blue','purple','magenta'))}
-	tcol2[surv]=='black'
+	tcol2[surv]='black'
+
+###############################################################################
+### Plot distribution of times
+pdf(paste(prefix,'TimeDistribution.pdf',sep=''),width=4,height=8)
+par(mfrow=c(2,1))
+hB=hist(log10(tB), breaks=0:10)
+hC=hist(log10(tC), breaks=0:10)
+dev.off()
 
 ########################################################################
 ### Plot initial params, color coded by survival ########################
@@ -144,17 +187,53 @@ pdf(paste(prefix,'aa.pdf',sep=''))
 plot(aB,aC, pch=pindC, col=ind)
 dev.off()
 
-########################################################################
-# aC in vs. out
-pdf(paste(prefix,'aa_C.pdf',sep=''),width=3.75, height=3.75)
-plot(aC, abs(aC2), pch='.', col=indC, xlim=c(1,max(aC2, na.rm=T)),log='xy',
-	main='Final vs. initial semimajor axis for C',
-	xlab='Initial a (AU)', ylab='Final a (AU)')
-points(aC[surv], aC2[surv], pch=20, col=indC[surv])
-abline(0,1, lty=2)
+###############################################################################
+### Plot inclinations
+#pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
+#par(mfrow=c(2,3))
 
-dev.off()
+#n1=8
+#br1=180*(0:n1)/n1
+#hC=hist(iC,br=br1,plot=F)$counts
+#hCs=hist(iC[surv],br=br1,plot=F)$counts
 
+#hC2 =hist(iC2,br=br1,plot=F)$counts
+#hC2s=hist(iC2[surv],br=br1,plot=F)$counts
+
+#hB2  =hist(iB2,br=br1,plot=F)$counts
+#hB2s =hist(iB2[surv],br=br1,plot=F)$counts
+
+### iC, with iC of surviving systems colored in
+#barplot(rbind(hCs,hC-hCs), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Initial iC')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+### iC, with iC2 of surviving systems colored in
+#barplot(rbind(hC2s,hC2-hC2s), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Final iC')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+### iB, with iB2 of surviving systems colored in
+#barplot(rbind(hB2s,hB2-hB2s), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Final iB')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+### iC of surviving systems as % of total iC in that bin
+#barplot(100*(hCs/hC), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+### iC2 of surviving systems as % of total iC2 in that bin
+#barplot(100*(hC2s/hC2), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+### iB2 of surviving systems as % of total iB2 in that bin
+#barplot(100*(hB2s/hB2), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+
+#dev.off()
 ########################################################################
 ### Side-by-side input and output parameters
 pdf(paste(prefix,'ae_io.pdf',sep=''),width=8, height=4)
@@ -163,7 +242,7 @@ par(mfrow=c(1,2),mar=c(4,4,1,0))
 # Initial distribution, a and e for B and C
 # make plot borders
 plot(.1,.1, pch='.', 
-	xlim=c(1e1,max(c(aC,aC2[surv]))), ylim=c(0,1.0),log='x',
+	xlim=c(1e1,max(c(aC,rCf[surv]))), ylim=c(0,1.0),log='x',
 	main='',xlab='',ylab='e')
 mtext(1,text='a (AU)',line=2.5,cex=1.2)
 
@@ -180,11 +259,12 @@ points(aB[indB!='red'], eB[indB!='red'], pch='.', col=indB[indB!='red'])
 points(aC, eC, pch='.', col=indC)
 # plot C from surviving systems bigger
 points(aC[surv], eC[surv], pch=20, col=indC[surv])
-# add something to proxima-like systems
-	for (j in 1:sum(prox))	{
+# add something to proxima-like systems?
+# lines connecting B and C from each surviving sim
+	for (j in 1:sum(surv))	{
 #	points(aB[prox][j], eB[prox][j], pch=21, col=colors()[257],cex=.7)
 #	points(aC[prox][j], eC[prox][j], pch=21, col=colors()[257],cex=.9)
-	lines(c(aB[prox][j], aC[prox][j]), c(eB[prox][j], eC[prox][j]),
+	lines(c(aB[surv][j], aC[surv][j]), c(eB[surv][j], eC[surv][j]),
 	lty=3, col='black', lwd=.5)
 	}
 
@@ -211,55 +291,66 @@ legend('topleft', cex=.8, ncol=2, pch=20,
 ### Final distribution, a and e for B and C 
 par(mar=c(4,3,1,1))
 plot(.1,.1, 
-	xlim=c(1e1,max(c(aC,aC2[surv]))), ylim=c(0,1.0),log='x',
+	xlim=c(1e1,max(c(aC,rCf[surv]))), ylim=c(0,1.0),log='x',
 	main='',xlab='',ylab='')
 mtext(1,text='a (AU)',line=2.5,cex=1.2)
 for (j in 1:sum(surv))	{
 # Draw line from initial to final position
-lines(c(aB[surv][j], aB2[surv][j]), c(eB[surv][j], eB2[surv][j]),
+lines(c(aB[surv][j], rBf[surv][j]), c(eB[surv][j], eBf[surv][j]),
 	col=allcols[1], lwd=.5)
-lines(c(aC[surv][j], aC2[surv][j]), c(eC[surv][j], eC2[surv][j]),
+lines(c(aC[surv][j], rCf[surv][j]), c(eC[surv][j], eCf[surv][j]),
 	col=allcols[5], lwd=.5)
 # Connect B and C from each sim
-lines(c(aB2[surv][j], aC2[surv][j]), c(eB2[surv][j], eC2[surv][j]),
+lines(c(rBf[surv][j], rCf[surv][j]), c(eBf[surv][j], eCf[surv][j]),
 	lty=3, col='black', lwd=.5)
 	}
 	# Plot final destinations of B (with fancy borders!)
 	for (j in 1:sum(surv))	{
-	points(aB2[surv][j], eB2[surv][j], pch=20, col=allcols[1],cex=.6)
-	points(aB2[surv][j], eB2[surv][j], pch=21, col='black',cex=.6)
+	points(rBf[surv][j], eBf[surv][j], pch=20, col=allcols[1],cex=.6)
+	points(rBf[surv][j], eBf[surv][j], pch=21, col='black',cex=.6)
 	}
 # Plot final destinations of C
-points(aC2[surv], eC2[surv], pch=20, col=indC[surv])
+points(rCf[surv], eCf[surv], pch=20, col=indC[surv])
 
 # Outer text
 mtext(2,text='e',line=2.5,cex=1.2, outer=TRUE)
 
 
 dev.off()
+########################################################################
+# aC in vs. out
+pdf(paste(prefix,'aa_C.pdf',sep=''),width=3.75, height=3.75)
+plot(aC, abs(rCf), pch='.', col=indC, xlim=c(1,max(rCf, na.rm=T)),log='xy',
+	main='Final vs. initial semimajor axis for C',
+	xlab='Initial a (AU)', ylab='Final a (AU)')
+points(aC[surv], rCf[surv], pch=20, col=indC[surv])
+abline(0,1, lty=2)
+
+dev.off()
+
 #########################################################################
 # Final distribution, a and e for B and C, only where C moved outward
 pdf(paste(prefix,'C_growth.pdf',sep=''),width=8/2.54, height=8/2.54)
 plot(.1,.1, 
-	xlim=c(1e1,max(c(aC,aC2[grow]))), ylim=c(0,1.0),log='x',
+	xlim=c(1e1,max(c(aC,rCf[grow]))), ylim=c(0,1.0),log='x',
 	main='Output Parameters',xlab='a (AU)',ylab='e')
 for (j in 1:sum(grow))	{
 # Draw line from initial to final position
-lines(c(aB[grow][j], aB2[grow][j]), c(eB[grow][j], eB2[grow][j]),
+lines(c(aB[grow][j], rBf[grow][j]), c(eB[grow][j], eBf[grow][j]),
 	col=allcols[1], lwd=.5)
-lines(c(aC[grow][j], aC2[grow][j]), c(eC[grow][j], eC2[grow][j]),
+lines(c(aC[grow][j], rCf[grow][j]), c(eC[grow][j], eCf[grow][j]),
 	col=allcols[5], lwd=.5)
 # Connect B and C from each sim
-lines(c(aB2[grow][j], aC2[grow][j]), c(eB2[grow][j], eC2[grow][j]),
+lines(c(rBf[grow][j], rCf[grow][j]), c(eBf[grow][j], eCf[grow][j]),
 	lty=3, col='black', lwd=.5)
 	}
 	# Plot final destinations of B (with fancy borders!)
 	for (j in 1:sum(grow))	{
-	points(aB2[grow][j], eB2[grow][j], pch=20, col=allcols[1],cex=.6)
-	points(aB2[grow][j], eB2[grow][j], pch=21, col='black',cex=.6)
+	points(rBf[grow][j], eBf[grow][j], pch=20, col=allcols[1],cex=.6)
+	points(rBf[grow][j], eBf[grow][j], pch=21, col='black',cex=.6)
 	}
 # Plot final destinations of C
-points(aC2[grow], eC2[grow], pch=20, col=indC[grow])
+points(rCf[grow], eCf[grow], pch=20, col=indC[grow])
 
 # make lines showing approximately where C is supposed to be now
 #abline(v=)
@@ -300,67 +391,21 @@ legend('bottomright', cex=.7, ncol=2, col=allcols,
 dev.off()
 
 ###############################################################################
-### Plot inclinations
-pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
-par(mfrow=c(2,3))
-
-n1=8
-br1=180*(0:n1)/n1
-hC=hist(iC,br=br1,plot=F)$counts
-hCs=hist(iC[surv],br=br1,plot=F)$counts
-
-hC2 =hist(iC2,br=br1,plot=F)$counts
-hC2s=hist(iC2[surv],br=br1,plot=F)$counts
-
-hB2  =hist(iB2,br=br1,plot=F)$counts
-hB2s =hist(iB2[surv],br=br1,plot=F)$counts
-
-# iC, with iC of surviving systems colored in
-barplot(rbind(hCs,hC-hCs), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Initial iC')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-# iC, with iC2 of surviving systems colored in
-barplot(rbind(hC2s,hC2-hC2s), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Final iC')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-# iB, with iB2 of surviving systems colored in
-barplot(rbind(hB2s,hB2-hB2s), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Final iB')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-
-# iC of surviving systems as % of total iC in that bin
-barplot(100*(hCs/hC), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-# iC2 of surviving systems as % of total iC2 in that bin
-barplot(100*(hC2s/hC2), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-# iB2 of surviving systems as % of total iB2 in that bin
-barplot(100*(hB2s/hB2), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
-
-dev.off()
-###############################################################################
 
 pB=(1-eB)*aB
 pC=(1-eC)*aC
-pB2=(1-eB2)*aB2
-pC2=(1-eC2)*aC2
+pB2=(1-eBf)*aBf
+pC2=(1-eCf)*aCf
 apB=(1+eB)*aB
 apC=(1+eC)*aC
-apB2=(1+eB2)*aB2
-apC2=(1+eC2)*aC2
+apB2=(1+eBf)*aBf
+apC2=(1+eCf)*aCf
 peris=cbind(apB,apC,apB2,apC2)
 apos =cbind(pB,pC,pB2,pC2)
-inpars=cbind(SumAll[,c(2:3,5:7)],pB,apB,pC,apC)
-outpars=cbind(SumAll[,c(8:13)],pB2,apB2,pC2,apC2)
+#inpars=cbind(SumAll[,c(2:3,5:7)],pB,apB,pC,apC)
+#outpars=cbind(SumAll[,c(8:13)],pB2,apB2,pC2,apC2)
+inpars=cbind(aB,eB,pB,apB,aC,eC,iC,pC,apC)
+outpars=cbind(EBf,rBf,aBf,eBf,pB2,apB2,ECf,rCf,aCf,eCf,pC2,apC2)
 
 #panel.time
 p.fate=function(x,y)	{points(x,y, pch='.',cex=0.5, col=dcol)}
@@ -369,7 +414,8 @@ p.time=function(x,y)	{points(x,y, pch='.',cex=0.5, col=tcol2)}
 palette(rainbow(n2))
 # pairs
 pdf(paste(prefix,'pairs.pdf',sep=''),width=10.5,height=8)
-pairs(SumAll[,c(2:3,5:13)],	upper.panel=p.fate, lower.panel=p.time)
+pairs(cbind(aB,eB,aC,eC,iC,EBf,rBf,aBf,eBf,ECf,rCf,aCf,eCf),
+	upper.panel=p.fate, lower.panel=p.time)
 #dev.off()
 
 #pdf(paste(prefix,'pairs-time.pdf',sep=''),width=10.5,height=8)
@@ -383,22 +429,18 @@ pairs(inpars,	upper.panel=p.fate, lower.panel=p.time)
 #pdf(paste(prefix,'outpairs.pdf',sep=''),width=10.5,height=8)
 pairs(outpars,	upper.panel=p.fate, lower.panel=p.time)
 dev.off()
-
 ###############################################################################
 
-### Print proxima-like systems to a file (aC2>acutoff)
+### Print proxima-like systems to a file (rCf>acutoff)
 acutoff=5000	# AU
 sink(paste(prefix,'proxlike.txt',sep=''))
 options(width=300)
-print(SumAll[prox,])
+print(SumAll[prox,],row.names=FALSE)
 options(width=80)
 sink()
 
 ###############################################################################
 detach(SumAll)
-
-### Calculate average runtime per sim
-if (runtype==1) source('CalcRunTime.R')
 
 
 
