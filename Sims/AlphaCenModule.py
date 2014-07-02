@@ -386,7 +386,7 @@ def Potential(m1, m2, r):
 	from mks_constants import G
 
 	U = -G*m1*m2/r
-	U = U/2.
+	U = U/2.		# correction to avoid counting U twice
 
 	return(U)
 
@@ -623,16 +623,16 @@ def GetFinalData(WhichDir,ThisT,mode):
 		rBC_ABC = AC.Distance(xvABC[1,:,:], xvABC[2,:,:])
 		rAC_ABC = AC.Distance(xvABC[0,:,:], xvABC[2,:,:])
 ########################## Energies #####################################
-### Calculate kinetic, potential, and total energies
+### Calculate kinetic energies, K
 		KCMABC = AC.Kinetic(m, vCMABC)
-### Calculate a, e of orbit
+### Calculate potential energies, U
 		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
 		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
 		UAC_CMABC = AC.Potential(m[1],m[2], rBC_ABC)
 		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
                             UAB_CMABC+UBC_CMABC,
                             UBC_CMABC+UAC_CMABC ])
-# Calculate total energy per object K+U
+# Calculate total energy per object, E=K+U
 		ECMABC = KCMABC+UCMABC
 # Calculate total energy in the system
 		EtotCMABC = np.sum(ECMABC, 0)
@@ -640,7 +640,7 @@ def GetFinalData(WhichDir,ThisT,mode):
 		EminABC = np.max(EtotCMABC)
 		EmaxABC = np.min(EtotCMABC)
 		dEABC   = (EmaxABC-EminABC)/EminABC
-#	assert dE<0.01
+
 		if dEABC>0.02:
 			print('dEABC = '+('% 7.4g' % dEABC)+
 				  ' - large energy variation')
@@ -659,8 +659,11 @@ def GetFinalData(WhichDir,ThisT,mode):
 
 		# specific angular momentum (r x v) of B wrt A
 		hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
+		# magnitude of h
 		hbarC = AC.XVtoR(hC[:,:])
+		# eccentricity
 		eC    = AC.e(aC, epsC, hbarC, mu)
+		# inclination
 		iC    = AC.i(hC[:,2], hbarC)
 		print(' aC = '+('% 10.4g'%(aC[-1]/AU))
 			 +', eC = '+('% 6.4g'%(eC[-1]))
@@ -719,6 +722,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Get final orbits from element.out
 	B, C = AC.Elem(WhichDir)
 
+### Get other final orbit data from .aei files and analysis
 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
 	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
 	aAB, eAB, iAB, aC, eC, iC,	\
@@ -728,10 +732,12 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ##################################### Plot ################################
 ### Make plots of sim
 	if ((machine != 'chloe') & (wantplot==True)):
-		AC.MakePlots(WhichDir, t, EtotCMAB, ECMAB, KCMAB, UCMAB, rAB, '_AB')
+		AC.MakePlots(WhichDir, t, EtotCMAB, 
+					 ECMAB, KCMAB, UCMAB, rAB, suffix='_AB')
 		if (mode=='triple'):
-			AC.MakePlots(WhichDir, t[0:ind], 
-	    	   EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, '_ABC')
+			AC.MakePlots(WhichDir, t[0:ind], EtotCMABC, 
+						 ECMABC, KCMABC, UCMABC, rAB_ABC, suffix='_ABC',
+						 rC=rCMAB[2,:])
 
 #################################### Write ################################
 ### Arrange data nicely
@@ -875,7 +881,7 @@ def InitSumFile(WhichDir):
 		'            tB    destB            tC    destC\n')
 	SumFile.close()
 ############################################################################
-def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix=''):
+def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.]):
 	'''Make plots of parameters from this run'''
 
 	print('	MakePlots    '+WhichDir)
@@ -890,22 +896,14 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix=''):
 
 	nobj= E.shape[0]
 
-# Plot energies of binary
-#rtest = np.array(range(19,37))*AU
-#normalization = np.array(range(-8,3))*1e37
-#Etest=np.empty( (len(normalization),len(rtest)) )
-#for i in range(len(normalization)):
-#	Etest[i,:] = normalization[i]/(rtest/np.max(rAB))
-
-#Ktest = np.min(KCMAB)/(rtest/np.max(rAB))
-#Utest = np.max(UCMAB)/(rtest/np.max(rAB))
+# Plot energies vs. binary separation
 	c=('b','y','r')
 
-	plt.plot(rAB/AU,   Etot, 'k-')
+	plt.plot(rAB/AU,   Etot, 'ks')
 	for i in range(nobj):
-		plt.plot(rAB/AU, E[i,:], c[i]+'-',
-				 rAB/AU, U[i,:], c[i]+'--',
-				 rAB/AU, K[i,:], c[i]+'-.',
+		plt.plot(rAB/AU, E[i,:], c[i]+'s',
+				 rAB/AU, U[i,:], c[i]+'o',
+				 rAB/AU, K[i,:], c[i]+'^',
 				)
 #	plt.legend(('System total','A total','B total','A potential','A kinetic'),
 #	           'lower right')
@@ -916,12 +914,6 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix=''):
 	plt.clf()
 	
 # Plot energies over time
-	#Amp		= .205
-	#Freq	= 102.
-	#Phase	= 0.3
-	#Offset	= -1.05
-	#sinfit = (Amp*sin((2*pi/Freq)*t + Phase) + Offset)*1.e38
-	
 	plt.plot(t, Etot, 'k-')
 	for i in range(nobj):
 		plt.plot(t, E[i,:], c[i]+'-',
@@ -934,7 +926,49 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix=''):
 	plt.xscale('log')
 	plt.savefig(WhichDir+'/EvsT'+suffix+'.png')
 	plt.clf()
-	
+		
+# Plot C distance over time, if given
+	if not all( [value == 0. for value in rC] ):
+		plt.plot(t, rC/AU, 'r-')
+#		for i in range(nobj):
+#			plt.plot(t, E[i,:], c[i]+'-',
+#					 t, U[i,:], c[i]+'--',
+#					 t, K[i,:], c[i]+'-.',
+#		        )
+		plt.xlabel('time (years)')
+		plt.ylabel('rC (AU)')
+		plt.title('C separation')
+		plt.xlim([9e8,10e8])
+#		plt.xscale('log')
+		plt.savefig(WhichDir+'/C_RvsT'+suffix+'.png')
+		plt.clf()
+# Plot C's energies over time
+#		plt.plot(t, Etot, 'k-')
+		i=2
+		plt.plot(t, E[i,:], c[i]+'-',
+				 t, U[i,:], c[i]+'--',
+				 t, K[i,:], c[i]+'-.',
+	        )
+		plt.xlabel('time (years)')
+		plt.ylabel('Energy (J)')
+		plt.title('Energies')
+#		plt.xscale('log')
+		plt.xlim([9e8,10e8])
+		plt.savefig(WhichDir+'/C_EvsT'+suffix+'.png')
+		plt.clf()
+# Plot C's energies vs R
+#		plt.plot(t, Etot, 'k-')
+		i=2
+		plt.plot(rC/AU, E[i,:], c[i]+'s',
+				 rC/AU, U[i,:], c[i]+'o',
+				 rC/AU, K[i,:], c[i]+'^',
+	        )
+		plt.xlabel('rC (AU)')
+		plt.ylabel('Energy (J)')
+		plt.title('Energies')
+		plt.savefig(WhichDir+'/C_EvsR'+suffix+'.png')
+		plt.clf()
+
 ############################################################################
 def ReadInfo(WhichDir):
 	'''A program to read the collision info from info.out'''

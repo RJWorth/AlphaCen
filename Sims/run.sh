@@ -27,7 +27,7 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=100	# = number of iterations to run
+niter=30	# = number of iterations to run
 user='yes'	# which mercury version to use
 
 ### Write files.in
