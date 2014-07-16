@@ -15,3 +15,5 @@ fi
 
 ### Read summary.out into R and make plots
 R CMD BATCH --slave plot.R
+rm Rplots.pdf
+mv plot.Rout Plots

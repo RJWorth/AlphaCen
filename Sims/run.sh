@@ -26,7 +26,7 @@ vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
-step=10.0	# = days
+step=30.0	# = days
 niter=30	# = number of iterations to run
 user='yes'	# which mercury version to use
 
@@ -55,8 +55,6 @@ echo '	timerange '$timerange
 
 	# Write param.in file
 	./writeparam.bash $1 $mintime $output $step $mintime $user
-	# create empty summary.out file if there isn't one
-	python -c 'import AlphaCenModule; AlphaCenModule.InitSumFile("'$1'")'
 	# Compile mercury
 	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
 		#j in, to fix colors

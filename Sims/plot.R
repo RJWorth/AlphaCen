@@ -2,12 +2,17 @@
 cat('hi from R!\n')
 
 ###1 for run normally, 2 or 3 for run on saved files
-runtype=1	
+runtype=0	
 
 ### Calculate average runtime per sim
-if (runtype==1) source('CalcRunTime.R')
+if ((runtype==0) | (runtype==1)) source('CalcRunTime.R')
 
 ### Read in Summary.out, normal
+if(runtype==0) {prefix='Plots/'
+	SumAll=read.table('SumAll.out', header=T, na.strings='-')	
+	SumAll$tB=10^SumAll$logtB
+	SumAll$tC=10^SumAll$logtC
+		}
 if(runtype==1) {prefix='Plots/'
 	SumAll=read.table('SumAll.out', header=T, na.strings='-')	
 	SumAll061914=read.table('SumAll061914.out', header=T, na.strings='-')	
@@ -94,35 +99,41 @@ pindC = replicate(length(tC),21)
 surv  = (is.na(rBf)==F & is.na(rCf)==F & eCf <1.)
 	 surv[is.na( surv)]=FALSE
 # survival index
+# growth index (did C move outward?)
+grow  = (surv  & rCf>aC)
+	 grow[is.na(grow)]=FALSE
+#prox = (rCf*(1+eCf)>10000 & !is.na(rCf))
+prox  = (surv  & aCf>4000 & !is.na(aCf))
+
+### get old version data
+if (runtype==1)	{
 surv2 = (is.na(c(rBf,SumAll061914$rBf,SumAll061714$rBf))==F & 
 		 is.na(c(rCf,SumAll061914$rCf,SumAll061714$rCf))==F & 
 		 c(ECf,SumAll061914$ECf,SumAll061714$ECf) <0.)
 	surv2[is.na(surv2)]=FALSE
-# growth index (did C move outward?)
-grow  = (surv  & rCf>aC)
-	 grow[is.na(grow)]=FALSE
 grow2 = (surv2 & 
 		c(aCf,SumAll061914$aCf,SumAll061714$rCf)>
 									c(aC,SumAll061914$aC,SumAll061714$rC))
 	grow2[is.na(grow2)]=FALSE
-#prox = (rCf*(1+eCf)>10000 & !is.na(rCf))
-prox  = (surv  & aCf>4000 & !is.na(aCf))
 prox2 = (surv2 & 
 		 c(aCf,SumAll061914$aCf,SumAll061714$rCf)>4000 & 
 		 !is.na(c(aCf,SumAll061914$aCf,SumAll061714$rCf)))
+	}
+
 
 ### Write totals
-nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
 cat(paste(dim(SumAll)[1],'recent simulations\n'))
 cat(paste("% of sims with no ejection  =",signif(mean(surv)*100,2),'\n'))
 cat(paste("% of sims where C moves out =",signif(mean(grow)*100,2),'\n'))
 cat(paste("% of Proxima-like sims      =",signif(mean(prox)*100,2),'\n'))
 
-nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
-cat(paste(nsims,'completed simulations,',dim(SumAll)[1],'recent\n'))
-cat(paste("% of sims with no ejection  =",signif(mean(surv2)*100,2),'\n'))
-cat(paste("% of sims where C moves out =",signif(mean(grow2)*100,2),'\n'))
-cat(paste("% of Proxima-like sims      =",signif(mean(prox2)*100,2),'\n'))
+if (runtype==1)	{
+	nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
+	cat(paste(nsims,'completed simulations,',dim(SumAll)[1],'recent\n'))
+	cat(paste("% of sims with no ejection  =",signif(mean(surv2)*100,2),'\n'))
+	cat(paste("% of sims where C moves out =",signif(mean(grow2)*100,2),'\n'))
+	cat(paste("% of Proxima-like sims      =",signif(mean(prox2)*100,2),'\n'))
+	}
 
 # change in B?
 bgrowth=abs(aB-rBf)/aB

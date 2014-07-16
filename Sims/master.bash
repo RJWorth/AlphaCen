@@ -9,20 +9,20 @@
 # \rm *Dir*/InParams.txt
 
 machine=$(hostname -s)
+if [ $machine = chloe ]; then
+	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10)
+#	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir8 CDir9)
+fi
 if [ $machine = shapiro ]; then
 	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 #	Dirs=(SDir1)
 fi
-if [ $machine = spaatz ]; then
+#if [ $machine = spaatz ]; then
 #	Dirs=(PDir1 PDir2 PDir3)
-fi
-if [ $machine = chloe ]; then
-#	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10)
-	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir8 CDir9)
-fi
-if [ $machine = nova ]; then
+#fi
+#if [ $machine = nova ]; then
 #	Dirs=(NDir1)
-fi
+#fi
 
 for i in ${Dirs[*]}
 do

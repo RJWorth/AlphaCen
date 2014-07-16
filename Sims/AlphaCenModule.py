@@ -597,7 +597,7 @@ def GetFinalData(WhichDir,ThisT,mode):
 		 +', eB = '+('% 6.4g'%(eAB[-1]))
 		 +', iB = '+('% 6.4g'%(iAB[-1])))
 
-###################### Triple system: ###################################
+###################### Triple system: ########################################
 ### Only relevant if B and C both survived
 	if (mode=='triple'):
 #		nobjs = 3
@@ -913,21 +913,6 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 	return(True)
 
 ############################################################################
-def InitSumFile(WhichDir):
-	'''Create an empty summary.out file if there isn't one'''
-
-### Needed modules
-	import os 
-
-	sumpath=WhichDir+'/summary.out'
-
-	SumFile=open(sumpath, 'a')
-	if os.path.getsize(sumpath)==0:
-		SumFile.write('    aB     eB     iB      aC     eC     iC'+\
-		'         rBf          EBf         rCf          ECf'+\
-		'            tB    destB            tC    destC\n')
-	SumFile.close()
-############################################################################
 def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.],
 				UC=[0.], KC=[0.], EC=[0.], EtotC=[0.]):
 	'''Make plots of parameters from this run'''
@@ -1090,53 +1075,68 @@ def SumAll(WhichDirs,cent,suffix=''):
 #	import numpy, os, AlphaCenModule
 	import os 
 	import AlphaCenModule as AC
-#	from random import random
-#	from math import pi, sin, cos
 	
 	print('	SumAll SumAll.out: '+", ".join(WhichDirs))
 
-### Read in summary.out from each directory, compile and write to SumAll.out
 	Sum=[]
+	Par=[]
 	for j in range(len(WhichDirs)):
- 		DirSumFile=open(WhichDirs[j]+'/summary'+suffix+'.out','r')
-		DirSumLen=AC.FileLength(WhichDirs[j]+'/summary'+suffix+'.out')
+### Read in summary.out from each directory, compile and write to SumAll.out
+		DirSumPath=WhichDirs[j]+'/summary'+suffix+'.out'
+		if os.path.isfile(DirSumPath):
+			DirSumFile=open(DirSumPath,'r')
+			DirSumLen=AC.FileLength(DirSumPath)
 
-		DirSum=DirSumFile.readlines()
-		DirSum[0]='Dir '+DirSum[0]
-		for k in range(1,len(DirSum)):
-			DirSum[k]=str(j+1).rjust(3)+' '+DirSum[k]
-		if (len(Sum) < 1):
-			Sum=DirSum
-		else:
-			Sum=Sum+DirSum[1:]
-		DirSumFile.close()
+			DirSum=DirSumFile.readlines()
+			DirSum[0]='Dir '+DirSum[0]
+			for k in range(1,len(DirSum)):
+				DirSum[k]=str(j+1).rjust(3)+' '+DirSum[k]
+			if (len(Sum) < 1):
+				Sum=DirSum
+			else:
+				Sum=Sum+DirSum[1:]
+			DirSumFile.close()
+### Read in InParams.txt from each directory, compile into AllParams.txt
+		if os.path.isfile(DirSumPath):
+	 		DirParFile=open(WhichDirs[j]+'/InParams'+suffix+'.txt','r')
+			DirParLen=AC.FileLength(WhichDirs[j]+'/InParams'+suffix+'.txt')
 	
+			DirPar=DirParFile.readlines()
+			DirPar[0]='Dir '+DirPar[0]
+			for k in range(1,len(DirPar)):
+				DirPar[k]=str(j+1).rjust(3)+' '+DirPar[k]
+			if (len(Par) < 1):
+				Par=DirPar
+			else:
+				Par=Par+DirPar[1:]
+			DirParFile.close()
+	
+### Write summary of summaries	
 	SumAll=open('SumAll'+suffix+'.out','w')
 	for j in range(len(Sum)):
 		SumAll.write(Sum[j].rstrip()+'\n')
 	SumAll.close()
-
-### Read in InParams.txt from each directory, compile into AllParams.txt
-	Par=[]
-	for j in range(len(WhichDirs)):
- 		DirParFile=open(WhichDirs[j]+'/InParams'+suffix+'.txt','r')
-		DirParLen=AC.FileLength(WhichDirs[j]+'/InParams'+suffix+'.txt')
-
-		DirPar=DirParFile.readlines()
-		DirPar[0]='Dir '+DirPar[0]
-		for k in range(1,len(DirPar)):
-			DirPar[k]=str(j+1).rjust(3)+' '+DirPar[k]
-		if (len(Par) < 1):
-			Par=DirPar
-		else:
-			Par=Par+DirPar[1:]
-		DirParFile.close()
-	
+### Write summary of initial parameters
 	ParAll=open('AllParams'+suffix+'.txt','w')
 	for j in range(len(Par)):
 		ParAll.write(Par[j])
 	ParAll.close()
 
+############################################################################
+#def InitSumFile(WhichDir):
+#	'''Create an empty summary.out file if there isn't one'''
+#
+#### Needed modules
+#	import os 
+#
+#	sumpath=WhichDir+'/summary.out'
+#
+#	SumFile=open(sumpath, 'a')
+#	if os.path.getsize(sumpath)==0:
+#		SumFile.write('    aB     eB     iB      aC     eC     iC'+\
+#		'         rBf          EBf         rCf          ECf'+\
+#		'            tB    destB            tC    destC\n')
+#	SumFile.close()
 ###############################################################################
 
 
