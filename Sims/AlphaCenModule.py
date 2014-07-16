@@ -607,24 +607,32 @@ def GetFinalData(WhichDir,ThisT,mode):
 #		LastxvA_A_AU = np.zeros_like(LastxvB_A_AU)
 #		LastxvC_A_AU = AC.ReadAei(WhichDir, filenames[1], ind-1, ind+4)
 ### Combine three stars into a 3D array
-		xvA_Triple_AU=np.array([
-                 xvA_A_AU[0:ind,:], xvB_A_AU[0:ind,:], xvC_A_AU[0:ind,:]])
+		xvA_Triple_AU = np.array([ xvA_A_AU[0:ind,:], 
+								   xvB_A_AU[0:ind,:], 
+								   xvC_A_AU[0:ind,:] ])
 ### Convert to mks units
 		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
+	# suffix '2' => treating AB as one star at their CM, AB-C as binary
+		xvA_Triple2=np.array([ xvCM_AB[0:ind,:], xvA[2,0:ind,:] ])
 ### Find the coordinates of the center of momentum
-		xvCM_ABC = AC.FindCM(m, xvA_Triple) 
+		xvCM_ABC = AC.FindCM( m, xvA_Triple) 
+#		xvCM_ABC2= AC.FindCM( [ m[0]+m[1], m[2] ], xvA_Triple2) 
 ### Convert to center-of-momentum units
-		xvABC  = AC.wrtCM(xvA_Triple, xvCM_ABC)
+		xvABC  = AC.wrtCM(xvA_Triple,  xvCM_ABC)
+		xvABC2 = AC.wrtCM(xvA_Triple2, xvCM_ABC)
 ### Get r, v in CM units
-		rCMABC = np.array([ AC.XVtoR(xvABC[i,:,:]) for i in range(nobjs) ])
-		vCMABC = np.array([ AC.XVtoV(xvABC[i,:,:]) for i in range(nobjs) ])
+		rCMABC = np.array([ AC.XVtoR( xvABC[i,:,:]) for i in range(nobjs) ])
+		vCMABC = np.array([ AC.XVtoV( xvABC[i,:,:]) for i in range(nobjs) ])
+		vCMABC2= np.array([ AC.XVtoV(xvABC2[i,:,:]) for i in range(2) ])
 ### Get distances between stars
 		rAB_ABC = AC.Distance(xvABC[0,:,:], xvABC[1,:,:])
 		rBC_ABC = AC.Distance(xvABC[1,:,:], xvABC[2,:,:])
 		rAC_ABC = AC.Distance(xvABC[0,:,:], xvABC[2,:,:])
+		rAB_C2  = AC.Distance(xvABC2[0,:,:], xvABC2[1,:,:])
 ########################## Energies #####################################
 ### Calculate kinetic energies, K
 		KCMABC = AC.Kinetic(m, vCMABC)
+		KABC2= AC.Kinetic( [m[0]+m[1], m[2]], vCMABC2)
 ### Calculate potential energies, U
 		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
 		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
@@ -632,10 +640,13 @@ def GetFinalData(WhichDir,ThisT,mode):
 		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
                             UAB_CMABC+UBC_CMABC,
                             UBC_CMABC+UAC_CMABC ])
+		UABC2    = AC.Potential( m[0]+m[1], m[2], rAB_C2)
 # Calculate total energy per object, E=K+U
 		ECMABC = KCMABC+UCMABC
+		ECMABC2= KABC2+UABC2
 # Calculate total energy in the system
 		EtotCMABC = np.sum(ECMABC, 0)
+		EtotCMABC2= np.sum(ECMABC2, 0)
 ### Check for consistency
 		EminABC = np.max(EtotCMABC)
 		EmaxABC = np.min(EtotCMABC)
@@ -690,7 +701,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 
 	return 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
 			rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
-			aAB, eAB, iAB, aC, eC, iC,	\
+			aAB, eAB, iAB, aC, eC, iC, \
+			UABC2, KABC2, ECMABC2, EtotCMABC2,	\
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
 
 ###############################################################################
@@ -726,6 +738,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
 	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
 	aAB, eAB, iAB, aC, eC, iC,	\
+	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
 													WhichDir, ThisT, mode)
 
@@ -737,35 +750,69 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 		if (mode=='triple'):
 			AC.MakePlots(WhichDir, t[0:ind], EtotCMABC, 
 						 ECMABC, KCMABC, UCMABC, rAB_ABC, suffix='_ABC',
-						 rC=rCMAB[2,:])
+					UC=UABC2, KC=KABC2, EC=ECMABC2, EtotC=EtotCMABC2, \
+						 rC=rCMAB[2,0:ind])
 
 #################################### Write ################################
 ### Arrange data nicely
 	if ((wantsum==True) & (mode=='triple')):
-		summary=aeiIn+\
-			    [str(round(rAB[-1]/AU,2)).rjust(6)]			+\
-			    [('% 7.2g' % ECMAB[1,-1]).rjust(9)]		+\
-			    [str(round(aAB[-1]/AU,2)).rjust(7)]			+\
-			    [str(round(eAB[-1]   ,2)).rjust(5)]			+\
-			    [str(round(iAB[-1]   ,1)).rjust(6)]			+\
-			    [str(round(rCMAB[2,ntC-1]/AU,1)).rjust(9)]	+\
-			    [('% 7.2g' % ECMABC[2,-1]).rjust(9)]		+\
-			    [str(round( aC[-1]/AU,2)).rjust(9)]			+\
-			    [str(round( eC[-1]   ,2)).rjust(6)]			+\
-			    [str(round( iC[-1]   ,1)).rjust(6)]			+\
-		        [str(round(log10(float(TimeB)),5)).rjust(7)]			+\
-				[DestB]										+\
-			    [str(round(log10(float(TimeC)),5)).rjust(7)]			+\
-				[DestC]+['\n']
-		header='  aB    eB   iB     aC    eC    iC'+\
-			'    rBf       EBf'+\
-			'     aBf   eBf    iBf'+\
-			'       rCf       ECf'+\
-			'       aCf    eCf    iCf'+\
-			'   logtB    destB   logtC    destC\n'
+		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
+			    str(round(rAB[-1]/AU,2)),
+			    ('% 7.2g' % EtotCMAB[-1]),
+			    str(round(aAB[-1]/AU,2)),
+			    str(round(eAB[-1]   ,2)),
+			    str(round(iAB[-1]   ,1)),
+			    str(round(rCMAB[2,ntC-1]/AU,1)),
+			    ('% 7.2g' % EtotCMABC2[-1]),
+			    str(round( aC[-1]/AU,2)),
+			    str(round( eC[-1]   ,2)),
+			    str(round( iC[-1]   ,1)),
+		        str(round(log10(float(TimeB)),5)), DestB,
+			    str(round(log10(float(TimeC)),5)), DestC, '\n']
+		headerfields=['aB','eB','iB','aC','eC','iC',
+					 'rBf','EBf','aBf','eBf','iBf',
+					 'rCf','ECf','aCf','eCf','iCf',
+					 'logtB','destB','logtC','destC', '\n']
+		sumspaces=[
+			len(aeiIn[0]),len(aeiIn[1]),len(aeiIn[2]),
+				len(aeiIn[3]),len(aeiIn[4]),len(aeiIn[5]), 
+			6,9,7,5,6, 9,9,9,6,6, 
+			7,len(DestB),7,len(DestC), len('\n')]
+### Assemble summary and summary header rows with proper spacing
+
+		summary=[summaryfields[i].rjust(sumspaces[i]) 
+							for i in range(len(sumspaces))]
+		header =[ headerfields[i].rjust(sumspaces[i]+1) 
+							for i in range(len(sumspaces))]
+		header[0]=header[0][2:]
+
+#		header = '  aB    eB   iB     aC    eC    iC'+\
+#			'    rBf       EBf'+\
+#			'     aBf   eBf    iBf'+\
+#			'       rCf       ECf'+\
+#			'       aCf    eCf    iCf'+\
+#			'   logtB    destB   logtC    destC\n'
+#		summary = aeiIn+\
+#			    [str(round(rAB[-1]/AU,2)).rjust(6)]			+\
+#			    [('% 7.2g' % EtotCMAB[-1]).rjust(9)]		+\
+#			    [str(round(aAB[-1]/AU,2)).rjust(7)]			+\
+#			    [str(round(eAB[-1]   ,2)).rjust(5)]			+\
+#			    [str(round(iAB[-1]   ,1)).rjust(6)]			+\
+#			    [str(round(rCMAB[2,ntC-1]/AU,1)).rjust(9)]	+\
+#			    [('% 7.2g' % EtotCMABC2[-1]).rjust(9)]		+\
+#			    [str(round( aC[-1]/AU,2)).rjust(9)]			+\
+#			    [str(round( eC[-1]   ,2)).rjust(6)]			+\
+#			    [str(round( iC[-1]   ,1)).rjust(6)]			+\
+#		        [str(round(log10(float(TimeB)),5)).rjust(7)]			+\
+#				[DestB]										+\
+#			    [str(round(log10(float(TimeC)),5)).rjust(7)]			+\
+#				[DestC]+['\n']
+
+
+
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
-	                     rAB/AU, ECMAB[1,:], rCMAB[2,:]/AU, ECMABC[2,:],
+	                     rAB/AU, EtotCMAB[:], rCMAB[2,:]/AU, EtotCMABC2[:],
 	                     TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
@@ -824,11 +871,11 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 			 ((EB[-1]>0.) & (not BdestStat)) | 
 			 ((EC[-1]>0.) & (not CdestStat)) ):
 			bigstop = True
-			print('	 bigstop fate/energy conflict')
+			print('**BIGSTOP FATE/ENERGY CONFLICT**')
 		if (np.isnan(EB[-1]) | np.isnan(EB[-1]) | 
 		    np.isinf(EB[-1]) | np.isinf(EB[-1])):
 			bigstop = True
-			print('	 bigstop energy error')
+			print('**BIGSTOP ENERGY ERROR**')
 	print('	 bigstop = '+str(bigstop)+',                             '+
 		  'WhichTime = '+str(WhichTime))
 
@@ -858,7 +905,7 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 	if (stop==True | bigstop==True):
 		SumFile=open(sumpath, 'a')
 		if os.path.getsize(sumpath)==0:
-			SumFile.write(summaryheader)
+			SumFile.write(''.join(summaryheader))
 		strsum=" ".join(summary).strip()+'\n'
 		SumFile.write(strsum)
 		SumFile.close()
@@ -881,7 +928,8 @@ def InitSumFile(WhichDir):
 		'            tB    destB            tC    destC\n')
 	SumFile.close()
 ############################################################################
-def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.]):
+def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.],
+				UC=[0.], KC=[0.], EC=[0.], EtotC=[0.]):
 	'''Make plots of parameters from this run'''
 
 	print('	MakePlots    '+WhichDir)
@@ -968,6 +1016,19 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.]):
 		plt.title('Energies')
 		plt.savefig(WhichDir+'/C_EvsR'+suffix+'.png')
 		plt.clf()
+# Plot C's energies vs R
+#		plt.plot(t, Etot, 'k-')
+		plt.plot(rC/AU,   EtotC, 'ks')
+		for i in range(2):
+			plt.plot(rC/AU, EC[i,:], c[i+1]+'s',
+					 rC/AU, UC[:], c[i+1]+'o',
+					 rC/AU, KC[i,:], c[i+1]+'^',
+					)
+		plt.xlabel('rC (AU)')
+		plt.ylabel('Energy (J)')
+		plt.title('Energies')
+		plt.savefig(WhichDir+'/AB-C_EvsR'+suffix+'.png')
+		plt.clf()
 
 ############################################################################
 def ReadInfo(WhichDir):
@@ -976,6 +1037,7 @@ def ReadInfo(WhichDir):
 #	import numpy, os
 #	import os 
 	import AlphaCenModule as AC
+	import numpy as np
 
  	InfoFile=open(WhichDir+'/Out/info.out','r')
 	InfoLen=AC.FileLength(WhichDir+'/Out/info.out')
@@ -987,10 +1049,23 @@ def ReadInfo(WhichDir):
 	nloops=len(ends)
 
 	# Read the last loop only
-	if (nloops == 1):	
-		want=[AllInfo[j] for j in range(start[0]+2,ends[0]-1)]
-	else:
-		want=[AllInfo[j] for j in range(ends[nloops-2]+10,ends[nloops-1]-1)]
+#	if (nloops == 1):	
+#		want=[AllInfo[j] for j in range(start[0]+2,ends[0]-1)]
+#	else:
+#		want=[AllInfo[j] for j in range(ends[nloops-2]+10,ends[nloops-1]-1)]
+#	print(np.array(AllInfo))
+#	print([AllInfo[j] for j in range(start[0]+2,ends[nloops-1]-1)])
+#	print(start,ends)
+#	print(nloops)
+
+	# Get any line that isn't blank or boilerplate
+	want = []
+	for row in AllInfo[ (start[0]+2):(ends[nloops-1]-1) ]:
+		if (row != '\n'):
+			if not ( (row.split()[0] == 'Fractional' ) | 
+					 (row.split()[0] == 'Integration') | 
+					 (row.split()[0] == 'Continuing' ) ):
+				want.append(row)
 	
 	# Extract name, dest, and time from 'want' section
 	name,dest,time = [], [], []
