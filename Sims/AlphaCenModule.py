@@ -1081,9 +1081,9 @@ def SumAll(WhichDirs,cent,suffix=''):
 	Sum=[]
 	Par=[]
 	for j in range(len(WhichDirs)):
-### Read in summary.out from each directory, compile and write to SumAll.out
 		DirSumPath=WhichDirs[j]+'/summary'+suffix+'.out'
 		if os.path.isfile(DirSumPath):
+### Read in summary.out from each directory, compile and write to SumAll.out
 			DirSumFile=open(DirSumPath,'r')
 			DirSumLen=AC.FileLength(DirSumPath)
 
@@ -1097,7 +1097,6 @@ def SumAll(WhichDirs,cent,suffix=''):
 				Sum=Sum+DirSum[1:]
 			DirSumFile.close()
 ### Read in InParams.txt from each directory, compile into AllParams.txt
-		if os.path.isfile(DirSumPath):
 	 		DirParFile=open(WhichDirs[j]+'/InParams'+suffix+'.txt','r')
 			DirParLen=AC.FileLength(WhichDirs[j]+'/InParams'+suffix+'.txt')
 	
