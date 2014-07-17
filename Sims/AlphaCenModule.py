@@ -547,10 +547,11 @@ def GetFinalData(WhichDir,ThisT,mode):
 ### Get distances between stars (== rAij_AU*AU), and rel. velocity
 	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
 	vAB = AC.XVtoV(xvA[1,:,:])
+
 ######################## Binary system: #################################
 # CMAB = Center of momentum frame of A+B
 ### Find the coordinates of the center of momentum
-	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,:,:]) 
+	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,0:ntB,:]) 
 ### Convert to center-of-momentum units
 	xvAB  = AC.wrtCM(xvA, xvCM_AB)
 ### Get r, v in CM units
@@ -560,8 +561,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 # Get kinetic energy = (1/2)mv^2
 	KCMAB = AC.Kinetic(m[0:2],vCMAB[0:2,:])
 # Get potential energy = GMm/r
-	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB),
-					   AC.Potential(m[0],m[1], rAB) ])
+	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB[0:ntB]),
+					   AC.Potential(m[0],m[1], rAB[0:ntB]) ])
 # Get total energy = K+U
 	ECMAB = KCMAB+UCMAB
 
@@ -582,12 +583,12 @@ def GetFinalData(WhichDir,ThisT,mode):
 	# grav. paramater for binary
 	mu2 = G*(m[0]+m[1])
 	# specific orbital energy
-	eps = AC.Eps(rAB[0:(ntB)], vAB[0:(ntB)], mu2)
+	eps = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
 	# semimajor axis
 	aAB = AC.a(eps, mu2)
 
 	# specific angular momentum (r x v) of B wrt A
-	hA     = AC.h( xvA[1,0:(ntB),0:3],  xvA[1,0:(ntB),3:6])
+	hA     = AC.h( xvA[1,0:ntB,0:3],  xvA[1,0:ntB,3:6])
 	hbarA  = AC.XVtoR( hA[:,:])
 	# eccentricity
 	eAB = AC.e(aAB, eps, hbarA, mu2)
@@ -836,19 +837,19 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### Write to summary.out, but only if the simulation is ending:
 ### Determine status of each star in each survival criterion,
 ### i.e., whether an object is missing and the run can be ended
-	BtimeStat = (float(TimeB)==Tmax)# has either survived the max sim length?
-	CtimeStat = (float(TimeC)==Tmax)	# or
-	BdestStat = (DestB!='-'.rjust(8))	# has either been ejected etc?
-	CdestStat = (DestC!='-'.rjust(8))	
+	isBmaxT = (float(TimeB)==Tmax)  # has either survived the max time?
+	isCmaxT = (float(TimeC)==Tmax)	# or
+	Bejectd = (DestB!='-'.rjust(8))	# has either been ejected/accreted?
+	Cejectd = (DestC!='-'.rjust(8))	
 
 ### The stop conditions should be mutually exclusive
-	if (BtimeStat==BdestStat==True) | (CtimeStat==CdestStat==True):
+	if (isBmaxT==Bejectd==True) | (isCmaxT==Cejectd==True):
 		print('Warning: possible stop condition conflict?')
 
 ### 'Little' stop = combination of these checks
-	stop=(BtimeStat | CtimeStat | BdestStat | CdestStat)
+	stop=(isBmaxT | isCmaxT | Bejectd | Cejectd)
 	print('	    stop = '+
-	str(BtimeStat)[0]+str(CtimeStat)[0]+str(BdestStat)[0]+str(CdestStat)[0]+
+	str(isBmaxT)[0]+str(isCmaxT)[0]+str(Bejectd)[0]+str(Cejectd)[0]+
 	',               Time = 1e'+str(int(log10(ThisT)))+' yrs')
 
 ### Write stop status to file for bash script to check
@@ -860,20 +861,15 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	pcut=2000.
 ### If a Proxima-like C was created, stop the whole series of runs
 	bigstop=False
-	if (BtimeStat & CtimeStat):
+	if (isBmaxT & isCmaxT):
 		bigstop = (rC[-1] >= pcut) & (EC[-1] <= 0.)
-		# Also check for nonsensical energies
-#		if ( np.isinf(EA_ABC[-1]) | np.isnan(EA_ABC[-1]) | 
-#			 np.isinf(EB_ABC[-1]) | np.isnan(EB_ABC[-1]) | 
-#			 np.isinf(EC_ABC[-1]) | np.isnan(EC_ABC[-1])):
-#			bigstop = True
-#			print('Something weird here... Check energies.')
 ### Weird circumstances that I want to stop and investigate:
-		if ( ((float(EB[-1])<0.) &      BdestStat)  | 
-			 ((float(EC[-1])<0.) &      CdestStat)  |
-			 ((float(EB[-1])>0.) & (not BdestStat)) | 
-			 ((float(EC[-1])>0.) & (not CdestStat)) |
-			 ( rB<=0.01 ) ):
+		print('Testing for errors')
+		if ( ((float(EB[-1])<0.) &      Bejectd)  | 
+			 ((float(EC[-1])<0.) &      Cejectd)  |
+			 ((float(EB[-1])>0.) & (not Bejectd)) | 
+			 ((float(EC[-1])>0.) & (not Cejectd)) |
+			 ( rB[-1]<=0.01 ) ):
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT**')
 		if (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
