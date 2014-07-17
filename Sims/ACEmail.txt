@@ -2,4 +2,4 @@ To: rjw274@psu.edu
 From: rjw274@gmail.com
 Subject: re: Proxima-like system!
 
-Check CDir7 on chloe, iterations = 12/100
+Check SDir3 on shapiro, iterations = 11/30

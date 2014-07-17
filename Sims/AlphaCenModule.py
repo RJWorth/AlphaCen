@@ -876,8 +876,11 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1]))):
 			bigstop = True
 			print('**BIGSTOP ENERGY ERROR**')
-	print('	 bigstop = '+str(bigstop)+',                             '+
-		  'WhichTime = '+str(WhichTime))
+		if (Bejectd & Cejectd):
+			bigstop = True
+			print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
+	print('	 bigstop = '+str(bigstop).rjust(5)+',                       '+
+		  '           WhichTime = '+str(WhichTime))
 
 ### debugging ----------
 #	t1=float('-INF')
