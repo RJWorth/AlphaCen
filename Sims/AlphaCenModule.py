@@ -830,6 +830,9 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 #	import rvtest as rv
 	from mks_constants import AU
 
+	print(isinstance(EB[-1],float))
+	print(isinstance(EC[-1],float))
+
 ### Write to summary.out, but only if the simulation is ending:
 ### Determine status of each star in each survival criterion,
 ### i.e., whether an object is missing and the run can be ended
@@ -866,19 +869,32 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 #			bigstop = True
 #			print('Something weird here... Check energies.')
 ### Weird circumstances that I want to stop and investigate:
-		if ( ((EB[-1]<0.) &      BdestStat)  | 
-			 ((EC[-1]<0.) &      CdestStat)  |
-			 ((EB[-1]>0.) & (not BdestStat)) | 
-			 ((EC[-1]>0.) & (not CdestStat)) ):
+		if ( ((float(EB[-1])<0.) &      BdestStat)  | 
+			 ((float(EC[-1])<0.) &      CdestStat)  |
+			 ((float(EB[-1])>0.) & (not BdestStat)) | 
+			 ((float(EC[-1])>0.) & (not CdestStat)) |
+			 ( rB<=0.01 ) ):
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT**')
-		if (np.isnan(EB[-1]) | np.isnan(EB[-1]) | 
-		    np.isinf(EB[-1]) | np.isinf(EB[-1])):
+		if (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
+		    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1]))):
 			bigstop = True
 			print('**BIGSTOP ENERGY ERROR**')
 	print('	 bigstop = '+str(bigstop)+',                             '+
 		  'WhichTime = '+str(WhichTime))
 
+### debugging ----------
+#	t1=float('-INF')
+#	t2=float('-NAN')
+#	print(t1,t2)
+#	print(np.isnan(t1),np.isnan(t2))
+#	print(np.isinf(t1),np.isinf(t2))
+#	if (np.isnan(float(t1)) | np.isnan(float(t2)) | 
+#	    np.isinf(float(t1)) | np.isinf(float(t2))):
+#		print('true')
+#	else:
+#		print('false')
+### debugging ----------
 
 ### Write big stop status to file for bash script to check
 	BigStopFile=open(WhichDir+'/bigstopfile.txt','w')
