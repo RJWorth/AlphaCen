@@ -1,0 +1,51 @@
+CDir1
+	 bigstop = False,                             WhichTime = 6
+	writeparam.bash,          stop time = 365.25e9
+CDir2
+	 bigstop = False,                             WhichTime = 15
+	writeparam.bash,          stop time = 365.25e9
+CDir3
+	 bigstop = False,                                  WhichTime = 5
+	writeparam.bash,          stop time = 365.25e7
+CDir4
+	 bigstop = False,                             WhichTime = 7
+	writeparam.bash,          stop time = 365.25e9
+CDir5
+	 bigstop = False,                             WhichTime = 4
+	writeparam.bash,          stop time = 365.25e9
+CDir6
+	 bigstop = False,                             WhichTime = 8
+	writeparam.bash,          stop time = 365.25e9
+CDir7
+	 bigstop = False,                                  WhichTime = 10
+	writeparam.bash,          stop time = 365.25e8
+CDir8
+	 bigstop = False,                             WhichTime = 2
+	writeparam.bash,          stop time = 365.25e9
+CDir9
+	 bigstop = False,                             WhichTime = 19
+	writeparam.bash,          stop time = 365.25e9
+CDir10
+	 bigstop = False,                             WhichTime = 9
+	writeparam.bash,          stop time = 365.25e9
+SDir1
+	 bigstop =  True,                                  WhichTime = 14
+Bigstop reached! Proxima-like system.
+SDir2
+	 bigstop = True,                             WhichTime = 11
+Bigstop reached! Proxima-like system.
+SDir3
+	 bigstop = True,                                  WhichTime = 11
+Bigstop reached! Proxima-like system.
+SDir4
+	 bigstop =  True,                                  WhichTime = 14
+Bigstop reached! Proxima-like system.
+SDir5
+	 bigstop = False,                                  WhichTime = 17
+	writeparam.bash,          stop time = 365.25e9
+SDir6
+	 bigstop =  True,                                  WhichTime = 14
+Bigstop reached! Proxima-like system.
+SDir7
+	 bigstop =  True,                                  WhichTime = 17
+Bigstop reached! Proxima-like system.
