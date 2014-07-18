@@ -865,17 +865,20 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		bigstop = (rC[-1] >= pcut) & (EC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
 		print('Testing for errors')
+		tests=summary[8:17]
 		if ( ((float(EB[-1])<0.) &      Bejectd)  | 
 			 ((float(EC[-1])<0.) &      Cejectd)  |
 			 ((float(EB[-1])>0.) & (not Bejectd)) | 
-			 ((float(EC[-1])>0.) & (not Cejectd)) |
-			 ( rB[-1]<=0.01 ) ):
+			 ((float(EC[-1])>0.) & (not Cejectd)) ):
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT**')
 		if (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
-		    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1]))):
+		    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
 			bigstop = True
 			print('**BIGSTOP ENERGY ERROR**')
+		if ((tests<=0.01) | (np.isnan(tests)) | (np.isinf(tests) ):
+			bigstop = True
+			print('**BIGSTOP NONSENSICAL OUTPUTS**')
 		if (Bejectd & Cejectd):
 			bigstop = True
 			print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
