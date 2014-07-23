@@ -59,6 +59,8 @@ attach(SumAll)
 # Define cut and max times
 tcut=1e5
 tmax=max(cbind(tB,tC))
+tmin=min(cbind(tB,tC))
+#tmin=1e4	#minimum t cutoff
 # as strings, with +0 or + removed from sci notation
 tcutS=sub('\\+0','',tcut)
 tmaxS=sub('\\+0','',tmax)
@@ -95,37 +97,45 @@ pindC = replicate(length(tC),21)
 	pindC[(tC == tmax) & (ECf <0.)] = 20
 
 ### Indices for the outcomes of simulations, with 2nd set including old sims
+# error in reading => na values
+brkn = is.na(aBf) | is.na(aCf) | is.na(eBf) | is.na(eCf)
 # survival index
-surv  = (is.na(rBf)==F & is.na(rCf)==F & eCf <1.)
-	 surv[is.na( surv)]=FALSE
+surv  = (is.na(destB) & is.na(destC) & eCf <1. & !brkn)
+#	 surv[is.na( surv)]=FALSE
 # survival index
 # growth index (did C move outward?)
 grow  = (surv  & rCf>aC)
-	 grow[is.na(grow)]=FALSE
+#	 grow[is.na(grow)]=FALSE
 #prox = (rCf*(1+eCf)>10000 & !is.na(rCf))
-prox  = (surv  & aCf>4000 & !is.na(aCf))
+prox  = (surv  & aCf*(1+eCf)>10000)
+
+# too huge (falsely counted as ejection in Mercury)
+huge = ((!is.na(destB) & eBf < 1.) | (!is.na(destC) & eCf < 1.))
+	huge[is.na(huge)]=FALSE
 
 ### get old version data
-if (runtype==1)	{
-surv2 = (is.na(c(rBf,SumAll061914$rBf,SumAll061714$rBf))==F & 
-		 is.na(c(rCf,SumAll061914$rCf,SumAll061714$rCf))==F & 
-		 c(ECf,SumAll061914$ECf,SumAll061714$ECf) <0.)
-	surv2[is.na(surv2)]=FALSE
-grow2 = (surv2 & 
-		c(aCf,SumAll061914$aCf,SumAll061714$rCf)>
-									c(aC,SumAll061914$aC,SumAll061714$rC))
-	grow2[is.na(grow2)]=FALSE
-prox2 = (surv2 & 
-		 c(aCf,SumAll061914$aCf,SumAll061714$rCf)>4000 & 
-		 !is.na(c(aCf,SumAll061914$aCf,SumAll061714$rCf)))
-	}
+	if (runtype==1)	{
+	surv2 = (is.na(c(rBf,SumAll061914$rBf,SumAll061714$rBf))==F & 
+			 is.na(c(rCf,SumAll061914$rCf,SumAll061714$rCf))==F & 
+			 c(ECf,SumAll061914$ECf,SumAll061714$ECf) <0.)
+		surv2[is.na(surv2)]=FALSE
+	grow2 = (surv2 & 
+			c(aCf,SumAll061914$aCf,SumAll061714$rCf)>
+										c(aC,SumAll061914$aC,SumAll061714$rC))
+		grow2[is.na(grow2)]=FALSE
+	prox2 = (surv2 & 
+			 c(aCf,SumAll061914$aCf,SumAll061714$rCf)>4000 & 
+			 !is.na(c(aCf,SumAll061914$aCf,SumAll061714$rCf)))
+		}
 
 
 ### Write totals
+i=signif(c(mean(brkn),mean(surv),mean(grow),mean(prox))*100,3)
 cat(paste(dim(SumAll)[1],'recent simulations\n'))
-cat(paste("% of sims with no ejection  =",signif(mean(surv)*100,2),'\n'))
-cat(paste("% of sims where C moves out =",signif(mean(grow)*100,2),'\n'))
-cat(paste("% of Proxima-like sims      =",signif(mean(prox)*100,2),'\n'))
+cat(paste("broken sims (NAs, etc) = ",i[1],'% (',sum(brkn),')\n',sep=''))
+cat(paste("sims with no ejection  = ",i[2],'% (',sum(surv),')\n',sep=''))
+cat(paste("sims where C moves out = ",i[3],'% (',sum(grow),')\n',sep=''))
+cat(paste("Proxima-like sims      = ",i[4],'% (',sum(prox),')\n',sep=''))
 
 if (runtype==1)	{
 	nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
@@ -161,34 +171,41 @@ row.names(changes)=c('aB','aC','eB','eC') #,'iB*','iC*')
 #print(changes)
 
 ### destination-based color schemes
-dcol=rep('red',length(destC))
-	dcol[is.na(destB) & is.na(destC) & ECf>0.]='magenta'
-	dcol[destB=='ejected' & is.na(destC)    ]='green'
-	dcol[is.na(destB)     & destC=='ejected']='blue'
-	dcol[destB=='ejected' & destC=='ejected']='grey'
-	dcol[destC=='Center']='yellow'
-	dcol[destC=='AlCenB']='orange'
+dcol=rep('black',length(destC))
+	dcol[is.na(destB) & is.na(destC) & ECf>0.]='magenta'	# unstable
+	dcol[destB=='ejected' & is.na(destC)    ]='blue'		# B ejected
+	dcol[is.na(destB)     & destC=='ejected']='red'			# C ejected
+	dcol[destB=='ejected' & destC=='ejected']='grey'		# both ejected
+	dcol[destC=='Center']='yellow'							# C hit A
+	dcol[destC=='AlCenB']='orange'							# C hit B
 # Make factor version, with levels sorted from most to least common
 dcol2=factor(dcol)
 dcol2=factor(dcol2,levels=levels(dcol2)[order(-summary(dcol2))])
 
 ### C ejection time color index
-mintime=4	#minimum log(t) cutoff
-n2=log10(tmax)-mintime+1
-br=c(0,10^(mintime:log10(tmax)))
-	tcol2=cut(tC,breaks=br,labels=1:n2)
-	if(n2==6) {tcol1=cut(tC,breaks=br,labels=c('red','yellow','green','cyan',
-						'blue','magenta'))} else
-	{tcol1=cut(tC,breaks=br,labels=c('red','yellow','green','cyan',
-						'blue','purple','magenta'))}
-	tcol2[surv]='black'
+tlevs=floor(log10(tmin)):ceiling(log10(tmax))
+ntbins=length(tlevs)		# number of time bins
+tcol=factor(floor(log10(tC)), levels=tlevs)
+#br=c(0, 10^( log10(tmin):(log10(tmax)+1) ))	# boundaries of time bins
+#	tcol2=cut(tC,breaks=br,labels=1:(n2+1),right=FALSE)	# tC binned as numbers
+	# tC binned as colors:
+#	if(n2==6) {tcol1=factor(tcol2,labels=c('red','yellow','green','cyan',
+#						'blue','magenta','black'))} else
+#	{tcol1=cut(tC,breaks=br,labels=c('red','yellow','green','cyan',
+#						'blue','purple','magenta','black'))}
+
+### Define color palette
+#palette(rainbow(ntbins))
+#palette(sort(gray.colors(ntbins  ),dec=T))
+palette(c(sort(heat.colors(ntbins),dec=T)[2:(ntbins)],'black'))
+
 
 ###############################################################################
 ### Plot distribution of times
 pdf(paste(prefix,'TimeDistribution.pdf',sep=''),width=4,height=8)
 par(mfrow=c(2,1))
-hB=hist(log10(tB), breaks=0:10)
-hC=hist(log10(tC), breaks=0:10)
+hB=hist(log10(tB), breaks=0:10,col=1:10, main='log(tB)')
+hC=hist(log10(tC), breaks=0:10,col=1:10, main='log(tC)')
 dev.off()
 
 ########################################################################
@@ -200,52 +217,52 @@ dev.off()
 
 ###############################################################################
 ### Plot inclinations
-#pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
-#par(mfrow=c(2,3))
+pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
+par(mfrow=c(2,3))
 
-#n1=8
-#br1=180*(0:n1)/n1
-#hC=hist(iC,br=br1,plot=F)$counts
-#hCs=hist(iC[surv],br=br1,plot=F)$counts
+n1=8
+br1=180*(0:n1)/n1
+hC=hist(iC,br=br1,plot=F)$counts
+hCs=hist(iC[surv],br=br1,plot=F)$counts
 
-#hC2 =hist(iC2,br=br1,plot=F)$counts
-#hC2s=hist(iC2[surv],br=br1,plot=F)$counts
+hC2 =hist(iCf,br=br1,plot=F)$counts
+hC2s=hist(iCf[surv],br=br1,plot=F)$counts
 
-#hB2  =hist(iB2,br=br1,plot=F)$counts
-#hB2s =hist(iB2[surv],br=br1,plot=F)$counts
+hB2  =hist(iBf,br=br1,plot=F)$counts
+hB2s =hist(iBf[surv],br=br1,plot=F)$counts
 
 ### iC, with iC of surviving systems colored in
-#barplot(rbind(hCs,hC-hCs), space=0, 
-#	xlab='i (degrees)',ylab='Counts', main='Initial iC')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+barplot(rbind(hCs,hC-hCs), space=0, 
+	xlab='i (degrees)',ylab='Counts', main='Initial iC')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-### iC, with iC2 of surviving systems colored in
-#barplot(rbind(hC2s,hC2-hC2s), space=0, 
-#	xlab='i (degrees)',ylab='Counts', main='Final iC')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+### iC, with iCf of surviving systems colored in
+barplot(rbind(hC2s,hC2-hC2s), space=0, 
+	xlab='i (degrees)',ylab='Counts', main='Final iC')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-### iB, with iB2 of surviving systems colored in
-#barplot(rbind(hB2s,hB2-hB2s), space=0, 
-#	xlab='i (degrees)',ylab='Counts', main='Final iB')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+### iB, with iBf of surviving systems colored in
+barplot(rbind(hB2s,hB2-hB2s), space=0, 
+	xlab='i (degrees)',ylab='Counts', main='Final iB')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iC of surviving systems as % of total iC in that bin
-#barplot(100*(hCs/hC), space=0, 
-#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+barplot(100*(hCs/hC), space=0, 
+	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-### iC2 of surviving systems as % of total iC2 in that bin
-#barplot(100*(hC2s/hC2), space=0, 
-#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+### iCf of surviving systems as % of total iCf in that bin
+barplot(100*(hC2s/hC2), space=0, 
+	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-### iB2 of surviving systems as % of total iB2 in that bin
-#barplot(100*(hB2s/hB2), space=0, 
-#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+### iBf of surviving systems as % of total iBf in that bin
+barplot(100*(hB2s/hB2), space=0, 
+	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-#dev.off()
-########################################################################
+dev.off()
+#######################################################################
 ### Side-by-side input and output parameters
 pdf(paste(prefix,'ae_io.pdf',sep=''),width=8, height=4)
 par(mfrow=c(1,2),mar=c(4,4,1,0))
@@ -420,9 +437,11 @@ outpars=cbind(EBf,rBf,aBf,eBf,pB2,apB2,ECf,rCf,aCf,eCf,pC2,apC2)
 
 #panel.time
 p.fate=function(x,y)	{points(x,y, pch='.',cex=0.5, col=dcol)}
-p.time=function(x,y)	{points(x,y, pch='.',cex=0.5, col=tcol2)}
+p.time=function(x,y)	{points(x,y, pch='.',cex=0.5, col=tcol)}
 
-palette(rainbow(n2))
+p.fate2=function(x,y)	{points(x,y, pch='.',cex=0.5, col=dcol[surv])}
+p.time2=function(x,y)	{points(x,y, pch='.',cex=0.5, col=tcol[surv])}
+
 # pairs
 pdf(paste(prefix,'pairs.pdf',sep=''),width=10.5,height=8)
 pairs(cbind(aB,eB,aC,eC,iC,EBf,rBf,aBf,eBf,ECf,rCf,aCf,eCf),
@@ -430,7 +449,7 @@ pairs(cbind(aB,eB,aC,eC,iC,EBf,rBf,aBf,eBf,ECf,rCf,aCf,eCf),
 #dev.off()
 
 #pdf(paste(prefix,'pairs-time.pdf',sep=''),width=10.5,height=8)
-#pairs(SumAll[,c(2:3,5:13)],pch='.',cex=0.5,col=tcol2)
+#pairs(SumAll[,c(2:3,5:13)],pch='.',cex=0.5,col=tcol)
 #dev.off()
 
 #pdf(paste(prefix,'inpairs.pdf',sep=''),width=10.5,height=8)
@@ -438,7 +457,7 @@ pairs(inpars,	upper.panel=p.fate, lower.panel=p.time)
 #dev.off()
 
 #pdf(paste(prefix,'outpairs.pdf',sep=''),width=10.5,height=8)
-pairs(outpars,	upper.panel=p.fate, lower.panel=p.time)
+pairs(outpars[surv,],	upper.panel=p.fate2, lower.panel=p.time2)
 dev.off()
 ###############################################################################
 

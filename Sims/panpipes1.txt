@@ -1,51 +1,176 @@
-CDir1
-	 bigstop = False,                             WhichTime = 6
-	writeparam.bash,          stop time = 365.25e9
-CDir2
-	 bigstop = False,                             WhichTime = 15
-	writeparam.bash,          stop time = 365.25e9
-CDir3
-	 bigstop = False,                                  WhichTime = 5
-	writeparam.bash,          stop time = 365.25e7
-CDir4
-	 bigstop = False,                             WhichTime = 7
-	writeparam.bash,          stop time = 365.25e9
-CDir5
-	 bigstop = False,                             WhichTime = 4
-	writeparam.bash,          stop time = 365.25e9
-CDir6
-	 bigstop = False,                             WhichTime = 8
-	writeparam.bash,          stop time = 365.25e9
-CDir7
-	 bigstop = False,                                  WhichTime = 10
-	writeparam.bash,          stop time = 365.25e8
-CDir8
-	 bigstop = False,                             WhichTime = 2
-	writeparam.bash,          stop time = 365.25e9
-CDir9
-	 bigstop = False,                             WhichTime = 19
-	writeparam.bash,          stop time = 365.25e9
-CDir10
-	 bigstop = False,                             WhichTime = 9
-	writeparam.bash,          stop time = 365.25e9
-SDir1
+Proxlike/Prx01
+ aC =  2.387e+04, eC =  0.8651, iC =  127.2
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop =  True,                                  WhichTime = 14
 Bigstop reached! Proxima-like system.
-SDir2
+Proxlike/Prx02
+ aC =       5278, eC =  0.9203, iC =  113.8
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop = True,                             WhichTime = 11
 Bigstop reached! Proxima-like system.
-SDir3
+Proxlike/Prx03
+ aC =  1.456e+04, eC =  0.7422, iC =  37.36
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop = True,                                  WhichTime = 11
 Bigstop reached! Proxima-like system.
-SDir4
+Proxlike/Prx04
+ aC =       9957, eC =  0.3696, iC =   79.9
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop =  True,                                  WhichTime = 14
 Bigstop reached! Proxima-like system.
-SDir5
-	 bigstop = False,                                  WhichTime = 17
-	writeparam.bash,          stop time = 365.25e9
-SDir6
+Proxlike/Prx05
+ aC =       4606, eC =  0.9072, iC =  70.74
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop =  True,                                  WhichTime = 14
 Bigstop reached! Proxima-like system.
-SDir7
+Proxlike/Prx06
+ aC =       8225, eC =  0.6715, iC =  143.1
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
 	 bigstop =  True,                                  WhichTime = 17
+Bigstop reached! Proxima-like system.
+Proxlike/Prx07
+ aC =  1.569e+04, eC =  0.8058, iC =  86.67
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 2
+Bigstop reached! Proxima-like system.
+Proxlike/Prx08
+ aC =       6963, eC =  0.9496, iC =  46.33
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 5
+Bigstop reached! Proxima-like system.
+Proxlike/Prx09
+ aC =       6610, eC =  0.9026, iC =  56.44
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 8
+Bigstop reached! Proxima-like system.
+Proxlike/Prx10
+ aC =       9337, eC =  0.5705, iC =  76.98
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 1
+Bigstop reached! Proxima-like system.
+Proxlike/Prx11
+ aC =       1468, eC =  0.6706, iC =  93.55
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 24
+Bigstop reached! Proxima-like system.
+Proxlike/Prx12
+ aC =  1.857e+04, eC =  0.8039, iC =  115.2
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 14
+Bigstop reached! Proxima-like system.
+Proxlike/Prx13
+ aC =       6321, eC =  0.9299, iC =  60.58
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 2
+Bigstop reached! Proxima-like system.
+Proxlike/Prx14
+ aC =       1698, eC =  0.8667, iC =  73.28
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 20
+Bigstop reached! Proxima-like system.
+Proxlike/Prx15
+ aC =       6718, eC =  0.9695, iC =   16.7
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 17
+Bigstop reached! Proxima-like system.
+Proxlike/Prx16
+ aC =  4.757e+04, eC =  0.5455, iC =  18.99
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 5
+Bigstop reached! Proxima-like system.
+Proxlike/Prx17
+ aC =       3263, eC =  0.8531, iC =  67.83
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 8
+Bigstop reached! Proxima-like system.
+Proxlike/Prx18
+ aC =       4445, eC =  0.749, iC =  94.91
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 6
+Bigstop reached! Proxima-like system.
+Proxlike/Prx19
+ aC =       1796, eC =  0.8028, iC =  21.97
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 10
+Bigstop reached! Proxima-like system.
+Proxlike/Prx20
+ aC =  1.476e+04, eC =  0.6456, iC =  44.17
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 6
+Bigstop reached! Proxima-like system.
+Proxlike/Prx21
+ aC =       2900, eC =  0.815, iC =  13.99
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 22
+Bigstop reached! Proxima-like system.
+Proxlike/Prx22
+ aC =       2772, eC =  0.921, iC =  72.22
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 12
 Bigstop reached! Proxima-like system.

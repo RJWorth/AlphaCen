@@ -5,16 +5,20 @@
 
 # choose which directories (with second input d)
 if [ $2 = 1 ]; then
+	prefix=''
 	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10 SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 fi
 if [ $2 = 2 ]; then
+	prefix=''
 	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10)
 fi
 if [ $2 = 3 ]; then
+	prefix=''
 	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 fi
 if [ $2 = 4 ]; then
-	Dirs=(PDir1 PDir2 PDir3)
+	prefix='Proxlike/Prx'
+	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22)
 fi
 
 
@@ -24,8 +28,8 @@ fi
 
 for i in ${Dirs[*]}
 do
-	echo $i >> panpipes1.txt
-	tail -$1 $i/run.pipe >> panpipes1.txt
+	echo $prefix$i >> panpipes1.txt
+	tail -$1 $prefix$i/run.pipe >> panpipes1.txt
 done
 
 #diff panpipes1.txt panpipes0.txt

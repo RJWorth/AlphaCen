@@ -21,14 +21,20 @@ runtime$t=runtime$t/3600
 attach(runtime)
 
 machines=levels(machine)
-avg=rep(0.,length(machines))
+avg  =rep(0.,length(machines))
+batch=rep(0.,length(machines))
 	for (i in 1:length(machines))	{
-	avg[i]=sum(t[machine==machines[i]])/sum(n[machine==machines[i]])	}
+	avg[i]=sum(t[machine==machines[i]])/sum(n[machine==machines[i]])
+	batch[i]=mean(t[machine==machines[i]])
+		}
 
 cat('Runtimes in hrs:\n')
 cat(sprintf("%7s",machines))
 cat('\n')
-cat(sprintf("%7.4f",avg))
+cat(sprintf("%7.2f",avg))
+cat('\n')
+cat('Runtime per batch (days):\n')
+cat(sprintf("%7.2f",batch/24.))
 cat('\n')
 
 palette(rainbow(length(machines)))

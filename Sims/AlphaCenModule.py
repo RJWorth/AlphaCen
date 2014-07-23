@@ -814,12 +814,12 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
 	                     rAB/AU, EtotCMAB[:], rCMAB[2,:]/AU, EtotCMABC2[:],
-	                     TimeB, TimeC, DestB, DestC)
+	                     aC[-1], eC[-1], TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
 def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
                   rB, EB, rC, EC,
-                  TimeB, TimeC, DestB, DestC):
+                  aCf, eCf, TimeB, TimeC, DestB, DestC):
 	'''Determine if simulation is ending, and write data if so	'''
 
 ### Needed modules
@@ -858,11 +858,11 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	StopFile.close()
 
 ### Prox's distance > this number (in AU) counts as 'prox-like'
-	pcut=2000.
+	pcut=10000.
 ### If a Proxima-like C was created, stop the whole series of runs
 	bigstop=False
 	if (isBmaxT & isCmaxT):
-		bigstop = (rC[-1] >= pcut) & (EC[-1] <= 0.)
+		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (EC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
 		print('Testing for errors')
 		if ( ((float(EB[-1])<0.) &      Bejectd)  | 
