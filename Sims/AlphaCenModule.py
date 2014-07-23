@@ -641,7 +641,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
                             UAB_CMABC+UBC_CMABC,
                             UBC_CMABC+UAC_CMABC ])
-		UABC2    = AC.Potential( m[0]+m[1], m[2], rAB_C2)
+		UABC2    = np.array([ AC.Potential( m[0]+m[1], m[2], rAB_C2),
+							  AC.Potential( m[0]+m[1], m[2], rAB_C2) ])
 # Calculate total energy per object, E=K+U
 		ECMABC = KCMABC+UCMABC
 		ECMABC2= KABC2+UABC2
@@ -746,13 +747,11 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ##################################### Plot ################################
 ### Make plots of sim
 	if ((machine != 'chloe') & (wantplot==True)):
-		AC.MakePlots(WhichDir, t, EtotCMAB, 
+		AC.MakePlots('binary',WhichDir, t, EtotCMAB, 
 					 ECMAB, KCMAB, UCMAB, rAB, suffix='_AB')
 		if (mode=='triple'):
-			AC.MakePlots(WhichDir, t[0:ind], EtotCMABC, 
-						 ECMABC, KCMABC, UCMABC, rAB_ABC, suffix='_ABC',
-					UC=UABC2, KC=KABC2, EC=ECMABC2, EtotC=EtotCMABC2, \
-						 rC=rCMAB[2,0:ind])
+			AC.MakePlots('triple',WhichDir, t[0:ind], EtotCMABC2, 
+						 ECMABC2, KABC2, UABC2, rCMAB[2,:], suffix='_ABC')
 
 #################################### Write ################################
 ### Arrange data nicely
@@ -934,8 +933,7 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 	return(True)
 
 ############################################################################
-def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.],
-				UC=[0.], KC=[0.], EC=[0.], EtotC=[0.]):
+def MakePlots(version, WhichDir, t, Etot, E, K, U, r, suffix=''):
 	'''Make plots of parameters from this run'''
 
 	print('	MakePlots    '+WhichDir)
@@ -949,19 +947,27 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.],
 	import matplotlib.pyplot as plt
 
 	nobj= E.shape[0]
+	if (nobj != 2):
+		print('Too many objects in E -- plot two objects')
 
-# Plot energies vs. binary separation
-	c=('b','y','r')
+# Assign colors
+	if version=='binary':
+		c=('b','y')
+	elif version=='triple':
+		c=('y','r')
+	else:
+		print('MakePlots version name invalid! Pick "binary" or "triple".')
 
-	plt.plot(rAB/AU,   Etot, 'ks')
+# Plot energies vs. separation
+	plt.plot(r/AU,   Etot, 'ks')
 	for i in range(nobj):
-		plt.plot(rAB/AU, E[i,:], c[i]+'s',
-				 rAB/AU, U[i,:], c[i]+'o',
-				 rAB/AU, K[i,:], c[i]+'^',
+		plt.plot(r/AU, E[i,:], c[i]+'s',
+				 r/AU, U[i,:], c[i]+'o',
+				 r/AU, K[i,:], c[i]+'^',
 				)
 #	plt.legend(('System total','A total','B total','A potential','A kinetic'),
 #	           'lower right')
-	plt.xlabel('A-B separation (AU)')
+	plt.xlabel('Separation (AU)')
 	plt.ylabel('Energy (J)')
 	plt.title('Energies')
 	plt.savefig(WhichDir+'/EvsR'+suffix+'.png')
@@ -981,60 +987,70 @@ def MakePlots(WhichDir, t, Etot, E, K, U, rAB, suffix='', rC=[0.],
 	plt.savefig(WhichDir+'/EvsT'+suffix+'.png')
 	plt.clf()
 		
+# Plot separation over time
+	plt.plot(t, r/AU, 'k-')
+	plt.xlabel('time (years)')
+	plt.ylabel('Separation (AU)')
+	plt.title('Distance over time')
+	plt.xscale('log')
+	plt.savefig(WhichDir+'/RvsT'+suffix+'.png')
+	plt.clf()
+
+
 # Plot C distance over time, if given
-	if not all( [value == 0. for value in rC] ):
-		plt.plot(t, rC/AU, 'r-')
-#		for i in range(nobj):
-#			plt.plot(t, E[i,:], c[i]+'-',
-#					 t, U[i,:], c[i]+'--',
-#					 t, K[i,:], c[i]+'-.',
-#		        )
-		plt.xlabel('time (years)')
-		plt.ylabel('rC (AU)')
-		plt.title('C separation')
-		plt.xlim([9e8,10e8])
-#		plt.xscale('log')
-		plt.savefig(WhichDir+'/C_RvsT'+suffix+'.png')
-		plt.clf()
-# Plot C's energies over time
-#		plt.plot(t, Etot, 'k-')
-		i=2
-		plt.plot(t, E[i,:], c[i]+'-',
-				 t, U[i,:], c[i]+'--',
-				 t, K[i,:], c[i]+'-.',
-	        )
-		plt.xlabel('time (years)')
-		plt.ylabel('Energy (J)')
-		plt.title('Energies')
-#		plt.xscale('log')
-		plt.xlim([9e8,10e8])
-		plt.savefig(WhichDir+'/C_EvsT'+suffix+'.png')
-		plt.clf()
-# Plot C's energies vs R
-#		plt.plot(t, Etot, 'k-')
-		i=2
-		plt.plot(rC/AU, E[i,:], c[i]+'s',
-				 rC/AU, U[i,:], c[i]+'o',
-				 rC/AU, K[i,:], c[i]+'^',
-	        )
-		plt.xlabel('rC (AU)')
-		plt.ylabel('Energy (J)')
-		plt.title('Energies')
-		plt.savefig(WhichDir+'/C_EvsR'+suffix+'.png')
-		plt.clf()
-# Plot C's energies vs R
-#		plt.plot(t, Etot, 'k-')
-		plt.plot(rC/AU,   EtotC, 'ks')
-		for i in range(2):
-			plt.plot(rC/AU, EC[i,:], c[i+1]+'s',
-					 rC/AU, UC[:], c[i+1]+'o',
-					 rC/AU, KC[i,:], c[i+1]+'^',
-					)
-		plt.xlabel('rC (AU)')
-		plt.ylabel('Energy (J)')
-		plt.title('Energies')
-		plt.savefig(WhichDir+'/AB-C_EvsR'+suffix+'.png')
-		plt.clf()
+#	if not all( [value == 0. for value in rC] ):
+#		plt.plot(t, rC/AU, 'r-')
+##		for i in range(nobj):
+##			plt.plot(t, E[i,:], c[i]+'-',
+##					 t, U[i,:], c[i]+'--',
+##					 t, K[i,:], c[i]+'-.',
+##		        )
+#		plt.xlabel('time (years)')
+#		plt.ylabel('rC (AU)')
+#		plt.title('C separation')
+#		plt.xlim([9e8,10e8])
+##		plt.xscale('log')
+#		plt.savefig(WhichDir+'/C_RvsT'+suffix+'.png')
+#		plt.clf()
+## Plot C's energies over time
+##		plt.plot(t, Etot, 'k-')
+#		i=2
+#		plt.plot(t, E[i,:], c[i]+'-',
+#				 t, U[i,:], c[i]+'--',
+#				 t, K[i,:], c[i]+'-.',
+#	        )
+#		plt.xlabel('time (years)')
+#		plt.ylabel('Energy (J)')
+#		plt.title('Energies')
+##		plt.xscale('log')
+#		plt.xlim([9e8,10e8])
+#		plt.savefig(WhichDir+'/C_EvsT'+suffix+'.png')
+#		plt.clf()
+## Plot C's energies vs R
+##		plt.plot(t, Etot, 'k-')
+#		i=2
+#		plt.plot(rC/AU, E[i,:], c[i]+'s',
+#				 rC/AU, U[i,:], c[i]+'o',
+#				 rC/AU, K[i,:], c[i]+'^',
+#	        )
+#		plt.xlabel('rC (AU)')
+#		plt.ylabel('Energy (J)')
+#		plt.title('Energies')
+#		plt.savefig(WhichDir+'/C_EvsR'+suffix+'.png')
+#		plt.clf()
+## Plot C's energies vs R
+##		plt.plot(t, Etot, 'k-')
+#		plt.plot(rC/AU,   EtotC, 'ks')
+#		for i in range(2):
+#			plt.plot(rC/AU, EC[i,:], c[i+1]+'s',
+#					 rC/AU, UC[:], c[i+1]+'o',
+#					 rC/AU, KC[i,:], c[i+1]+'^',
+#					)
+#		plt.xlabel('rC (AU)')
+#		plt.ylabel('Energy (J)')
+#		plt.title('Energies')
+#		plt.savefig(WhichDir+'/AB-C_EvsR'+suffix+'.png')
+#		plt.clf()
 
 ############################################################################
 def ReadInfo(WhichDir):
