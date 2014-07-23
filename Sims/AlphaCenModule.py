@@ -569,14 +569,17 @@ def GetFinalData(WhichDir,ThisT,mode):
 ### This should be constant
 	EtotCMAB = np.sum(ECMAB, 0)
 ### Check for consistency
-	EminAB = np.max(EtotCMAB)
-	EmaxAB = np.min(EtotCMAB)
-	dEAB   = (EmaxAB-EminAB)/EminAB
-#	assert dE<0.01
-	if dEAB<0.02:
-		print(' dEAB = '+ ('% 7.4g' % dEAB)+' - OK'  )
+#	EminAB = np.max(EtotCMAB)
+#	EmaxAB = np.min(EtotCMAB)
+#	dEAB   = (EmaxAB-EminAB)/EminAB
+	dEAB = EtotCMAB[-1]-EtotCMAB[0]
+
+	if abs(dEAB/EtotCMAB[0])<0.05:
+		print(' dEAB = '+ ('% 7.4g' % dEAB)+' J, '+
+			 ('% 7.4g' % float(100*dEAB/EtotCMAB[0]))+'%'  )
 	else:
-		print(' dEAB = '+('% 7.4g' % dEAB)+
+		print(' dEAB = '+('% 7.4g' % dEAB)+' J, '+
+			 ('% 7.4g' % float(100*dEAB/EtotCMAB[0]))+'%'+
 			  ' - large energy variation (AB)')
 
 ### Get orbital parameters
@@ -650,15 +653,17 @@ def GetFinalData(WhichDir,ThisT,mode):
 		EtotCMABC = np.sum(ECMABC, 0)
 		EtotCMABC2= np.sum(ECMABC2, 0)
 ### Check for consistency
-		EminABC = np.max(EtotCMABC)
-		EmaxABC = np.min(EtotCMABC)
-		dEABC   = (EmaxABC-EminABC)/EminABC
+#		EminABC = np.max(EtotCMABC)
+#		EmaxABC = np.min(EtotCMABC)
+#		dEABC   = (EmaxABC-EminABC)/EminABC
+		dEABC = EtotCMABC2[-1]-EtotCMABC2[0]
 
-		if dEABC>0.02:
-			print('dEABC = '+('% 7.4g' % dEABC)+
-				  ' - large energy variation')
+		if abs(dEABC/EtotCMABC2[0])>0.02:
+			print('dEABC = '+('% 7.4g' % dEABC)+' J, '+
+			 ('% 7.4g' % float(100*dEABC/EtotCMABC2[0]))+'%'+
+			  ' - large energy variation (ABC)')
 		else:
-			print('dEABC = '+ ('% 7.4g' % dEABC)+' - OK' )
+			print('dEABC = '+ ('% 7.4g' % dEABC)+' J' )
 
 ### Get orbital parameters
 		# dist. from C to CM(AB)
