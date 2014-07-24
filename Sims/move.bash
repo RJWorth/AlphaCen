@@ -11,8 +11,8 @@ do
 #	head -1 $i/InParams071614.txt >  $i/InParams.txt
 #	tail -1 $i/InParams071614.txt >> $i/InParams.txt
 
-	rm $i/InParams.txt
-	rm $i/summary.out
+#	rm $i/InParams.txt
+#	rm $i/summary.out
 
 done
 

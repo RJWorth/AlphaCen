@@ -491,6 +491,7 @@ def GetFinalData(WhichDir,ThisT,mode):
 #	import subprocess
 #	import rvtest as rv
 	from mks_constants import G, mSun, AU, day, m, mu
+	from numpy import log10
 
 	assert (mode=='triple') | (mode=='binary')
 
@@ -659,11 +660,25 @@ def GetFinalData(WhichDir,ThisT,mode):
 		dEABC = EtotCMABC2[-1]-EtotCMABC2[0]
 
 		if abs(dEABC/EtotCMABC2[0])>0.02:
-			print('dEABC = '+('% 7.4g' % dEABC)+' J, '+
-			 ('% 7.4g' % float(100*dEABC/EtotCMABC2[0]))+'%'+
-			  ' - large energy variation (ABC)')
+			print('dEABC = {0} J, {1}% - large energy variation (ABC)'.format(
+			     ('% 7.4g' % dEABC), 
+				 ('% 7.4g' % float(100*dEABC/EtotCMABC2[0])) ))
 		else:
-			print('dEABC = '+ ('% 7.4g' % dEABC)+' J' )
+			print('dEABC = {0} J'.format( ('% 7.4g' % dEABC) ))
+
+### Save dE for Prx sims
+		Esumnames = ['EBi','EBf','ECi','ECf','dEBe33','dECe33']
+		Esum = [   EtotCMAB[0],   EtotCMAB[-1], 
+				 EtotCMABC2[0], EtotCMABC2[-1], 
+					 dEAB/1e33,		dEABC/1e33]
+		if 'Prx' in WhichDir:
+			if '01' in WhichDir:
+				PrxSum=open('Proxlike/Plots/PrxSum.txt','w')
+				PrxSum.write(' '.join([('% 11s' % i) for i in Esumnames])+'\n')
+			else:
+				PrxSum=open('Proxlike/Plots/PrxSum.txt','a')
+			PrxSum.write(' '.join([('% 11.4g' % i) for i in Esum])+'\n')
+			PrxSum.close()
 
 ### Get orbital parameters
 		# dist. from C to CM(AB)
@@ -706,8 +721,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 	if ((DestB=='ejected') & ( ECMAB[1,-1]<0.)):
 		print('B: Energy weirdness!!!')
 
-	return 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
-			rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
+	return 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEAB, \
+			rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, dEABC, \
 			aAB, eAB, iAB, aC, eC, iC, \
 			UABC2, KABC2, ECMABC2, EtotCMABC2,	\
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
@@ -742,8 +757,8 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, \
-	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, \
+	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEAB, \
+	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, dEABC, \
 	aAB, eAB, iAB, aC, eC, iC,	\
 	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
@@ -763,26 +778,27 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	if ((wantsum==True) & (mode=='triple')):
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
 			    str(round(rAB[-1]/AU,2)),
-			    ('% 7.2g' % EtotCMAB[-1]),
+			    ('% 9.3g' % EtotCMAB[-1]),
 			    str(round(aAB[-1]/AU,2)),
 			    str(round(eAB[-1]   ,2)),
 			    str(round(iAB[-1]   ,1)),
 			    str(round(rCMAB[2,ntC-1]/AU,1)),
-			    ('% 7.2g' % EtotCMABC2[-1]),
+			    ('% 9.3g' % EtotCMABC2[-1]),
 			    str(round( aC[-1]/AU,2)),
 			    str(round( eC[-1]   ,2)),
 			    str(round( iC[-1]   ,1)),
 		        str(round(log10(float(TimeB)),5)), DestB,
-			    str(round(log10(float(TimeC)),5)), DestC, '\n']
+			    str(round(log10(float(TimeC)),5)), DestC, 
+				('% 9.3g' % dEAB), ('% 9.3g' % dEABC), '\n']
 		headerfields=['aB','eB','iB','aC','eC','iC',
 					 'rBf','EBf','aBf','eBf','iBf',
 					 'rCf','ECf','aCf','eCf','iCf',
-					 'logtB','destB','logtC','destC', '\n']
+					 'logtB','destB','logtC','destC', 'dEAB','dEABC', '\n']
 		sumspaces=[
 			len(aeiIn[0]),len(aeiIn[1]),len(aeiIn[2]),
 				len(aeiIn[3]),len(aeiIn[4]),len(aeiIn[5]), 
 			6,9,7,5,6, 9,9,9,6,6, 
-			7,len(DestB),7,len(DestC), len('\n')]
+			7,len(DestB),7,len(DestC), 9,9, len('\n')]
 ### Assemble summary and summary header rows with proper spacing
 
 		summary=[summaryfields[i].rjust(sumspaces[i]) 
@@ -868,27 +884,30 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	if (isBmaxT & isCmaxT):
 		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (EC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
-		print('Testing for errors')
-		if ( ((float(EB[-1])<0.) &      Bejectd)  | 
-			 ((float(EC[-1])<0.) &      Cejectd)  |
-			 ((float(EB[-1])>0.) & (not Bejectd)) | 
-			 ((float(EC[-1])>0.) & (not Cejectd)) ):
-			bigstop = True
-			print('**BIGSTOP FATE/ENERGY CONFLICT**')
-		if (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
-		    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
-			bigstop = True
-			print('**BIGSTOP ENERGY ERROR**')
-		tests=np.array([float(i) for i in summary[7:16]])
-		if ( any(abs(tests)<=1e-10) | 
-			 any(np.isnan(tests))   | 
-			 any(np.isinf(tests))   ):
-			bigstop = True
-			print('**BIGSTOP NONSENSICAL OUTPUTS**')
-			print(tests)
-		if (Bejectd & Cejectd):
-			bigstop = True
-			print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
+	print('Testing for errors')
+	tests=np.array([float(i) for i in summary[7:16]])
+	if ( ((float(EB[-1])<0.) &      Bejectd)  | 
+		 ((float(EC[-1])<0.) &      Cejectd)  |
+		 ((float(EB[-1])>0.) & (not Bejectd)) | 
+		 ((float(EC[-1])>0.) & (not Cejectd)) ):
+		bigstop = True
+		print('**BIGSTOP FATE/ENERGY CONFLICT**')
+	elif (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
+	    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
+		bigstop = True
+		print('**BIGSTOP ENERGY ERROR**')
+	elif ( any(abs(tests)<=1e-10) | 
+		   any(np.isnan(tests))   | 
+		   any(np.isinf(tests))   ):
+		bigstop = True
+		print('**BIGSTOP NONSENSICAL OUTPUTS**')
+		print(tests)
+	elif (Bejectd & Cejectd):
+		bigstop = True
+		print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
+	else:
+		print('  Error check passed')
+
 	print('	 bigstop = '+str(bigstop).rjust(5)+',                       '+
 		  '           WhichTime = '+str(WhichTime))
 
