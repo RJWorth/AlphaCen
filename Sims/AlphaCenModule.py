@@ -834,12 +834,14 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
 	                     rAB/AU, EtotCMAB[:], rCMAB[2,:]/AU, EtotCMABC2[:],
-	                     aC[-1], eC[-1], TimeB, TimeC, DestB, DestC)
+	                     aAB[-1], eAB[-1], aC[-1], eC[-1], 
+						 TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
 def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
-                  rB, EB, rC, EC,
-                  aCf, eCf, TimeB, TimeC, DestB, DestC):
+                  rB, EB, rC, EC, 
+                  aBf, eBf, aCf, eCf, 
+				  TimeB, TimeC, DestB, DestC):
 	'''Determine if simulation is ending, and write data if so	'''
 
 ### Needed modules
@@ -886,18 +888,27 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### Weird circumstances that I want to stop and investigate:
 	print('Testing for errors')
 	tests=np.array([float(i) for i in summary[7:16]])
-	if ( ((float(EB[-1])<0.) &      Bejectd)  | 
-		 ((float(EC[-1])<0.) &      Cejectd)  |
-		 ((float(EB[-1])>0.) & (not Bejectd)) | 
-		 ((float(EC[-1])>0.) & (not Cejectd)) ):
+	if ( (float(EB[-1])<0.) & Bejectd ):
+		if ( aBf*(1+eBf)>=1e5 ):
+			print('B ejected due to extremely large orbit')
+		else:
+			bigstop = True
+			print('**BIGSTOP FATE/ENERGY CONFLICT (B)**')			
+	if ( (float(EC[-1])<0.) & Cejectd ):
+		if ( aCf*(1+eCf)>=1e5 ):
+			print('C ejected due to extremely large orbit')
+		else:
+			bigstop = True
+			print('**BIGSTOP FATE/ENERGY CONFLICT (C)**')			
+	if ((isBmaxT & isCmaxT) & (((float(EB[-1])>0.) & (not Bejectd)) | 
+		 					   ((float(EC[-1])>0.) & (not Cejectd)) ) ):
 		bigstop = True
-		print('**BIGSTOP FATE/ENERGY CONFLICT**')
+		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
 	elif (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
-	    np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
+	      np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
 		bigstop = True
 		print('**BIGSTOP ENERGY ERROR**')
-	elif ( any(abs(tests)<=1e-10) | 
-		   any(np.isnan(tests))   | 
+	elif ( any(np.isnan(tests))   | 
 		   any(np.isinf(tests))   ):
 		bigstop = True
 		print('**BIGSTOP NONSENSICAL OUTPUTS**')

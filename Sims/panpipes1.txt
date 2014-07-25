@@ -1,176 +1,187 @@
-Proxlike/Prx01
- aC =  2.387e+04, eC =  0.8651, iC =  127.2
+******************* CDir1 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -2.025e+35 J,  -102.7% - large energy variation (ABC)
+ aC =  4.111e+04, eC =  0.5126, iC =  65.37
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 14
-Bigstop reached! Proxima-like system.
-Proxlike/Prx02
- aC =       5278, eC =  0.9203, iC =  113.8
+  Error check passed
+	 bigstop = False,                                  WhichTime = 15
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir2 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  1.073e+34 J,  -2.044% - large energy variation (ABC)
+ aC =      430.4, eC =  0.7084, iC =  24.58
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop = True,                             WhichTime = 11
-Bigstop reached! Proxima-like system.
-Proxlike/Prx03
- aC =  1.456e+04, eC =  0.7422, iC =  37.36
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir3 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  1.362e+32 J
+ aC =      528.2, eC =  0.4552, iC =  66.89
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop = True,                                  WhichTime = 11
-Bigstop reached! Proxima-like system.
-Proxlike/Prx04
- aC =       9957, eC =  0.3696, iC =   79.9
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir4 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =     nan J
+ aC =         -0, eC =    nan, iC =    nan
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFTT,               Time = 1e7 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 14
-Bigstop reached! Proxima-like system.
-Proxlike/Prx05
- aC =       4606, eC =  0.9072, iC =  70.74
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 14
-Bigstop reached! Proxima-like system.
-Proxlike/Prx06
- aC =       8225, eC =  0.6715, iC =  143.1
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 17
-Bigstop reached! Proxima-like system.
-Proxlike/Prx07
- aC =  1.569e+04, eC =  0.8058, iC =  86.67
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 2
-Bigstop reached! Proxima-like system.
-Proxlike/Prx08
- aC =       6963, eC =  0.9496, iC =  46.33
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 5
-Bigstop reached! Proxima-like system.
-Proxlike/Prx09
- aC =       6610, eC =  0.9026, iC =  56.44
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 8
-Bigstop reached! Proxima-like system.
-Proxlike/Prx10
- aC =       9337, eC =  0.5705, iC =  76.98
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
+**BIGSTOP ENERGY ERROR**
 	 bigstop =  True,                                  WhichTime = 1
 Bigstop reached! Proxima-like system.
-Proxlike/Prx11
- aC =       1468, eC =  0.6706, iC =  93.55
+******************* CDir5 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -7.205e+34 J,  -168.5% - large energy variation (ABC)
+ aC =       7555, eC =  0.6327, iC =  108.4
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 24
-Bigstop reached! Proxima-like system.
-Proxlike/Prx12
- aC =  1.857e+04, eC =  0.8039, iC =  115.2
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir6 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -4.652e+33 J,   2.028% - large energy variation (ABC)
+ aC =      945.5, eC =  0.8332, iC =  65.02
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 14
-Bigstop reached! Proxima-like system.
-Proxlike/Prx13
- aC =       6321, eC =  0.9299, iC =  60.58
+  Error check passed
+	 bigstop = False,                                  WhichTime = 6
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir7 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -2.121e+35 J,  -102.3% - large energy variation (ABC)
+ aC =    4.6e+04, eC =  0.6734, iC =  106.8
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 2
-Bigstop reached! Proxima-like system.
-Proxlike/Prx14
- aC =       1698, eC =  0.8667, iC =  73.28
+  Error check passed
+	 bigstop = False,                                  WhichTime = 5
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir8 *******************
+ aC =     -124.8, eC =  116.3, iC =   92.2
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFT,               Time = 1e6 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 20
-Bigstop reached! Proxima-like system.
-Proxlike/Prx15
- aC =       6718, eC =  0.9695, iC =   16.7
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 17
-Bigstop reached! Proxima-like system.
-Proxlike/Prx16
- aC =  4.757e+04, eC =  0.5455, iC =  18.99
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
+**BIGSTOP NONSENSICAL OUTPUTS**
+[ -3.61e+37   2.52e+01   5.00e-02   0.00e+00   1.00e+05   1.77e+36
+  -1.25e+02   1.16e+02   9.22e+01]
 	 bigstop =  True,                                  WhichTime = 5
 Bigstop reached! Proxima-like system.
-Proxlike/Prx17
- aC =       3263, eC =  0.8531, iC =  67.83
+******************* CDir9 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  5.252e+35 J,  -90.99% - large energy variation (ABC)
+ aC =       4255, eC =  0.9668, iC =  83.65
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir10 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -1.623e+35 J,    -113% - large energy variation (ABC)
+ aC =   1.19e+04, eC =  0.4734, iC =  120.4
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir1 *******************
+ aC =      467.5, eC =  0.389, iC =  102.6
 True
 True
 	    stop = TTFF,               Time = 1e9 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 8
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+run: SDir1, 2
+	MakeBigRand  SDir1/In/big.in,                          2
+	writeparam.bash,          stop time = 365.25e3
+******************* SDir2 *******************
+ aC =     -189.7, eC =  8.256, iC =  162.2
+True
+True
+	    stop = FFFT,               Time = 1e6 yrs
+Testing for errors
+**BIGSTOP NONSENSICAL OUTPUTS**
+[ -3.32e+37   2.74e+01   2.10e-01   0.00e+00   9.96e+04   1.17e+36
+  -1.90e+02   8.26e+00   1.62e+02]
+	 bigstop =  True,                                  WhichTime = 13
 Bigstop reached! Proxima-like system.
-Proxlike/Prx18
- aC =       4445, eC =  0.749, iC =  94.91
+******************* SDir3 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -1.71e+34 J,   75.14% - large energy variation (ABC)
+ aC =       5554, eC =  0.9593, iC =  136.8
 True
 True
 	    stop = TTFF,               Time = 1e9 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 6
+  Error check passed
+	 bigstop =  True,                                  WhichTime = 7
 Bigstop reached! Proxima-like system.
-Proxlike/Prx19
- aC =       1796, eC =  0.8028, iC =  21.97
+******************* SDir4 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  3.885e+35 J,  -82.52% - large energy variation (ABC)
+ aC =       2690, eC =  0.9263, iC =  107.1
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e7 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 10
+  Error check passed
+	 bigstop = False,                                  WhichTime = 2
+	writeparam.bash,          stop time = 365.25e8
+******************* SDir5 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -1.321e+33 J
+ aC =      139.6, eC =  0.1368, iC =  8.657
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 7
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir6 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -3.568e+35 J,  -100.1% - large energy variation (ABC)
+ aC =   1.01e+06, eC =  0.988, iC =    166
+True
+True
+	    stop = FFFT,               Time = 1e8 yrs
+Testing for errors
+**BIGSTOP FATE/ENERGY CONFLICT**
+	 bigstop =  True,                                  WhichTime = 3
 Bigstop reached! Proxima-like system.
-Proxlike/Prx20
- aC =  1.476e+04, eC =  0.6456, iC =  44.17
+******************* SDir7 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -2.841e+34 J,  2.408e+04% - large energy variation (ABC)
+ aC =       7760, eC =  0.334, iC =  93.63
 True
 True
 	    stop = TTFF,               Time = 1e9 yrs
 Testing for errors
-	 bigstop =  True,                                  WhichTime = 6
-Bigstop reached! Proxima-like system.
-Proxlike/Prx21
- aC =       2900, eC =  0.815, iC =  13.99
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 22
-Bigstop reached! Proxima-like system.
-Proxlike/Prx22
- aC =       2772, eC =  0.921, iC =  72.22
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-	 bigstop =  True,                                  WhichTime = 12
+  Error check passed
+	 bigstop =  True,                                  WhichTime = 7
 Bigstop reached! Proxima-like system.

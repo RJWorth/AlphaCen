@@ -28,7 +28,7 @@ fi
 
 for i in ${Dirs[*]}
 do
-	echo $prefix$i >> panpipes1.txt
+	echo '******************* '$prefix$i' *******************' >> panpipes1.txt
 	tail -$1 $prefix$i/run.pipe >> panpipes1.txt
 done
 
