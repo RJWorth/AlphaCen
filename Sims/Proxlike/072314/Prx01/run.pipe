@@ -1,0 +1,1335 @@
+ury_TG.for
+r
+	itrange 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+	timerange 3 4 5 6 7 8 9
+run: SDir1, 1
+	MakeBigRand  SDir1/In/big.in,                          1
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -4.51466E-06   dL/L: -2.12060E-08
+ Time:        400.000 years   dE/E: -1.13355E-05   dL/L:  4.59873E-08
+ Time:        600.000 years   dE/E: -2.02315E-05   dL/L:  1.63095E-07
+ Time:        800.000 years   dE/E: -3.10214E-05   dL/L:  1.63619E-07
+ Time:       1000.000 years   dE/E: -4.35644E-05   dL/L: -2.36957E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 1
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0009581 - OK
+ aB =       27.5, eB =  0.3355, iB =  0.02063
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0009842 - OK
+ aC =     -504.8, eC =  1.658, iC =  88.87
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 1
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -2.47414E-04   dL/L: -1.54573E-04
+ Time:       5000.000 years   dE/E: -5.56719E-04   dL/L: -1.26159E-03
+ Time:       7000.000 years   dE/E: -9.46927E-04   dL/L: -4.66900E-03
+ Time:       9000.000 years   dE/E: -1.39806E-03   dL/L: -1.19367E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 1
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0009608 - OK
+ aB =      27.49, eB =  0.3344, iB =  0.02778
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002406 - OK
+ aC =       -573, eC =  1.574, iC =  89.64
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 1
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -6.11364E-03   dL/L: -4.26709E-01
+ Time:      50000.000 years   dE/E: -8.64490E-03   dL/L:  5.56585E-01
+ Time:      70000.000 years   dE/E: -9.85811E-03   dL/L:  2.75100E+00
+ Time:      90000.000 years   dE/E: -1.04081E-02   dL/L:  4.95942E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 1
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0009643 - OK
+ aB =      27.49, eB =  0.327, iB =  0.3205
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01139 - OK
+ aC =      -2357, eC =   5.52, iC =    142
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 1
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.22142E-02   dL/L:  1.17149E+01
+ Time:     500000.000 years   dE/E: -1.23314E-02   dL/L:  1.32138E+01
+ Time:     700000.000 years   dE/E: -1.23309E-02   dL/L:  1.32163E+01
+ Time:     900000.000 years   dE/E: -1.23318E-02   dL/L:  1.32163E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 1
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3387
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0009649 - OK
+ aB =      27.49, eB =  0.3225, iB =  0.5269
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01323 - OK
+ aC =      -5926, eC =  6.891, iC =  106.9
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 1
+run: SDir1, 2
+	MakeBigRand  SDir1/In/big.in,                          2
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E:  3.95363E-06   dL/L: -8.35857E-09
+ Time:        400.000 years   dE/E:  4.82086E-06   dL/L: -8.12565E-09
+ Time:        600.000 years   dE/E:  1.50353E-06   dL/L: -7.07315E-09
+ Time:        800.000 years   dE/E: -2.51095E-06   dL/L:  5.71885E-09
+ Time:       1000.000 years   dE/E: -8.59563E-06   dL/L:  1.65166E-09
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 2
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.003168 - OK
+ aB =      23.64, eB =  0.2712, iB =  0.1547
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008705 - OK
+ aC =       1343, eC =  0.9325, iC =  80.49
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 2
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -8.28776E-05   dL/L: -1.51165E-05
+ Time:       5000.000 years   dE/E: -1.62661E-04   dL/L: -7.37521E-05
+ Time:       7000.000 years   dE/E: -2.33047E-04   dL/L: -1.39103E-04
+ Time:       9000.000 years   dE/E: -2.89100E-04   dL/L: -1.41351E-04
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 2
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.003168 - OK
+ aB =      23.65, eB =  0.2718, iB =  0.1477
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001023 - OK
+ aC =       1258, eC =  0.9279, iC =  80.57
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 2
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -3.90122E-05   dL/L:  2.63714E-03
+ Time:      50000.000 years   dE/E: -2.87645E-04   dL/L:  3.39084E-03
+ Time:      70000.000 years   dE/E: -3.30003E-04   dL/L:  3.18770E-03
+ Time:      90000.000 years   dE/E: -1.10984E-04   dL/L:  3.81962E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 2
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.003168 - OK
+ aB =      23.64, eB =  0.2528, iB =  0.502
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001171 - OK
+ aC =       1250, eC =  0.9263, iC =  80.64
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 2
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.83472E-04   dL/L: -1.28411E-02
+ Time:     500000.000 years   dE/E: -2.53718E-04   dL/L: -1.70978E-02
+ Time:     700000.000 years   dE/E: -2.53706E-04   dL/L: -1.70973E-02
+ Time:     900000.000 years   dE/E: -2.54326E-04   dL/L: -1.70979E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 2
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3705
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.003168 - OK
+ aB =      23.63, eB =  0.2554, iB =  5.515
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001171 - OK
+ aC =       1383, eC =  0.9455, iC =  79.06
+	    stop = FFFF,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 2
+	writeparam.bash,          stop time = 365.25e7
+ Time:    3000000.000 years   dE/E: -2.54691E-04   dL/L: -2.50515E-02
+ Time:    5000000.000 years   dE/E: -2.55835E-04   dL/L: -4.25519E-02
+ Time:    7000000.000 years   dE/E: -2.55974E-04   dL/L: -4.25519E-02
+ Time:    9000000.000 years   dE/E: -2.56621E-04   dL/L: -4.25519E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 2
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:4012
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.008059 - OK
+ aB =      23.54, eB =  0.6084, iB =   17.4
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0016 - OK
+ aC =  6.757e+04, eC =  0.999, iC =  52.24
+	    stop = FFFT,               Time = 1e7 yrs
+	 bigstop = False,                             WhichTime = 2
+run: SDir1, 3
+	MakeBigRand  SDir1/In/big.in,                          3
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -6.36552E-06   dL/L:  7.14400E-07
+ Time:        400.000 years   dE/E: -1.23787E-05   dL/L:  1.13374E-06
+ Time:        600.000 years   dE/E: -2.67507E-05   dL/L:  9.29466E-07
+ Time:        800.000 years   dE/E: -4.33649E-05   dL/L: -1.15075E-07
+ Time:       1000.000 years   dE/E: -6.36596E-05   dL/L: -2.06544E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 3
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001061 - OK
+ aB =      26.15, eB =  0.3715, iB =  0.002563
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001146 - OK
+ aC =     -186.9, eC =  5.348, iC =  149.1
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 3
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -4.11270E-04   dL/L:  5.86491E-05
+ Time:       5000.000 years   dE/E: -9.76649E-04   dL/L:  1.53699E-03
+ Time:       7000.000 years   dE/E: -1.67429E-03   dL/L:  7.64630E-03
+ Time:       9000.000 years   dE/E: -2.40041E-03   dL/L:  2.23223E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 3
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001061 - OK
+ aB =      26.14, eB =  0.3711, iB =  0.01766
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.003608 - OK
+ aC =     -202.5, eC =  5.276, iC =  149.3
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 3
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -7.81433E-03   dL/L:  1.06389E+00
+ Time:      50000.000 years   dE/E: -9.95747E-03   dL/L:  3.18598E+00
+ Time:      70000.000 years   dE/E: -1.09527E-02   dL/L:  5.69769E+00
+ Time:      90000.000 years   dE/E: -1.14979E-02   dL/L:  7.93175E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 3
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.00107 - OK
+ aB =      26.14, eB =  0.3747, iB =  0.2022
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01259 - OK
+ aC =     -279.7, eC =  33.41, iC =  146.3
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 3
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.26604E-02   dL/L:  1.47273E+01
+ Time:     500000.000 years   dE/E: -1.26606E-02   dL/L:  1.47273E+01
+ Time:     700000.000 years   dE/E: -1.26608E-02   dL/L:  1.47273E+01
+ Time:     900000.000 years   dE/E: -1.26611E-02   dL/L:  1.47273E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 3
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2880
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001078 - OK
+ aB =      26.13, eB =  0.3767, iB =  0.0625
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01332 - OK
+ aC =     -291.4, eC =     52, iC =  162.5
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 3
+run: SDir1, 4
+	MakeBigRand  SDir1/In/big.in,                          4
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -5.03545E-06   dL/L: -1.99502E-07
+ Time:        400.000 years   dE/E: -1.49320E-05   dL/L: -5.12119E-07
+ Time:        600.000 years   dE/E: -2.98958E-05   dL/L: -6.94202E-07
+ Time:        800.000 years   dE/E: -5.00182E-05   dL/L: -3.51991E-07
+ Time:       1000.000 years   dE/E: -7.50712E-05   dL/L:  1.04680E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 4
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005315 - OK
+ aB =      26.41, eB =  0.0117, iB =  0.002854
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0005993 - OK
+ aC =     -128.3, eC =  6.682, iC =  57.53
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 4
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -5.23644E-04   dL/L:  2.62640E-04
+ Time:       5000.000 years   dE/E: -1.22749E-03   dL/L:  1.77505E-03
+ Time:       7000.000 years   dE/E: -2.02895E-03   dL/L:  5.63981E-03
+ Time:       9000.000 years   dE/E: -2.82893E-03   dL/L:  1.25726E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 4
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005357 - OK
+ aB =       26.4, eB =  0.009782, iB =  0.001514
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.003638 - OK
+ aC =     -136.4, eC =  6.553, iC =  55.18
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 4
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -8.33185E-03   dL/L:  6.10010E-01
+ Time:      50000.000 years   dE/E: -1.07509E-02   dL/L:  2.88877E+00
+ Time:      70000.000 years   dE/E: -1.18219E-02   dL/L:  6.35574E+00
+ Time:      90000.000 years   dE/E: -1.20304E-02   dL/L:  1.07068E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 4
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005434 - OK
+ aB =      26.41, eB =  0.01636, iB =  0.004748
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01259 - OK
+ aC =     -165.3, eC =  96.77, iC =  44.13
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 4
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.02724E-02   dL/L:  2.39666E+01
+ Time:     500000.000 years   dE/E: -1.02724E-02   dL/L:  2.39666E+01
+ Time:     700000.000 years   dE/E: -1.02724E-02   dL/L:  2.39666E+01
+ Time:     900000.000 years   dE/E: -1.02724E-02   dL/L:  2.39666E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 4
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2841
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005679 - OK
+ aB =       26.4, eB =  0.02271, iB =  0.01184
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01259 - OK
+ aC =     -159.2, eC =  172.1, iC =  44.49
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 4
+run: SDir1, 5
+	MakeBigRand  SDir1/In/big.in,                          5
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E:  5.38299E-06   dL/L:  4.45461E-08
+ Time:        400.000 years   dE/E:  8.85065E-06   dL/L:  9.07847E-08
+ Time:        600.000 years   dE/E:  9.86199E-06   dL/L:  8.31404E-08
+ Time:        800.000 years   dE/E:  6.39458E-06   dL/L:  7.30572E-08
+ Time:       1000.000 years   dE/E:  3.11640E-06   dL/L:  1.55721E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 5
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0008281 - OK
+ aB =      23.98, eB =  0.2683, iB =  0.01703
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008186 - OK
+ aC =       -375, eC =  1.775, iC =  92.99
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 5
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -1.50532E-04   dL/L: -5.89975E-06
+ Time:       5000.000 years   dE/E: -4.48594E-04   dL/L:  2.14648E-05
+ Time:       7000.000 years   dE/E: -8.43420E-04   dL/L:  6.04060E-04
+ Time:       9000.000 years   dE/E: -1.32062E-03   dL/L:  2.96144E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 5
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0008281 - OK
+ aB =      23.97, eB =  0.2664, iB =  0.01817
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002275 - OK
+ aC =     -416.7, eC =  1.714, iC =  92.34
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 5
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -6.58895E-03   dL/L:  5.57151E-01
+ Time:      50000.000 years   dE/E: -9.43825E-03   dL/L:  2.33380E+00
+ Time:      70000.000 years   dE/E: -1.08934E-02   dL/L:  5.00809E+00
+ Time:      90000.000 years   dE/E: -1.15896E-02   dL/L:  8.40365E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 5
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0008323 - OK
+ aB =      23.97, eB =  0.2643, iB =  0.1699
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01239 - OK
+ aC =      -1457, eC =  9.858, iC =  58.73
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 5
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.33794E-02   dL/L:  8.58905E+00
+ Time:     500000.000 years   dE/E: -1.33411E-02   dL/L:  1.91134E+01
+ Time:     700000.000 years   dE/E: -1.33406E-02   dL/L:  1.91134E+01
+ Time:     900000.000 years   dE/E: -1.33406E-02   dL/L:  1.91134E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 5
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3140
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0008323 - OK
+ aB =      23.98, eB =  0.2569, iB =  0.2013
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01409 - OK
+ aC =      -2399, eC =  14.15, iC =  110.9
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 5
+run: SDir1, 6
+	MakeBigRand  SDir1/In/big.in,                          6
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -6.47020E-07   dL/L:  1.66303E-09
+ Time:        400.000 years   dE/E:  2.49530E-07   dL/L:  2.69518E-09
+ Time:        600.000 years   dE/E:  6.39372E-02   dL/L:  2.62294E-09
+ Time:        800.000 years   dE/E:  6.39312E-02   dL/L:  1.08804E-08
+ Time:       1000.000 years   dE/E:  6.39051E-02   dL/L:  4.02287E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 6
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =    1.88 - large energy variation (AB)
+ aB =      21.45, eB =  0.2623, iB =  4.838
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.07089 - large energy variation
+ aC =      -30.6, eC =  1.775, iC =   7.87
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 6
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E:  6.29664E-02   dL/L:  2.63749E-03
+ Time:       5000.000 years   dE/E:  6.14554E-02   dL/L:  3.48415E-02
+ Time:       7000.000 years   dE/E:  6.00029E-02   dL/L:  1.38569E-01
+ Time:       9000.000 years   dE/E:  5.87390E-02   dL/L:  3.35157E-01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 6
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =    1.88 - large energy variation (AB)
+ aB =      21.45, eB =  0.2612, iB =  4.827
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.07089 - large energy variation
+ aC =     -31.53, eC =  3.957, iC =  18.93
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 6
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E:  5.21274E-02   dL/L:  7.17578E+00
+ Time:      50000.000 years   dE/E:  4.98690E-02   dL/L:  1.99739E+01
+ Time:      70000.000 years   dE/E:  4.91291E-02   dL/L:  3.01757E+01
+ Time:      90000.000 years   dE/E:  4.91302E-02   dL/L:  3.01757E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 6
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2430
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =    1.88 - large energy variation (AB)
+ aB =      21.45, eB =  0.2574, iB =  4.663
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.07089 - large energy variation
+ aC =     -32.88, eC =  146.3, iC =  70.37
+	    stop = FFFT,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 6
+run: SDir1, 7
+	MakeBigRand  SDir1/In/big.in,                          7
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E:  1.66746E-06   dL/L:  1.33735E-07
+ Time:        400.000 years   dE/E: -3.84253E-07   dL/L: -6.02133E-07
+ Time:        600.000 years   dE/E: -1.00340E-05   dL/L: -1.93684E-06
+ Time:        800.000 years   dE/E: -2.36737E-05   dL/L: -3.31757E-06
+ Time:       1000.000 years   dE/E: -3.80678E-05   dL/L: -3.97542E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 7
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005709 - OK
+ aB =      25.45, eB =  0.05893, iB =      0
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.000651 - OK
+ aC =     -144.5, eC =   6.54, iC =  174.5
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 7
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -3.77726E-04   dL/L:  2.46431E-04
+ Time:       5000.000 years   dE/E: -9.51168E-04   dL/L:  1.36736E-03
+ Time:       7000.000 years   dE/E: -1.60419E-03   dL/L:  2.74891E-03
+ Time:       9000.000 years   dE/E: -2.24064E-03   dL/L:  2.35074E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 7
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0005971 - OK
+ aB =      25.45, eB =  0.05736, iB =  0.0009026
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.003029 - OK
+ aC =     -153.2, eC =  6.353, iC =  174.8
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 7
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -6.13439E-03   dL/L: -3.07702E-01
+ Time:      50000.000 years   dE/E: -7.61652E-03   dL/L:  2.28805E+00
+ Time:      70000.000 years   dE/E: -8.13069E-03   dL/L:  7.06106E+00
+ Time:      90000.000 years   dE/E: -8.03588E-03   dL/L:  1.26991E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 7
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006001 - OK
+ aB =      25.45, eB =  0.04649, iB =  0.03457
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.00873 - OK
+ aC =       -175, eC =  68.93, iC =  35.82
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 7
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -7.71711E-03   dL/L:  1.89955E+01
+ Time:     500000.000 years   dE/E: -7.71710E-03   dL/L:  1.89955E+01
+ Time:     700000.000 years   dE/E: -7.71713E-03   dL/L:  1.89955E+01
+ Time:     900000.000 years   dE/E: -7.71713E-03   dL/L:  1.89955E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 7
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2846
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006001 - OK
+ aB =      25.45, eB =  0.04551, iB =  0.03045
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.00873 - OK
+ aC =     -174.3, eC =   84.5, iC =  21.06
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 7
+run: SDir1, 8
+	MakeBigRand  SDir1/In/big.in,                          8
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -4.07232E-06   dL/L:  4.16660E-12
+ Time:        400.000 years   dE/E: -3.65731E-06   dL/L:  5.03582E-12
+ Time:        600.000 years   dE/E: -1.25594E-06   dL/L: -3.02362E-10
+ Time:        800.000 years   dE/E: -1.44586E-05   dL/L:  2.40349E-09
+ Time:       1000.000 years   dE/E: -1.36217E-06   dL/L:  2.54661E-09
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 8
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =   1.841 - large energy variation (AB)
+ aB =      17.68, eB =  0.5039, iB =  23.92
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001061 - OK
+ aC =      355.4, eC =  0.9259, iC =  33.95
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 8
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -3.89226E-05   dL/L:  6.47462E-06
+ Time:       5000.000 years   dE/E: -6.38776E-06   dL/L:  1.19878E-05
+ Time:       7000.000 years   dE/E: -3.90967E-05   dL/L:  1.56243E-05
+ Time:       9000.000 years   dE/E: -1.06692E-04   dL/L:  1.16088E-04
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 8
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =   1.841 - large energy variation (AB)
+ aB =      17.54, eB =  0.5126, iB =  24.49
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001267 - OK
+ aC =       1148, eC =  0.9765, iC =  33.51
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 8
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -1.09561E-05   dL/L:  8.54645E-03
+ Time:      50000.000 years   dE/E: -5.96277E-03   dL/L: -1.77842E-01
+ Time:      70000.000 years   dE/E: -7.86701E-03   dL/L:  5.22090E+00
+ Time:      90000.000 years   dE/E: -8.56345E-03   dL/L:  1.51556E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 8
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =    1.85 - large energy variation (AB)
+ aB =      16.27, eB =  0.5759, iB =  24.79
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.009932 - OK
+ aC =     -64.85, eC =  56.67, iC =  100.8
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 8
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -8.86869E-03   dL/L:  3.10419E+01
+ Time:     500000.000 years   dE/E: -8.87164E-03   dL/L:  3.10419E+01
+ Time:     700000.000 years   dE/E: -8.88170E-03   dL/L:  3.10419E+01
+ Time:     900000.000 years   dE/E: -8.91362E-03   dL/L:  3.10419E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 8
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2820
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =    1.85 - large energy variation (AB)
+ aB =      16.27, eB =  0.5763, iB =  24.75
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.009932 - OK
+ aC =     -65.03, eC =  80.06, iC =  98.71
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 8
+run: SDir1, 9
+	MakeBigRand  SDir1/In/big.in,                          9
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -5.36147E-06   dL/L: -1.17216E-07
+ Time:        400.000 years   dE/E: -1.35319E-05   dL/L: -2.82916E-07
+ Time:        600.000 years   dE/E: -2.36865E-05   dL/L: -4.48135E-07
+ Time:        800.000 years   dE/E: -3.63660E-05   dL/L: -5.48284E-07
+ Time:       1000.000 years   dE/E: -4.65837E-05   dL/L: -5.07431E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 9
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001034 - OK
+ aB =      25.82, eB =  0.382, iB =  0.02409
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001062 - OK
+ aC =      -1113, eC =  1.143, iC =  93.93
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 9
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -2.12495E-04   dL/L:  2.20016E-05
+ Time:       5000.000 years   dE/E: -4.34505E-04   dL/L:  1.03768E-04
+ Time:       7000.000 years   dE/E: -7.03313E-04   dL/L:  2.04944E-04
+ Time:       9000.000 years   dE/E: -1.00290E-03   dL/L:  2.16662E-04
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 9
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001034 - OK
+ aB =      25.84, eB =  0.3831, iB =  0.04423
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002077 - OK
+ aC =      -1382, eC =  1.118, iC =  94.16
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 9
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -3.94635E-03   dL/L: -1.57580E-03
+ Time:      50000.000 years   dE/E: -5.48615E-03   dL/L:  1.94025E-01
+ Time:      70000.000 years   dE/E: -6.18404E-03   dL/L:  6.62265E-01
+ Time:      90000.000 years   dE/E: -6.36181E-03   dL/L:  1.39236E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 9
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001034 - OK
+ aB =      25.84, eB =  0.3869, iB =  0.08509
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.007249 - OK
+ aC =  1.101e+04, eC =  0.4156, iC =  164.5
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 9
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -4.83623E-03   dL/L:  5.41538E+00
+ Time:     500000.000 years   dE/E: -5.06397E-03   dL/L:  5.65677E+00
+ Time:     700000.000 years   dE/E: -5.06186E-03   dL/L:  5.65547E+00
+ Time:     900000.000 years   dE/E: -5.06330E-03   dL/L:  5.65246E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 9
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3705
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001103 - OK
+ aB =      25.84, eB =  0.396, iB =  0.05484
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.007249 - OK
+ aC =      -9508, eC =  2.224, iC =  176.7
+	    stop = FFFF,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 9
+	writeparam.bash,          stop time = 365.25e7
+ Time:    3000000.000 years   dE/E: -5.06344E-03   dL/L:  5.64558E+00
+ Time:    5000000.000 years   dE/E: -5.06029E-03   dL/L:  5.64558E+00
+ Time:    7000000.000 years   dE/E: -5.06364E-03   dL/L:  5.64558E+00
+ Time:    9000000.000 years   dE/E: -5.06225E-03   dL/L:  5.64558E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 9
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3719
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001103 - OK
+ aB =      25.84, eB =  0.3957, iB =  0.06262
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.007249 - OK
+ aC =      -9515, eC =  2.222, iC =  176.6
+	    stop = FFFT,               Time = 1e7 yrs
+	 bigstop = False,                             WhichTime = 9
+run: SDir1, 10
+	MakeBigRand  SDir1/In/big.in,                          10
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -5.13885E-06   dL/L:  1.04829E-07
+ Time:        400.000 years   dE/E: -1.23273E-05   dL/L:  1.66134E-07
+ Time:        600.000 years   dE/E: -1.79211E-05   dL/L:  5.26709E-08
+ Time:        800.000 years   dE/E: -2.63553E-05   dL/L: -4.64633E-07
+ Time:       1000.000 years   dE/E: -3.09641E-05   dL/L: -1.57075E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.000811 - OK
+ aB =      23.86, eB =  0.2556, iB =  0.008958
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0007933 - OK
+ aC =       1146, eC =  0.9336, iC =  128.7
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -1.09773E-04   dL/L: -1.07711E-04
+ Time:       5000.000 years   dE/E: -1.73285E-04   dL/L: -5.61286E-04
+ Time:       7000.000 years   dE/E: -2.30163E-04   dL/L: -1.48973E-03
+ Time:       9000.000 years   dE/E: -2.59769E-04   dL/L: -2.83930E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.000811 - OK
+ aB =      23.87, eB =  0.2563, iB =  0.006947
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =       1093, eC =  0.9302, iC =  128.7
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -2.18457E-04   dL/L: -9.72241E-03
+ Time:      50000.000 years   dE/E: -2.95752E-05   dL/L: -2.03438E-02
+ Time:      70000.000 years   dE/E: -8.22749E-05   dL/L: -2.73188E-02
+ Time:      90000.000 years   dE/E: -2.54985E-04   dL/L: -3.59642E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001952 - OK
+ aB =      23.87, eB =  0.2393, iB =  2.036
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =       1168, eC =  0.9346, iC =  131.9
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -2.16493E-04   dL/L: -6.88836E-02
+ Time:     500000.000 years   dE/E: -1.77465E-04   dL/L: -7.46342E-02
+ Time:     700000.000 years   dE/E: -1.77202E-04   dL/L: -7.46410E-02
+ Time:     900000.000 years   dE/E: -1.77403E-04   dL/L: -7.46487E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3705
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.002583 - OK
+ aB =      23.86, eB =  0.1209, iB =  20.82
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =       1208, eC =  0.9366, iC =  128.9
+	    stop = FFFF,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e7
+ Time:    3000000.000 years   dE/E: -1.77151E-04   dL/L: -7.47217E-02
+ Time:    5000000.000 years   dE/E: -1.77131E-04   dL/L: -7.47681E-02
+ Time:    7000000.000 years   dE/E: -1.77008E-04   dL/L: -7.50193E-02
+ Time:    9000000.000 years   dE/E: -1.77196E-04   dL/L: -7.55724E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:4605
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.005959 - OK
+ aB =      23.76, eB =  0.2367, iB =  71.42
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =       7418, eC =  0.9897, iC =   66.1
+	    stop = FFFF,               Time = 1e7 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e8
+ Time:   30000000.000 years   dE/E: -1.77193E-04   dL/L: -1.12790E-01
+ Time:   50000000.000 years   dE/E: -1.77180E-04   dL/L: -1.41896E-01
+ Time:   70000000.000 years   dE/E: -1.77278E-04   dL/L: -1.62532E-01
+ Time:   90000000.000 years   dE/E: -1.77163E-04   dL/L: -1.88806E-01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.006354 - OK
+ aB =      23.76, eB =  0.1812, iB =  76.55
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =  1.158e+04, eC =  0.9835, iC =  68.41
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+	 bigstop = False,                             WhichTime = 10
+	writeparam.bash,          stop time = 365.25e9
+ Time:  300000000.000 years   dE/E: -1.77256E-04   dL/L:  2.55689E-01
+ Time:  500000000.000 years   dE/E: -1.77307E-04   dL/L:  9.38507E-01
+ Time:  700000000.000 years   dE/E: -1.77485E-04   dL/L:  1.55609E+00
+ Time:  900000000.000 years   dE/E: -1.77110E-04   dL/L:  2.08853E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 10
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:6405
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.006354 - OK
+ aB =      23.76, eB =  0.1812, iB =  84.79
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001013 - OK
+ aC =  1.161e+04, eC =  0.7666, iC =  81.41
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+run: SDir1, 11
+	MakeBigRand  SDir1/In/big.in,                          11
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -3.63675E-06   dL/L: -7.94861E-09
+ Time:        400.000 years   dE/E: -5.77015E-06   dL/L: -1.01352E-09
+ Time:        600.000 years   dE/E: -8.61906E-06   dL/L:  5.91597E-08
+ Time:        800.000 years   dE/E: -1.02770E-05   dL/L:  1.82620E-07
+ Time:       1000.000 years   dE/E: -1.15932E-05   dL/L:  3.35468E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 11
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001034 - OK
+ aB =      23.44, eB =  0.3161, iB =  0.01317
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008066 - OK
+ aC =      265.3, eC =  0.7175, iC =  19.23
+True
+True
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 11
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -1.15289E-06   dL/L:  3.62852E-07
+ Time:       5000.000 years   dE/E: -6.03340E-06   dL/L:  7.90610E-07
+ Time:       7000.000 years   dE/E: -7.73393E-06   dL/L:  9.55709E-07
+ Time:       9000.000 years   dE/E: -1.01668E-05   dL/L:  1.06359E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 11
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.01428 - OK
+ aB =      23.45, eB =  0.3194, iB =  1.227
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008496 - OK
+ aC =      261.6, eC =  0.7134, iC =  18.72
+True
+True
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 11
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -1.86952E-05   dL/L:  1.73674E-06
+ Time:      50000.000 years   dE/E: -1.27384E-05   dL/L: -4.88698E-06
+ Time:      70000.000 years   dE/E: -2.55481E-06   dL/L: -1.01272E-05
+ Time:      90000.000 years   dE/E: -4.48523E-06   dL/L: -9.09713E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 11
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.01745 - OK
+ aB =      23.52, eB =  0.3117, iB =  12.94
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008847 - OK
+ aC =      230.8, eC =  0.6689, iC =  9.251
+True
+True
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 11
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.50910E-03   dL/L: -3.22456E-01
+ Time:     500000.000 years   dE/E: -1.83392E-03   dL/L:  7.58541E-01
+ Time:     700000.000 years   dE/E: -1.83295E-03   dL/L:  7.58163E-01
+ Time:     900000.000 years   dE/E: -1.83282E-03   dL/L:  7.57184E-01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 11
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3705
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.03333 - large energy variation (AB)
+ aB =      22.91, eB =  0.3813, iB =  12.49
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002763 - OK
+ aC =   5.72e+04, eC =  0.9611, iC =  150.2
+True
+True
+	    stop = FFFF,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 11
+	writeparam.bash,          stop time = 365.25e7
+ Time:    3000000.000 years   dE/E: -1.83352E-03   dL/L:  6.99603E-01
+ Time:    5000000.000 years   dE/E: -1.83508E-03   dL/L:  6.99603E-01
+ Time:    7000000.000 years   dE/E: -1.83272E-03   dL/L:  6.99603E-01
+ Time:    9000000.000 years   dE/E: -1.83546E-03   dL/L:  6.99603E-01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 11
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3902
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.03337 - large energy variation (AB)
+ aB =       22.9, eB =  0.381, iB =  12.49
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002763 - OK
+ aC =  5.682e+04, eC =  0.9641, iC =  151.1
+True
+True
+	    stop = FFFT,               Time = 1e7 yrs
+	 bigstop = False,                             WhichTime = 11
+run: SDir1, 12
+	MakeBigRand  SDir1/In/big.in,                          12
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E:  1.66975E-06   dL/L: -2.49016E-10
+ Time:        400.000 years   dE/E: -2.17875E-06   dL/L:  5.31580E-10
+ Time:        600.000 years   dE/E: -5.99635E-06   dL/L: -4.36403E-09
+ Time:        800.000 years   dE/E: -1.22852E-05   dL/L: -5.08780E-08
+ Time:       1000.000 years   dE/E: -1.78304E-05   dL/L: -1.71176E-07
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 12
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.00833 - OK
+ aB =      25.63, eB =  0.3507, iB =  0.9845
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0008968 - OK
+ aC =      875.6, eC =  0.924, iC =    142
+True
+True
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 12
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -8.62069E-05   dL/L:  3.36593E-06
+ Time:       5000.000 years   dE/E: -1.42097E-04   dL/L:  8.86493E-05
+ Time:       7000.000 years   dE/E: -1.74948E-04   dL/L:  3.42688E-04
+ Time:       9000.000 years   dE/E: -1.82044E-04   dL/L:  7.48931E-04
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 12
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.00833 - OK
+ aB =      25.63, eB =  0.3519, iB =  1.007
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001081 - OK
+ aC =      857.1, eC =  0.9222, iC =  141.9
+True
+True
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 12
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -9.04725E-05   dL/L:  2.74228E-03
+ Time:      50000.000 years   dE/E: -4.67794E-05   dL/L:  4.13330E-03
+ Time:      70000.000 years   dE/E: -1.61415E-04   dL/L:  5.85766E-03
+ Time:      90000.000 years   dE/E: -2.42971E-04   dL/L:  6.39512E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 12
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.008991 - OK
+ aB =      25.61, eB =  0.3896, iB =  6.672
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001229 - OK
+ aC =      965.6, eC =  0.9317, iC =    138
+True
+True
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 12
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.16525E-04   dL/L: -3.92817E-03
+ Time:     500000.000 years   dE/E: -1.31542E-04   dL/L: -1.18704E-02
+ Time:     700000.000 years   dE/E: -1.43310E-04   dL/L: -1.18075E-02
+ Time:     900000.000 years   dE/E: -1.34338E-04   dL/L: -9.47778E-03
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 12
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3624
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.02163 - large energy variation (AB)
+ aB =      25.27, eB =  0.7214, iB =  37.01
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.002304 - OK
+ aC =     -858.4, eC =  1.081, iC =   92.3
+True
+True
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 12
+run: SDir1, 13
+	MakeBigRand  SDir1/In/big.in,                          13
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -4.89796E-06   dL/L: -5.41067E-08
+ Time:        400.000 years   dE/E: -1.51010E-05   dL/L:  6.10716E-07
+ Time:        600.000 years   dE/E: -2.96178E-05   dL/L:  2.29230E-06
+ Time:        800.000 years   dE/E: -4.48849E-05   dL/L:  5.18105E-06
+ Time:       1000.000 years   dE/E: -6.04029E-05   dL/L:  9.32070E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 13
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006454 - OK
+ aB =      25.24, eB =  0.144, iB =  0.002071
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.0007238 - OK
+ aC =     -212.7, eC =   3.76, iC =  153.1
+True
+True
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 13
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -3.76059E-04   dL/L:  3.74813E-05
+ Time:       5000.000 years   dE/E: -8.58273E-04   dL/L: -7.34155E-04
+ Time:       7000.000 years   dE/E: -1.46820E-03   dL/L: -4.09919E-03
+ Time:       9000.000 years   dE/E: -2.11616E-03   dL/L: -1.16764E-02
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 13
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006509 - OK
+ aB =      25.25, eB =  0.1447, iB =  0.00144
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.003018 - OK
+ aC =     -231.5, eC =  3.548, iC =  151.1
+True
+True
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 13
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -7.80719E-03   dL/L:  8.57338E-01
+ Time:      50000.000 years   dE/E: -1.03547E-02   dL/L:  4.44673E+00
+ Time:      70000.000 years   dE/E: -1.14684E-02   dL/L:  9.38896E+00
+ Time:      90000.000 years   dE/E: -1.18601E-02   dL/L:  1.47946E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 13
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006652 - OK
+ aB =      25.24, eB =  0.139, iB =  0.1367
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01253 - OK
+ aC =     -354.7, eC =  33.69, iC =  69.37
+True
+True
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 13
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -1.35733E-02   dL/L:  1.46966E+01
+ Time:     500000.000 years   dE/E: -1.35734E-02   dL/L:  1.46966E+01
+ Time:     700000.000 years   dE/E: -1.35734E-02   dL/L:  1.46966E+01
+ Time:     900000.000 years   dE/E: -1.35732E-02   dL/L:  1.46966E+01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 13
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2902
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.0006853 - OK
+ aB =      25.24, eB =  0.137, iB =  0.06908
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.01403 - OK
+ aC =     -390.5, eC =  26.82, iC =     35
+True
+True
+	    stop = FFFT,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 13
+run: SDir1, 14
+	MakeBigRand  SDir1/In/big.in,                          14
+	writeparam.bash,          stop time = 365.25e3
+   Integrating massive bodies and particles up to the same epoch.
+   Beginning the main integration.
+ Time:        200.000 years   dE/E: -3.40767E-06   dL/L: -5.89524E-09
+ Time:        400.000 years   dE/E: -7.16375E-06   dL/L: -2.84968E-08
+ Time:        600.000 years   dE/E: -1.07361E-05   dL/L: -4.80741E-08
+ Time:        800.000 years   dE/E: -1.39345E-05   dL/L: -3.51987E-08
+ Time:       1000.000 years   dE/E: -1.67677E-05   dL/L:  2.91083E-08
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1005
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1005
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.001273 - OK
+ aB =      27.89, eB =  0.4695, iB =  0.123
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001243 - OK
+ aC =      287.9, eC =  0.8043, iC =  141.2
+True
+True
+	    stop = FFFF,               Time = 1e3 yrs
+	 bigstop = False,                             WhichTime = 14
+	writeparam.bash,          stop time = 365.25e4
+ Time:       3000.000 years   dE/E: -1.51196E-07   dL/L:  7.05865E-07
+ Time:       5000.000 years   dE/E: -3.30567E-05   dL/L:  1.50563E-06
+ Time:       7000.000 years   dE/E: -1.27663E-05   dL/L:  2.67106E-06
+ Time:       9000.000 years   dE/E: -2.71329E-05   dL/L:  2.70329E-06
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:1905
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:1905
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.01715 - OK
+ aB =      27.65, eB =  0.5075, iB =  4.432
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.001376 - OK
+ aC =      441.7, eC =  0.8717, iC =  134.6
+True
+True
+	    stop = FFFF,               Time = 1e4 yrs
+	 bigstop = False,                             WhichTime = 14
+	writeparam.bash,          stop time = 365.25e5
+ Time:      30000.000 years   dE/E: -3.41908E-05   dL/L: -9.89511E-07
+ Time:      50000.000 years   dE/E: -1.76522E-04   dL/L: -5.90481E-03
+ Time:      70000.000 years   dE/E: -1.38696E-03   dL/L: -2.24508E-02
+ Time:      90000.000 years   dE/E: -2.99375E-03   dL/L:  2.20189E-01
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:2805
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:2805
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.05454 - large energy variation (AB)
+ aB =      27.19, eB =  0.7703, iB =  25.01
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.005431 - OK
+ aC =       7170, eC =  0.9118, iC =  123.9
+True
+True
+	    stop = FFFF,               Time = 1e5 yrs
+	 bigstop = False,                             WhichTime = 14
+	writeparam.bash,          stop time = 365.25e6
+ Time:     300000.000 years   dE/E: -3.34291E-03   dL/L:  3.44097E+00
+ Time:     500000.000 years   dE/E: -2.74699E-03   dL/L:  3.47009E+00
+ Time:     700000.000 years   dE/E: -2.74564E-03   dL/L:  3.47095E+00
+ Time:     900000.000 years   dE/E: -2.74661E-03   dL/L:  3.47220E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:3705
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:3705
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.05454 - large energy variation (AB)
+ aB =      27.16, eB =  0.7642, iB =  25.52
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.005831 - OK
+ aC =  2.381e+04, eC =  0.8888, iC =  131.6
+True
+True
+	    stop = FFFF,               Time = 1e6 yrs
+	 bigstop = False,                             WhichTime = 14
+	writeparam.bash,          stop time = 365.25e7
+ Time:    3000000.000 years   dE/E: -2.74687E-03   dL/L:  3.45197E+00
+ Time:    5000000.000 years   dE/E: -2.74572E-03   dL/L:  3.43609E+00
+ Time:    7000000.000 years   dE/E: -2.74561E-03   dL/L:  3.42519E+00
+ Time:    9000000.000 years   dE/E: -2.74625E-03   dL/L:  3.41146E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:4605
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:4605
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.05454 - large energy variation (AB)
+ aB =      27.19, eB =  0.7645, iB =  25.53
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.005831 - OK
+ aC =  2.384e+04, eC =  0.8936, iC =  131.7
+True
+True
+	    stop = FFFF,               Time = 1e7 yrs
+	 bigstop = False,                             WhichTime = 14
+	writeparam.bash,          stop time = 365.25e8
+ Time:   30000000.000 years   dE/E: -2.74567E-03   dL/L:  3.19997E+00
+ Time:   50000000.000 years   dE/E: -2.74564E-03   dL/L:  3.05046E+00
+ Time:   70000000.000 years   dE/E: -2.74562E-03   dL/L:  2.99003E+00
+ Time:   90000000.000 years   dE/E: -2.74561E-03   dL/L:  2.96365E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.05454 - large energy variation (AB)
+ aB =      27.19, eB =  0.7644, iB =  25.91
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.005831 - OK
+ aC =  2.388e+04, eC =  0.9094, iC =  136.2
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+	 bigstop = False,                                  WhichTime = 14
+	writeparam.bash,          stop time = 365.25e9
+ Time:  300000000.000 years   dE/E: -2.85109E-03   dL/L:  1.59575E+00
+ Time:  500000000.000 years   dE/E: -2.74561E-03   dL/L:  1.63315E+00
+ Time:  700000000.000 years   dE/E: -2.75218E-03   dL/L:  3.10983E+00
+ Time:  900000000.000 years   dE/E: -2.74564E-03   dL/L:  4.23056E+00
+   Integration complete.
+	Summary      SDir1,                          WhichTime = 14
+	GetFinalData SDir1
+	GetT         SDir1/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir1/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir1/Out/AeiOutFiles/PrxCen, 4:6405
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  0.05454 - large energy variation (AB)
+ aB =      27.19, eB =  0.7645, iB =  24.87
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  0.005831 - OK
+ aC =  2.387e+04, eC =  0.8651, iC =  127.2
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+	 bigstop =  True,                                  WhichTime = 14
+Bigstop reached! Proxima-like system.
