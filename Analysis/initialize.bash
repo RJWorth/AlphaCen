@@ -1,7 +1,7 @@
 #!/bin/bash
 ############################################################################### 
 ### Create directories for a new extension
-### > ./initialize.bash Prx12 4-1
+### > ./initialize.bash Proxlike/Prx01 6-3
 
 mkdir gif/$1
 mkdir gif/$1/$2

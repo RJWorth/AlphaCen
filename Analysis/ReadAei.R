@@ -5,8 +5,8 @@ args <- commandArgs(trailingOnly = F)
 myarg <- sub("-","",args[length(args)])
 
 ### Variables
-#dir=myarg		# which directory to use, as string
-dir='Prx12/4-1'
+dir=myarg		# which directory to use, as string
+#dir='Prx12/4-1'
 
 aeidir=paste('../Sims/Proxlike/',dir,'/Out/AeiOutFiles/',sep='')
 #aeidir=paste('../Sims/',dir,'/Control/',sep='')	#location of directory
@@ -62,8 +62,8 @@ redux=1
 #DoAEPlot=(1:length(t))[ ((1:length(t))%%redux)==0]
 # extension indices
 #DoAEPlot=(6401:7401)[(1:1000%%1)==0]
-start=6405-4
-stop=6505-4
+start=6505-4	#start=5-4
+stop=7405-4		#stop=6505-4
 range=start:stop
 DoAEPlot=range[(1:length(range)%%redux)==0]
 

@@ -1,62 +1,51 @@
 ******************* CDir1 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -2.025e+35 J,  -102.7% - large energy variation (ABC)
- aC =  4.111e+04, eC =  0.5126, iC =  65.37
+dEABC = -4.725e+34 J,    2248% - large energy variation (ABC)
+ aC =       4485, eC =  0.9102, iC =    109
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 15
+	 bigstop = False,                                  WhichTime = 11
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir2 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  1.073e+34 J,  -2.044% - large energy variation (ABC)
- aC =      430.4, eC =  0.7084, iC =  24.58
+dEABC = -1.495e+32 J
+ aC =      347.4, eC =  0.4274, iC =  2.901
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 3
+	 bigstop = False,                                  WhichTime = 14
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir3 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  1.362e+32 J
- aC =      528.2, eC =  0.4552, iC =  66.89
+dEABC = -3.797e+32 J
+ aC =      779.8, eC =  0.701, iC =  17.91
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
+	 bigstop = False,                                  WhichTime = 9
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir4 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =     nan J
- aC =         -0, eC =    nan, iC =    nan
+dEABC = -4.548e+34 J,   677.2% - large energy variation (ABC)
+ aC =       4241, eC =  0.9596, iC =  28.73
 True
 True
-	    stop = FFTT,               Time = 1e7 yrs
-Testing for errors
-**BIGSTOP ENERGY ERROR**
-	 bigstop =  True,                                  WhichTime = 1
-Bigstop reached! Proxima-like system.
-******************* CDir5 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -7.205e+34 J,  -168.5% - large energy variation (ABC)
- aC =       7555, eC =  0.6327, iC =  108.4
-True
-True
-	    stop = FFFF,               Time = 1e8 yrs
+	    stop = FFFF,               Time = 1e7 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 3
-	writeparam.bash,          stop time = 365.25e9
-******************* CDir6 *******************
+	 bigstop = False,                                  WhichTime = 16
+	writeparam.bash,          stop time = 365.25e8
+******************* CDir5 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -4.652e+33 J,   2.028% - large energy variation (ABC)
- aC =      945.5, eC =  0.8332, iC =  65.02
+dEABC =  6.437e+33 J
+ aC =      121.4, eC =  0.2859, iC =  3.472
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
@@ -64,43 +53,76 @@ Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 6
 	writeparam.bash,          stop time = 365.25e9
+******************* CDir6 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -3.253e+33 J
+ aC =      970.3, eC =  0.7621, iC =  45.58
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 17
+	writeparam.bash,          stop time = 365.25e9
 ******************* CDir7 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -2.121e+35 J,  -102.3% - large energy variation (ABC)
- aC =    4.6e+04, eC =  0.6734, iC =  106.8
+dEABC =  3.746e+33 J
+ aC =      213.5, eC =  0.3398, iC =  10.86
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 5
+	 bigstop = False,                                  WhichTime = 9
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir8 *******************
- aC =     -124.8, eC =  116.3, iC =   92.2
-True
-True
-	    stop = FFFT,               Time = 1e6 yrs
-Testing for errors
-**BIGSTOP NONSENSICAL OUTPUTS**
-[ -3.61e+37   2.52e+01   5.00e-02   0.00e+00   1.00e+05   1.77e+36
-  -1.25e+02   1.16e+02   9.22e+01]
-	 bigstop =  True,                                  WhichTime = 5
-Bigstop reached! Proxima-like system.
-******************* CDir9 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  5.252e+35 J,  -90.99% - large energy variation (ABC)
- aC =       4255, eC =  0.9668, iC =  83.65
+dEABC = -1.267e+34 J,   10.64% - large energy variation (ABC)
+ aC =       1680, eC =  0.884, iC =  31.77
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
+	 bigstop = False,                                  WhichTime = 15
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir9 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -2.32e+34 J,   28.57% - large energy variation (ABC)
+ aC =       2121, eC =  0.8711, iC =  8.915
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 10
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir10 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -1.623e+35 J,    -113% - large energy variation (ABC)
- aC =   1.19e+04, eC =  0.4734, iC =  120.4
+dEABC = -3.444e+31 J
+ aC =      332.3, eC =  0.654, iC =   35.7
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 9
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir1 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =    -nan J
+ aC =         -0, eC =   -nan, iC =   -nan
+True
+True
+	    stop = FFFT,               Time = 1e4 yrs
+Testing for errors
+**BIGSTOP ENERGY ERROR**
+	 bigstop =  True,                                  WhichTime = 15
+Bigstop reached! Proxima-like system.
+******************* SDir2 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  6.662e+32 J
+ aC =      485.8, eC =  0.2132, iC =  169.8
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
@@ -108,54 +130,54 @@ Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 3
 	writeparam.bash,          stop time = 365.25e9
-******************* SDir1 *******************
- aC =      467.5, eC =  0.389, iC =  102.6
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-run: SDir1, 2
-	MakeBigRand  SDir1/In/big.in,                          2
-	writeparam.bash,          stop time = 365.25e3
-******************* SDir2 *******************
- aC =     -189.7, eC =  8.256, iC =  162.2
-True
-True
-	    stop = FFFT,               Time = 1e6 yrs
-Testing for errors
-**BIGSTOP NONSENSICAL OUTPUTS**
-[ -3.32e+37   2.74e+01   2.10e-01   0.00e+00   9.96e+04   1.17e+36
-  -1.90e+02   8.26e+00   1.62e+02]
-	 bigstop =  True,                                  WhichTime = 13
-Bigstop reached! Proxima-like system.
 ******************* SDir3 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -1.71e+34 J,   75.14% - large energy variation (ABC)
- aC =       5554, eC =  0.9593, iC =  136.8
+dEABC =  3.429e+33 J
+ aC =      721.3, eC =  0.7416, iC =  54.24
 True
 True
-	    stop = TTFF,               Time = 1e9 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop =  True,                                  WhichTime = 7
-Bigstop reached! Proxima-like system.
+	 bigstop = False,                                  WhichTime = 26
+	writeparam.bash,          stop time = 365.25e9
 ******************* SDir4 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  3.885e+35 J,  -82.52% - large energy variation (ABC)
- aC =       2690, eC =  0.9263, iC =  107.1
+dEABC =  1.063e+33 J
+ aC =        292, eC =  0.485, iC =  61.89
 True
 True
-	    stop = FFFF,               Time = 1e7 yrs
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 14
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir5 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -5.934e+31 J
+ aC =      346.1, eC =  0.2219, iC =  8.988
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir6 *******************
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -8.91e+33 J,   5.588% - large energy variation (ABC)
+ aC =       1315, eC =  0.8088, iC =  22.14
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 2
-	writeparam.bash,          stop time = 365.25e8
-******************* SDir5 *******************
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir7 *******************
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -1.321e+33 J
- aC =      139.6, eC =  0.1368, iC =  8.657
+dEABC = -1.758e+33 J
+ aC =      848.5, eC =  0.6027, iC =  32.72
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
@@ -163,25 +185,3 @@ Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 7
 	writeparam.bash,          stop time = 365.25e9
-******************* SDir6 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -3.568e+35 J,  -100.1% - large energy variation (ABC)
- aC =   1.01e+06, eC =  0.988, iC =    166
-True
-True
-	    stop = FFFT,               Time = 1e8 yrs
-Testing for errors
-**BIGSTOP FATE/ENERGY CONFLICT**
-	 bigstop =  True,                                  WhichTime = 3
-Bigstop reached! Proxima-like system.
-******************* SDir7 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -2.841e+34 J,  2.408e+04% - large energy variation (ABC)
- aC =       7760, eC =  0.334, iC =  93.63
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-  Error check passed
-	 bigstop =  True,                                  WhichTime = 7
-Bigstop reached! Proxima-like system.

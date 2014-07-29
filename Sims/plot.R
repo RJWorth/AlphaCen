@@ -204,8 +204,8 @@ palette(c(sort(heat.colors(ntbins),dec=T)[2:(ntbins)],'black'))
 ### Plot distribution of times
 pdf(paste(prefix,'TimeDistribution.pdf',sep=''),width=4,height=8)
 par(mfrow=c(2,1))
-hB=hist(log10(tB), breaks=0:10,col=1:10, main='log(tB)')
-hC=hist(log10(tC), breaks=0:10,col=1:10, main='log(tC)')
+hB=hist(log10(tB), breaks=tlevs,col=1:ntbins, main='log(tB)')
+hC=hist(log10(tC), breaks=tlevs,col=1:ntbins, main='log(tC)')
 dev.off()
 
 ########################################################################
