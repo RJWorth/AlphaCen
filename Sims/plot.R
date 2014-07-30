@@ -153,6 +153,15 @@ bgrowth[rBf<0]=NA
 PtSz = replicate(length(surv),1)
 	PtSz[surv==T] = 10
 
+### Amount parameters changed
+daB = aBf-aB
+deB = eBf-eB
+diB = iBf-iB
+
+daC = aCf-aC
+deC = eCf-eC
+diC = iCf-iC
+
 # Change index -- did parameters change by at least 1%?
 aBchange = rbind(aB[surv],rBf[surv],(rBf[surv]-aB[surv])/aB[surv]*100)
 aCchange = rbind(aC[surv],rCf[surv],(rCf[surv]-aC[surv])/aC[surv]*100)
@@ -199,6 +208,23 @@ tcol=factor(floor(log10(tC)), levels=tlevs)
 #palette(sort(gray.colors(ntbins  ),dec=T))
 palette(c(sort(heat.colors(ntbins),dec=T)[2:(ntbins)],'black'))
 
+### Histogram breaks spanning domain of each parameter
+# number of sections in histogram
+n1=20
+# max and min of a for each star, including before and after
+aBmin = min(aB[surv],aBf[surv],na.rm=T)
+aCmin = min(aC[surv],aCf[surv],na.rm=T)
+aBmax = max(aB[surv],aBf[surv],na.rm=T)
+aCmax = max(aC[surv],aCf[surv],na.rm=T)
+# breaks for a, e, and i, and da, de, and di (the change in each)
+br.aB  =          aBmin+(         aBmax-         aBmin)*(0:n1)/n1
+br.aC  =          aCmin+(         aCmax-         aCmin)*(0:n1)/n1
+br.daB = min(daB[surv])+(max(daB[surv])-min(daB[surv]))*(0:n1)/n1
+br.daC = min(daC[surv])+(max(daC[surv])-min(daC[surv]))*(0:n1)/n1
+br.e   =  1.*(0:n1)/n1
+br.de  =  -1.+2.*(0:n1)/n1
+br.i   = 180*(0:n1)/n1
+br.di  = -180.+2*180*(0:n1)/n1
 
 ###############################################################################
 ### Plot distribution of times
@@ -216,20 +242,132 @@ plot(aB,aC, pch=pindC, col=ind)
 dev.off()
 
 ###############################################################################
+### Histograms of all parameters
+### set up histogram counts:
+haBs = hist(aBf[surv], br=br.aB,plot=F)$counts
+haBp = hist(aBf[prox], br=br.aB,plot=F)$counts
+
+heBs = hist(eBf[surv],  br=br.e,plot=F)$counts
+heBp = hist(eBf[prox],  br=br.e,plot=F)$counts
+
+hiBs = hist(iBf[surv],  br=br.i,plot=F)$counts
+hiBp = hist(iBf[prox],  br=br.i,plot=F)$counts
+
+haCs = hist(aCf[surv], br=br.aC,plot=F)$counts
+haCp = hist(aCf[prox], br=br.aC,plot=F)$counts
+
+heCs = hist(eCf[surv],  br=br.e,plot=F)$counts
+heCp = hist(eCf[prox],  br=br.e,plot=F)$counts
+
+hiCs = hist(iCf[surv],  br=br.i,plot=F)$counts
+hiCp = hist(iCf[prox],  br=br.i,plot=F)$counts
+
+pdf(paste(prefix,'HistAllParameters.pdf',sep=''),width=9,height=6)
+par(mfrow=c(2,3))
+### plot aB
+barplot(rbind(haBp,haBs-haBp), space=0, 
+	xlab='Semimajor axis of B (AU)',ylab='Counts', main='aBf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(br.aB[(0:(n1/2))*2+1],3) )
+legend('topleft',legend=c('Surviving simulations','Proxima-like'),
+	fill=grey.colors(2)[2:1])
+
+### plot eB
+barplot(rbind(heBp,heBs-heBp), space=0, 
+	xlab='Eccentricity of B',ylab='Counts', main='eBf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.e[(0:(n1/2))*2+1],3) )
+
+### plot diB
+barplot(rbind(hiBp,hiBs-hiBp), space=0, 
+	xlab='Inclination of B (degrees)',ylab='Counts', main='iBf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.i[(0:(n1/2))*2+1],3) )
+
+### plot daC
+barplot(rbind(haCp,haCs-haCp), space=0, 
+	xlab='Semimajor axis of C (AU)',ylab='Counts', main='aCf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(br.aC[(0:(n1/2))*2+1],3) )
+
+### plot deC
+barplot(rbind(heCp,heCs-heCp), space=0, 
+	xlab='Eccentricity of C',ylab='Counts', main='eCf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.e[(0:(n1/2))*2+1],3) )
+
+### plot diC
+barplot(rbind(hiCp,hiCs-hiCp), space=0, 
+	xlab='Inclination of C',ylab='Counts', main='iCf')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.i[(0:(n1/2))*2+1],3) )
+
+dev.off()
+
+###############################################################################
+### Plot changes
+### set up histogram counts:
+hdaBs = hist(daB[surv], br=br.daB,plot=F)$counts
+hdaBp = hist(daB[prox], br=br.daB,plot=F)$counts
+
+hdeBs = hist(deB[surv],  br=br.de,plot=F)$counts
+hdeBp = hist(deB[prox],  br=br.de,plot=F)$counts
+
+hdiBs = hist(diB[surv],  br=br.di,plot=F)$counts
+hdiBp = hist(diB[prox],  br=br.di,plot=F)$counts
+
+hdaCs = hist(daC[surv], br=br.daC,plot=F)$counts
+hdaCp = hist(daC[prox], br=br.daC,plot=F)$counts
+
+hdeCs = hist(deC[surv],  br=br.de,plot=F)$counts
+hdeCp = hist(deC[prox],  br=br.de,plot=F)$counts
+
+hdiCs = hist(diC[surv],  br=br.di,plot=F)$counts
+hdiCp = hist(diC[prox],  br=br.di,plot=F)$counts
+
+pdf(paste(prefix,'changes.pdf',sep=''),width=9,height=6)
+par(mfrow=c(2,3))
+### plot daB
+barplot(rbind(hdaBp,hdaBs-hdaBp), space=0, 
+	xlab='change in aB (AU)',ylab='Counts', main='aBf-aB')
+	axis(1,at=(0:(n1/2))*2, lab=signif(br.daB[(0:(n1/2))*2+1],3) )
+legend('topleft',legend=c('Surviving simulations','Proxima-like'),
+	fill=grey.colors(2)[2:1])
+
+### plot deB
+barplot(rbind(hdeBp,hdeBs-hdeBp), space=0, 
+	xlab='change in eB',ylab='Counts', main='eBf-eB')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.de[(0:(n1/2))*2+1],3) )
+
+### plot diB
+barplot(rbind(hdiBp,hdiBs-hdiBp), space=0, 
+	xlab='change in iB',ylab='Counts', main='iBf-iB')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.di[(0:(n1/2))*2+1],3) )
+
+### plot daC
+barplot(rbind(hdaCp,hdaCs-hdaCp), space=0, 
+	xlab='change in aC (AU)',ylab='Counts', main='aCf-aC')
+	axis(1,at=(0:(n1/2))*2, lab=signif(br.daC[(0:(n1/2))*2+1],3) )
+
+### plot deC
+barplot(rbind(hdeCp,hdeCs-hdeCp), space=0, 
+	xlab='change in eC',ylab='Counts', main='eCf-eC')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.de[(0:(n1/2))*2+1],3) )
+
+### plot diC
+barplot(rbind(hdiCp,hdiCs-hdiCp), space=0, 
+	xlab='change in iC',ylab='Counts', main='iCf-iC')
+	axis(1,at=(0:(n1/2))*2, lab=signif(  br.di[(0:(n1/2))*2+1],3) )
+
+dev.off()
+
+###############################################################################
 ### Plot inclinations
 pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
 par(mfrow=c(2,3))
 
-n1=8
-br1=180*(0:n1)/n1
-hC=hist(iC,br=br1,plot=F)$counts
-hCs=hist(iC[surv],br=br1,plot=F)$counts
+hC   = hist( iC,      br=br.i,plot=F)$counts
+hCs  = hist( iC[surv],br=br.i,plot=F)$counts
 
-hC2 =hist(iCf,br=br1,plot=F)$counts
-hC2s=hist(iCf[surv],br=br1,plot=F)$counts
+hC2  = hist(iCf,      br=br.i,plot=F)$counts
+hC2s = hist(iCf[surv],br=br.i,plot=F)$counts
 
-hB2  =hist(iBf,br=br1,plot=F)$counts
-hB2s =hist(iBf[surv],br=br1,plot=F)$counts
+hB2  = hist(iBf,      br=br.i,plot=F)$counts
+hB2s = hist(iBf[surv],br=br.i,plot=F)$counts
 
 ### iC, with iC of surviving systems colored in
 barplot(rbind(hCs,hC-hCs), space=0, 
@@ -311,7 +449,7 @@ points(aC[surv], eC[surv], pch=20, col=indC[surv])
 #	leg3=as.expression(substitute(phantom(0) < 10^t1 , list(t1=log10(tcut))))
 #	leg3=''
 	leg6=as.expression(substitute(phantom(1) < 10^t1 , list(t1=log10(tcut))))
-legend('topleft', cex=.8, ncol=2, pch=20,
+legend('bottomright', cex=.8, ncol=2, pch=20,
 	col=c('white',allcols[1:3],'white',allcols[4:6]),
 	legend=c(	expression(t[B] ~ (yrs)),leg4,leg5,leg6,
 				expression(t[C] ~ (yrs)),leg4,leg5,leg6))
@@ -346,16 +484,35 @@ mtext(2,text='e',line=2.5,cex=1.2, outer=TRUE)
 
 dev.off()
 ########################################################################
-# aC in vs. out
-pdf(paste(prefix,'aa_C.pdf',sep=''),width=3.75, height=3.75)
-plot(aC, abs(rCf), pch='.', col=indC, xlim=c(1,max(rCf, na.rm=T)),log='xy',
+# aB in vs. out
+pdf(paste(prefix,'ai_af.pdf',sep=''),width=7.5, height=7.5)
+par(mfrow=c(2,2))
+
+plot(aB, abs(aBf), pch='.', col=indB, log='xy',#xlim=c(1,max(aBf, na.rm=T)),
+	main='Final vs. initial semimajor axis for B',
+	xlab='Initial a (AU)', ylab='Final a (AU)')
+points(aB[surv], aBf[surv], pch=20, col=indB[surv])
+abline(0,1, lty=2)
+
+plot(aC, abs(aCf), pch='.', col=indC, log='xy',xlim=c(1,max(aCf, na.rm=T)),
 	main='Final vs. initial semimajor axis for C',
 	xlab='Initial a (AU)', ylab='Final a (AU)')
+points(aC[surv], aCf[surv], pch=20, col=indC[surv])
+abline(0,1, lty=2)
+
+plot(aB, abs(rBf), pch='.', col=indB, log='xy',#xlim=c(1,max(rBf, na.rm=T)),
+	main='Final position vs. initial semimajor axis for B',
+	xlab='Initial a (AU)', ylab='Final r (AU)')
+points(aB[surv], rBf[surv], pch=20, col=indB[surv])
+abline(0,1, lty=2)
+
+plot(aC, abs(rCf), pch='.', col=indC, log='xy',xlim=c(1,max(rCf, na.rm=T)),
+	main='Final position vs. initial semimajor axis for C',
+	xlab='Initial a (AU)', ylab='Final r (AU)')
 points(aC[surv], rCf[surv], pch=20, col=indC[surv])
 abline(0,1, lty=2)
 
 dev.off()
-
 #########################################################################
 # Final distribution, a and e for B and C, only where C moved outward
 pdf(paste(prefix,'C_growth.pdf',sep=''),width=8/2.54, height=8/2.54)
@@ -447,6 +604,8 @@ pdf(paste(prefix,'pairs.pdf',sep=''),width=10.5,height=8)
 pairs(cbind(aB,eB,aC,eC,iC,EBf,rBf,aBf,eBf,ECf,rCf,aCf,eCf),
 	upper.panel=p.fate, lower.panel=p.time)
 #dev.off()
+pairs(cbind(pB,apB,pC,apC,EBf,aBf,eBf,ECf,aCf,eCf)[surv,],
+	upper.panel=p.fate2, lower.panel=p.time2)
 
 #pdf(paste(prefix,'pairs-time.pdf',sep=''),width=10.5,height=8)
 #pairs(SumAll[,c(2:3,5:13)],pch='.',cex=0.5,col=tcol)

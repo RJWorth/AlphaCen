@@ -4,8 +4,8 @@
 
 #Dirs=(Prx12/4-1)
 	prefix='Prx'
-	Dirs=(02 03 04 05 06 07 08 09 10 11)
-#	Dirs=(01)
+#	Dirs=(01 02 03 04 05 06 07 08 09 10 11)
+	Dirs=(03 05 07)
 	suffix='6-3'
 
 for i in ${Dirs[*]}

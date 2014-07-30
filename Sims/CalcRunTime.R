@@ -38,11 +38,21 @@ cat(sprintf("%7.2f",batch/24.))
 cat('\n')
 
 palette(rainbow(length(machines)))
-pdf(paste(prefix,'runtimes.pdf',sep=''),height=4,width=4)
+
+pdf(paste(prefix,'runtimes.pdf',sep=''),height=4,width=8)
+par(mfrow=c(1,2))
+
 plot(t/n, col=as.numeric(machine), pch=20, 
 	xlab='batch', ylab='Time per sim (hrs)')
-for (i in length(machines)) abline(h=avg[i],col=i)
+for (i in 1:length(machines)) abline(h=avg[i],col=i)
 legend('topleft',pch=20,col=1:length(machines), legend=c(machines))
+
+plot(t/n, col=as.numeric(machine), pch=20, 
+	xlab='batch', ylab='Time per batch (days)')
+for (i in 1:length(machines)) abline(h=batch[i]/24.,col=i)
+legend('topleft',pch=20,col=1:length(machines), legend=c(machines))
+
+
 dev.off()
 
 detach(runtime)

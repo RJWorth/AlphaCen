@@ -15,7 +15,7 @@ if [ $machine = chloe ]; then
 fi
 if [ $machine = shapiro ]; then
 #	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
-	Dirs=(SDir1)
+	Dirs=()
 fi
 #if [ $machine = spaatz ]; then
 #	Dirs=(PDir1 PDir2 PDir3)
