@@ -1,26 +1,56 @@
 ******************* CDir1 *******************
+ Time:   90000000.000 years   dE/E: -1.26455E-05   dL/L: -4.32956E-05
+   Integration complete.
+	Summary      CDir1,                          WhichTime = 13
+	GetFinalData CDir1
+	GetT         CDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir1/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir1/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -9.765e+33 J,  0.02775%
+ aB =      25.88, eB =  0.7582, iB =  108.5
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -3.6e+31 J
- aC =      503.2, eC =  0.3489, iC =  138.6
+dEABC =  2.659e+33 J
+ aC =      506.3, eC =  0.3494, iC =  64.64
 True
 True
-	    stop = FFFF,               Time = 1e6 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 13
-	writeparam.bash,          stop time = 365.25e7
+	writeparam.bash,          stop time = 365.25e9
 ******************* CDir2 *******************
+ Time:   90000000.000 years   dE/E: -1.97557E-05   dL/L: -2.72178E-06
+   Integration complete.
+	Summary      CDir2,                          WhichTime = 1
+	GetFinalData CDir2
+	GetT         CDir2/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir2/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir2/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  1.648e+33 J, -0.004886%
+ aB =         27, eB =  0.2354, iB =  15.13
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =     nan J
- aC =         -0, eC =    nan, iC =    nan
+dEABC = -5.994e+32 J
+ aC =      714.8, eC =  0.2429, iC =  16.38
 True
 True
-	    stop = FFFT,               Time = 1e4 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-**BIGSTOP ENERGY ERROR**
-	 bigstop =  True,                                  WhichTime = 17
-Bigstop reached! Proxima-like system.
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+	writeparam.bash,          stop time = 365.25e9
 ******************* CDir3 *******************
+ Time:   90000000.000 years   dE/E: -1.27353E-05   dL/L: -4.05437E-05
+   Integration complete.
+	Summary      CDir3,                          WhichTime = 21
+	GetFinalData CDir3
+	GetT         CDir3/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir3/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir3/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -1.261e+34 J,  0.03883%
+ aB =      28.05, eB =  0.06242, iB =  14.89
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
 dEABC = -1.759e+33 J
  aC =      371.6, eC =  0.5293, iC =  12.52
@@ -32,6 +62,16 @@ Testing for errors
 	 bigstop = False,                                  WhichTime = 21
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir4 *******************
+ Time:   90000000.000 years   dE/E: -1.29105E-03   dL/L: -2.31143E-01
+   Integration complete.
+	Summary      CDir4,                          WhichTime = 16
+	GetFinalData CDir4
+	GetT         CDir4/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir4/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir4/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -2.771e+33 J,  0.007821%
+ aB =       25.7, eB =  0.4718, iB =  19.72
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
 dEABC = -4.558e+34 J,   678.7% - large energy variation (ABC)
  aC =       4232, eC =  0.9609, iC =  23.51
@@ -43,39 +83,79 @@ Testing for errors
 	 bigstop = False,                                  WhichTime = 16
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir5 *******************
+ Time:   90000000.000 years   dE/E: -3.36796E-04   dL/L:  7.17382E-02
+   Integration complete.
+	Summary      CDir5,                          WhichTime = 19
+	GetFinalData CDir5
+	GetT         CDir5/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir5/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir5/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -1.162e+36 J,   3.078%
+ aB =      23.41, eB =  0.5238, iB =  16.82
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  1.097e+36 J,  -91.81% - large energy variation (ABC)
- aC =       2263, eC =  0.9449, iC =  23.73
-True
-True
-	    stop = FFFF,               Time = 1e7 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 19
-	writeparam.bash,          stop time = 365.25e8
-******************* CDir6 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =     nan J
- aC =         -0, eC =    nan, iC =    nan
-True
-True
-	    stop = FFTT,               Time = 1e5 yrs
-Testing for errors
-**BIGSTOP ENERGY ERROR**
-	 bigstop =  True,                                  WhichTime = 26
-Bigstop reached! Proxima-like system.
-******************* CDir7 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  3.746e+33 J
- aC =      213.5, eC =  0.3398, iC =  10.86
+dEABC =  1.085e+36 J,  -90.84% - large energy variation (ABC)
+ aC =       2023, eC =  0.939, iC =  43.09
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 9
+	 bigstop = False,                                  WhichTime = 19
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir6 *******************
+ Time:   90000000.000 years   dE/E: -2.31196E-04   dL/L: -1.35256E-03
+   Integration complete.
+	Summary      CDir6,                          WhichTime = 4
+	GetFinalData CDir6
+	GetT         CDir6/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir6/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir6/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  5.254e+33 J, -0.01512%
+ aB =      26.21, eB =  0.263, iB =  73.56
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -6.955e+33 J,   4.445% - large energy variation (ABC)
+ aC =       1354, eC =  0.7851, iC =  84.88
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 4
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir7 *******************
+ Time:   90000000.000 years   dE/E: -2.49609E-03   dL/L:  8.65804E-01
+   Integration complete.
+	Summary      CDir7,                          WhichTime = 11
+	GetFinalData CDir7
+	GetT         CDir7/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir7/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir7/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -9.385e+34 J,  0.2721%
+ aB =      26.34, eB =  0.3507, iB =  0.701
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC =  6.887e+33 J,  -25.81% - large energy variation (ABC)
+ aC =  1.118e+04, eC =  0.7089, iC =  108.7
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 11
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir8 *******************
+ Time:   90000000.000 years   dE/E: -3.95270E-04   dL/L: -6.21494E-02
+   Integration complete.
+	Summary      CDir8,                          WhichTime = 15
+	GetFinalData CDir8
+	GetT         CDir8/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir8/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir8/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  1.147e+33 J, -0.003388%
+ aB =       26.9, eB =  0.2588, iB =  68.43
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
 dEABC = -1.267e+34 J,   10.64% - large energy variation (ABC)
  aC =       1680, eC =  0.884, iC =  31.77
@@ -87,6 +167,16 @@ Testing for errors
 	 bigstop = False,                                  WhichTime = 15
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir9 *******************
+ Time:   90000000.000 years   dE/E: -2.03785E-05   dL/L: -1.26941E-04
+   Integration complete.
+	Summary      CDir9,                          WhichTime = 14
+	GetFinalData CDir9
+	GetT         CDir9/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir9/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir9/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  5.881e+33 J, -0.01661%
+ aB =      25.74, eB =  0.7794, iB =  45.82
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
 dEABC =  1.916e+33 J
  aC =      319.7, eC =  0.5891, iC =  104.3
@@ -98,28 +188,38 @@ Testing for errors
 	 bigstop = False,                                  WhichTime = 14
 	writeparam.bash,          stop time = 365.25e9
 ******************* CDir10 *******************
+ Time:   90000000.000 years   dE/E: -2.40083E-08   dL/L: -1.09902E-06
+   Integration complete.
+	Summary      CDir10,                          WhichTime = 15
+	GetFinalData CDir10
+	GetT         CDir10/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir10/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      CDir10/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -1.644e+34 J,  0.04723%
+ aB =      26.15, eB =  0.2916, iB =  13.67
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -3.444e+31 J
- aC =      332.3, eC =  0.654, iC =   35.7
+dEABC = -1.132e+33 J
+ aC =      257.3, eC =  0.2007, iC =  28.33
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 9
+	 bigstop = False,                                  WhichTime = 15
 	writeparam.bash,          stop time = 365.25e9
 ******************* SDir1 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =  7.462e+35 J,  -96.68% - large energy variation (ABC)
- aC =       8642, eC =  0.9771, iC =  132.8
-True
-True
-	    stop = TTFF,               Time = 1e9 yrs
-Testing for errors
-  Error check passed
-	 bigstop =  True,                                  WhichTime = 6
-Bigstop reached! Proxima-like system.
 ******************* SDir2 *******************
+ Time:   90000000.000 years   dE/E: -8.08844E-03   dL/L:  2.39330E-01
+   Integration complete.
+	Summary      SDir2,                          WhichTime = 11
+	GetFinalData SDir2
+	GetT         SDir2/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir2/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir2/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  7.893e+33 J, -0.02256%
+ aB =      26.04, eB =  0.3979, iB =  0.3434
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
 dEABC = -2.807e+35 J,  -104.8% - large energy variation (ABC)
  aC =  1.722e+04, eC =  0.8071, iC =  123.9
@@ -131,57 +231,107 @@ Testing for errors
 	 bigstop = False,                                  WhichTime = 11
 	writeparam.bash,          stop time = 365.25e9
 ******************* SDir3 *******************
+ Time:   90000000.000 years   dE/E: -8.04460E-04   dL/L:  9.70150E-02
+   Integration complete.
+	Summary      SDir3,                          WhichTime = 29
+	GetFinalData SDir3
+	GetT         SDir3/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir3/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir3/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -7.839e+33 J,  0.02324%
+ aB =         27, eB =  0.2257, iB =  64.21
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -2.664e+34 J,   42.08% - large energy variation (ABC)
- aC =       2460, eC =  0.8985, iC =   60.9
-True
-True
-	    stop = FFFF,               Time = 1e7 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 29
-	writeparam.bash,          stop time = 365.25e8
-******************* SDir4 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -9.447e+34 J,  -7.015% - large energy variation (ABC)
- aC =     -176.8, eC =  2.036, iC =  2.539
-True
-True
-	    stop = FFFF,               Time = 1e4 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 21
-	writeparam.bash,          stop time = 365.25e5
-******************* SDir5 *******************
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC = -9.509e+34 J,  -142.5% - large energy variation (ABC)
- aC =       7810, eC =  0.8214, iC =   95.4
+dEABC = -2.66e+34 J,   42.01% - large energy variation (ABC)
+ aC =       2462, eC =  0.8999, iC =  14.75
 True
 True
 	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 5
+	 bigstop = False,                                  WhichTime = 29
 	writeparam.bash,          stop time = 365.25e9
+******************* SDir4 *******************
+ Time:   90000000.000 years   dE/E:  1.39829E-06   dL/L:  1.38420E-07
+   Integration complete.
+	Summary      SDir4,                          WhichTime = 22
+	GetFinalData SDir4
+	GetT         SDir4/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir4/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir4/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  4.439e+34 J, -0.1147%
+ aB =      23.56, eB =  0.372, iB =  12.55
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -1.65e+34 J
+ aC =      180.7, eC =  0.4347, iC =  35.58
+True
+True
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 22
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir5 *******************
+ Time:  900000000.000 years   dE/E: -2.70918E-03   dL/L:  2.96096E+00
+   Integration complete.
+	Summary      SDir5,                          WhichTime = 5
+	GetFinalData SDir5
+	GetT         SDir5/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir5/Out/AeiOutFiles/AlCenB, 4:6405
+	ReadAei      SDir5/Out/AeiOutFiles/PrxCen, 4:6405
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB =  3.309e+33 J, -0.009436%
+ aB =      25.97, eB =  0.4197, iB =  4.986
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+dEABC = -9.505e+34 J,  -142.4% - large energy variation (ABC)
+ aC =       7819, eC =  0.8172, iC =  95.27
+True
+True
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+  Error check passed
+	 bigstop =  True,                                  WhichTime = 5
+Bigstop reached! Proxima-like system.
 ******************* SDir6 *******************
+ Time:   90000000.000 years   dE/E: -1.61402E-04   dL/L: -1.01252E-02
+   Integration complete.
+	Summary      SDir6,                          WhichTime = 4
+	GetFinalData SDir6
+	GetT         SDir6/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir6/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir6/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -9.809e+34 J,  0.2649%
+ aB =      24.54, eB =  0.6437, iB =  27.94
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =    -nan J
- aC =         -0, eC =   -nan, iC =   -nan
+dEABC =  9.225e+34 J,  -39.15% - large energy variation (ABC)
+ aC =       1544, eC =  0.923, iC =  47.28
 True
 True
-	    stop = FFFT,               Time = 1e4 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-**BIGSTOP ENERGY ERROR**
-	 bigstop =  True,                                  WhichTime = 10
-Bigstop reached! Proxima-like system.
+  Error check passed
+	 bigstop = False,                                  WhichTime = 4
+	writeparam.bash,          stop time = 365.25e9
 ******************* SDir7 *******************
+ Time:   90000000.000 years   dE/E:  2.03569E-07   dL/L:  1.03379E-05
+   Integration complete.
+	Summary      SDir7,                          WhichTime = 3
+	GetFinalData SDir7
+	GetT         SDir7/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir7/Out/AeiOutFiles/AlCenB, 4:5505
+	ReadAei      SDir7/Out/AeiOutFiles/PrxCen, 4:5505
+	FindCM       m = [' 1.1', ' 0.934']
+ dEAB = -1.801e+34 J,  0.05493%
+ aB =      27.76, eB =  0.3169, iB =  35.68
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
-dEABC =    -nan J
- aC =         -0, eC =   -nan, iC =   -nan
+dEABC =  1.051e+33 J
+ aC =      292.1, eC =  0.2426, iC =  41.21
 True
 True
-	    stop = FFFT,               Time = 1e5 yrs
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
-**BIGSTOP ENERGY ERROR**
-	 bigstop =  True,                                  WhichTime = 17
-Bigstop reached! Proxima-like system.
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9

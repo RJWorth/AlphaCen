@@ -515,7 +515,7 @@ abline(0,1, lty=2)
 dev.off()
 #########################################################################
 # Final distribution, a and e for B and C, only where C moved outward
-pdf(paste(prefix,'C_growth.pdf',sep=''),width=8/2.54, height=8/2.54)
+pdf(paste(prefix,'C_growth.pdf',sep=''),width=4, height=4)
 plot(.1,.1, 
 	xlim=c(1e1,max(c(aC,rCf[grow]))), ylim=c(0,1.0),log='x',
 	main='Output Parameters',xlab='a (AU)',ylab='e')
