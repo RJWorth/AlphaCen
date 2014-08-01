@@ -8,9 +8,9 @@ machine=$(hostname -s)
 
 cent=A		# placeholder; this currently does nothing
 
-mA=1.105	# mSun
-mB=0.934	# mSun
-mC=0.123	# mSun
+mA=0.123	# mSun, actual = 1.105
+mB=0.123	# mSun, actual = 0.934
+mC=0.123	# mSun, actual = 0.123
 
 aBmin=23.4	# AU
 aBmax=28.1
