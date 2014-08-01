@@ -41,7 +41,8 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 ###############################################################################
 def MakeBigRand(WhichDir,WhichTime, cent,
 	aBmin, aBmax, eBmin, eBmax, iBmin, iBmax,
-	aCmin, aCmax, eCmin, eCmax, iCmin, iCmax):
+	aCmin, aCmax, eCmin, eCmax, iCmin, iCmax, 
+	mB=0.934, mC=0.123):
 	'''Pick random parameters for the stars and make a new big.in'''
 
 	print('	MakeBigRand  '+WhichDir+'/In/big.in,                          '+
@@ -59,8 +60,8 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	AU   = 1.496e13			# cm/AU
 	day  = 24.*3600.		# s/day
 	MSun = 1.989e33			# g
-	MB   = 0.934			# in MSun
-	MC   = 0.123			# in MSun
+	MB   = mB				# in MSun
+	MC   = mC				# in MSun
 	rad  = 2*pi/360.		# multiply degrees by this to get radians
 
 ### Pick random a, e, i and g, n, m for B and C
@@ -393,7 +394,8 @@ def Potential(m1, m2, r):
 ###############################################################################
 def Eps(r, v, mu):
 	'''Calculate specific orbital energy
-	where r is the distance between two stars, v is the relative velocity'''
+	where r is the distance between two stars, v is the relative velocity.
+	Final units should be J/kg or m^2/s^2.'''
 
 	eps = v**2./2.-mu/r
 
@@ -478,7 +480,8 @@ def i(hz, hbar):
 
 ###############################################################################
 def GetFinalData(WhichDir,ThisT,mode):
-	'''A program to read the important bits and record in summary.txt'''
+	'''Read in data, calculate derived values, and output for 
+	writing/plotting/etc.'''
 
 	print('	GetFinalData '+WhichDir)
 
@@ -721,11 +724,64 @@ def GetFinalData(WhichDir,ThisT,mode):
 	if ((DestB=='ejected') & ( ECMAB[1,-1]<0.)):
 		print('B: Energy weirdness!!!')
 
-	return 	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEAB, \
-			rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, dEABC, \
+### Return all the data
+	return 	  rAB,   vAB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB,  eps,\
+			rC_AB, vC_AB, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
 			aAB, eAB, iAB, aC, eC, iC, \
 			UABC2, KABC2, ECMABC2, EtotCMABC2,	\
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
+
+###############################################################################
+def WriteAEI(WhichDir,ThisT,mode='triple'):
+	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
+		
+	print('WriteAEI      '+WhichDir)
+
+### Needed modules
+	import numpy as np
+	import AlphaCenModule as AC
+	from mks_constants import G, mSun, AU, day, m, mu
+
+### Column width in output
+	wn = 5
+	ws = str(wn)
+	print(ws+'bla')
+	fmt='% '+ws+'.3g'
+
+### Get final orbit data from mercury's .aei files and analysis
+	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB, epsB,\
+	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
+	aB, eB, iB, aC, eC, iC,	\
+	UABC2, KABC2, ECMABC2, EtotCMABC2, \
+	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
+													WhichDir, ThisT, mode)
+
+### Make array of the binary and triple parameters over time
+	data   = np.transpose(np.array([
+				[(fmt % i) for i in t],
+				[(fmt % i) for i in rB/AU],
+				[(fmt % i) for i in vB],
+				[(fmt % i) for i in epsB],
+				[(fmt % i) for i in aB/AU],
+				[(fmt % i) for i in eB],
+				[(fmt % i) for i in iB],
+				[(fmt % i) for i in rC/AU],
+				[(fmt % i) for i in vC],
+				[(fmt % i) for i in epsC],
+				[(fmt % i) for i in aC/AU],
+				[(fmt % i) for i in eC],
+				[(fmt % i) for i in iC] ]))
+	print(data.shape)
+	hdr = np.array(['t','rB', 'vB', 'epsB', 'aB', 'eB', 'iB',
+						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC'])
+	hdr = b''.join([i.rjust(wn+1) for i in hdr])+'\n'
+	print(hdr)
+### Write data to file
+	f = WhichDir+'/Out/AeiOutFiles/TimeData.txt'
+	TimeFile=open(f,'wb')
+	TimeFile.write(hdr)
+	np.savetxt(f, data, delimiter=' ')
+	TimeFile.close()
 
 ###############################################################################
 def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
@@ -757,8 +813,8 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	rAB,    EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEAB, \
-	rCMAB, EtotCMABC, ECMABC, KCMABC, UCMABC, rAB_ABC, dEABC, \
+	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB, epsB,\
+	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
 	aAB, eAB, iAB, aC, eC, iC,	\
 	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
@@ -768,21 +824,21 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Make plots of sim
 	if ((machine != 'chloe') & (wantplot==True)):
 		AC.MakePlots('binary',WhichDir, t, EtotCMAB, 
-					 ECMAB, KCMAB, UCMAB, rAB, suffix='_AB')
+					 ECMAB, KCMAB, UCMAB, rB, suffix='_AB')
 		if (mode=='triple'):
 			AC.MakePlots('triple',WhichDir, t[0:ind], EtotCMABC2, 
-						 ECMABC2, KABC2, UABC2, rCMAB[2,:], suffix='_ABC')
+						 ECMABC2, KABC2, UABC2, rC, suffix='_ABC')
 
 #################################### Write ################################
 ### Arrange data nicely
 	if ((wantsum==True) & (mode=='triple')):
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
-			    str(round(rAB[-1]/AU,2)),
+			    str(round(rB[-1]/AU,2)),
 			    ('% 9.3g' % EtotCMAB[-1]),
 			    str(round(aAB[-1]/AU,2)),
 			    str(round(eAB[-1]   ,2)),
 			    str(round(iAB[-1]   ,1)),
-			    str(round(rCMAB[2,ntC-1]/AU,1)),
+			    str(round(rC[ntC-1]/AU,1)),
 			    ('% 9.3g' % EtotCMABC2[-1]),
 			    str(round( aC[-1]/AU,2)),
 			    str(round( eC[-1]   ,2)),
@@ -833,7 +889,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
-	                     rAB/AU, EtotCMAB[:], rCMAB[2,:]/AU, EtotCMABC2[:],
+	                     rB/AU, EtotCMAB[:], rC/AU, EtotCMABC2[:],
 	                     aAB[-1], eAB[-1], aC[-1], eC[-1], 
 						 TimeB, TimeC, DestB, DestC)
 	

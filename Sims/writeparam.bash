@@ -43,7 +43,7 @@ echo ') These parameters do not need to be adjusted often:      ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ' ejection distance (AU)= 100000                           ' >> $paramfile
 echo ' radius of central body (AU) = 0.0051                     ' >> $paramfile
-echo ' central mass (solar) = 1.105                             ' >> $paramfile
+echo ' central mass (solar) = '$7'                              ' >> $paramfile
 echo ' central J2 = 0                                           ' >> $paramfile
 echo ' central J4 = 0                                           ' >> $paramfile
 echo ' central J6 = 0                                           ' >> $paramfile

@@ -6,13 +6,17 @@ machine=$(hostname -s)
 
 ### Simulation parameters
 
-cent=A
+cent=A		# placeholder; this currently does nothing
 
-aBmin=23.4
+mA=1.105	# mSun
+mB=0.934	# mSun
+mC=0.123	# mSun
+
+aBmin=23.4	# AU
 aBmax=28.1
-eBmin=0.0
+eBmin=0.0	# 0 to 1
 eBmax=0.52
-iBmin=0.0
+iBmin=0.0	# degrees
 iBmax=0.0
 
 aCmin=1.0	# *aB(1+eB)/(1-eC), i.e. min(periapse of C) = this*(apoapse of B)
@@ -50,10 +54,10 @@ echo '	timerange '$timerange
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
 	#### Randomize B and C parameters (a, e, i)
-	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax')'
+	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax', '$mB','$mC')'
 
 	# Write param.in file
-	./writeparam.bash $1 $mintime $output $step $mintime $user
+	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
 	# Compile mercury
 	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
 		#j in, to fix colors
