@@ -8,8 +8,8 @@ machine=$(hostname -s)
 
 cent=A		# placeholder; this currently does nothing
 
-mA=0.123	# mSun, actual = 1.105
-mB=0.123	# mSun, actual = 0.934
+mA=1.105	# mSun, actual = 1.105
+mB=0.934	# mSun, actual = 0.934
 mC=0.123	# mSun, actual = 0.123
 
 aBmin=23.4	# AU
@@ -30,9 +30,9 @@ vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
-step=30.0	# = days
-niter=30	# = number of iterations to run
-user='yes'	# which mercury version to use
+step=10.0	# = days
+niter=10	# = number of iterations to run
+user='yes'	# use user module?
 
 ### Write files.in
 ./writefiles.bash $1 $vers
@@ -89,7 +89,7 @@ echo '	timerange '$timerange
 		fi
 
 		# Write param.dmp file for next timestep
-		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user
+		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
 	done	#timerange
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
