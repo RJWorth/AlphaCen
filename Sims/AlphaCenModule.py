@@ -87,12 +87,12 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 
 ### First lines for each object
 	if (cent == 'A'):
-		BigFirstLines=(['AlCenB      m=0.934\n'])
+		BigFirstLines=(['AlCenB      m=0.934  r=3.0\n'])
 		names=['AlCenB']
 	if (cent == 'B'):
-		BigFirstLines=(['AlCenA      m=1.105\n'])
+		BigFirstLines=(['AlCenA      m=1.105  r=3.0\n'])
 		names=['AlCenA']
-	BigFirstLines.append('PrxCen     m=0.123\n')
+	BigFirstLines.append('PrxCen     m=0.123  r=3.0\n')
 	names.append('PrxCen')
 
 ### Spin
@@ -518,6 +518,19 @@ def GetFinalData(WhichDir,ThisT,mode):
 	Bind = [4,ntB+4]
 	Cind = [4,ntC+4]
 
+########## Get object's fate and collision/ejection time from info.out #######
+	name,dest,time = AC.ReadInfo(WhichDir)
+	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
+	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
+
+	for j in range(len(name)):
+		if (name[j] == 'AlCenB'):
+			DestB = dest[j].rjust(8)
+			TimeB = time[j].rjust(13)
+		if (name[j] == 'PrxCen'):
+			DestC = dest[j].rjust(8)
+			TimeC = time[j].rjust(13)
+
 ############# Read in original x and v values ###########################
 ### NOTATION:
 # 3D array: xvA = xv of all objects w.r.t. CMA (in AU units)
@@ -557,7 +570,7 @@ def GetFinalData(WhichDir,ThisT,mode):
 ### Find the coordinates of the center of momentum
 	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,0:ntB,:]) 
 ### Convert to center-of-momentum units
-	xvAB  = AC.wrtCM(xvA, xvCM_AB)
+	xvAB  = AC.wrtCM(xvA[:,0:ntB,:], xvCM_AB)
 ### Get r, v in CM units
 	rCMAB = np.array([ AC.XVtoR(xvAB[i,:,:]) for i in range(nobjs) ])
 	vCMAB = np.array([ AC.XVtoV(xvAB[i,:,:]) for i in range(nobjs) ])
@@ -572,38 +585,36 @@ def GetFinalData(WhichDir,ThisT,mode):
 
 ### This should be constant
 	EtotCMAB = np.sum(ECMAB, 0)
-### Check for consistency
-#	EminAB = np.max(EtotCMAB)
-#	EmaxAB = np.min(EtotCMAB)
-#	dEAB   = (EmaxAB-EminAB)/EminAB
-	dEAB = EtotCMAB[-1]-EtotCMAB[0]
-
-	if abs(dEAB/EtotCMAB[0])<0.05:
-		print(' dEAB = '+ ('% 7.4g' % dEAB)+' J, '+
-			 ('% 7.4g' % float(100*dEAB/EtotCMAB[0]))+'%'  )
-	else:
-		print(' dEAB = '+('% 7.4g' % dEAB)+' J, '+
-			 ('% 7.4g' % float(100*dEAB/EtotCMAB[0]))+'%'+
-			  ' - large energy variation (AB)')
 
 ### Get orbital parameters
 	# grav. paramater for binary
 	mu2 = G*(m[0]+m[1])
 	# specific orbital energy
-	eps = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
+	epsB = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
 	# semimajor axis
-	aAB = AC.a(eps, mu2)
+	aAB = AC.a(epsB, mu2)
 
 	# specific angular momentum (r x v) of B wrt A
 	hA     = AC.h( xvA[1,0:ntB,0:3],  xvA[1,0:ntB,3:6])
 	hbarA  = AC.XVtoR( hA[:,:])
 	# eccentricity
-	eAB = AC.e(aAB, eps, hbarA, mu2)
+	eAB = AC.e(aAB, epsB, hbarA, mu2)
 	# inclination
 	iAB = AC.i(hA[:,2], hbarA)
 	print(' aB = '+('% 10.4g'%(aAB[-1]/AU))
 		 +', eB = '+('% 6.4g'%(eAB[-1]))
 		 +', iB = '+('% 6.4g'%(iAB[-1])))
+
+### Check for consistency
+	dEpsB = epsB[-1]-epsB[0]
+
+	if abs(dEpsB/epsB[0])<0.05:
+		print(' dEpsB = '+ ('% 7.4g' % dEpsB)+' J, '+
+			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'  )
+	else:
+		print(' dEpsB = '+('% 7.4g' % dEpsB)+' J, '+
+			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'+
+			  ' - large energy variation (AB)')
 
 ###################### Triple system: ########################################
 ### Only relevant if B and C both survived
@@ -614,16 +625,31 @@ def GetFinalData(WhichDir,ThisT,mode):
 #		LastxvB_A_AU = AC.ReadAei(WhichDir, filenames[0], ind-1, ind+4)
 #		LastxvA_A_AU = np.zeros_like(LastxvB_A_AU)
 #		LastxvC_A_AU = AC.ReadAei(WhichDir, filenames[1], ind-1, ind+4)
+
+#		xvA_AU=np.array([
+#                np.concatenate(( xvA_A_AU, np.zeros((max(ntC-ntB,0.),6)) )),
+#                np.concatenate((xvB_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
+#                np.concatenate((xvC_A_AU,np.zeros((max(ntB-ntC,0.),6))))])
+
+### If B is ejected before C, exend the AB CM, and set equal to A during that
+		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
+			xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xvA[0,ntB:ntC,:]) )
+		# Get xv wrt CM_AB through ntC
+			xvAB  = AC.wrtCM(xvA[:,0:ntC,:], xvCM_AB)
+
 ### Combine three stars into a 3D array
-		xvA_Triple_AU = np.array([ xvA_A_AU[0:ind,:], 
-								   xvB_A_AU[0:ind,:], 
-								   xvC_A_AU[0:ind,:] ])
+#		xvA_Triple_AU = np.array([ xvA_A_AU[0:ind,:], 
+#								   xvB_A_AU[0:ind,:], 
+#								   xvC_A_AU[0:ind,:] ])
+		xvA_Triple_AU = xvA_AU[:, 0:ntC, :]
 ### Convert to mks units
 		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
-	# suffix '2' => treating AB as one star at their CM, AB-C as binary
-		xvA_Triple2=np.array([ xvCM_AB[0:ind,:], xvA[2,0:ind,:] ])
+### suffix '2' => treating AB as one star at their CM, AB-C as binary
+		xvA_Triple2 = np.array([ xvCM_AB[0:ntC,:], xvA[2,0:ntC,:] ])
 ### Find the coordinates of the center of momentum
 		xvCM_ABC = AC.FindCM( m, xvA_Triple) 
+		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
+			xvCM_ABC[0:ntB, :] = AC.FindCM( [m[0], 0., m[2]], xvA_Triple[:, 0:ntB, :]) 
 #		xvCM_ABC2= AC.FindCM( [ m[0]+m[1], m[2] ], xvA_Triple2) 
 ### Convert to center-of-momentum units
 		xvABC  = AC.wrtCM(xvA_Triple,  xvCM_ABC)
@@ -641,6 +667,7 @@ def GetFinalData(WhichDir,ThisT,mode):
 ### Calculate kinetic energies, K
 		KCMABC = AC.Kinetic(m, vCMABC)
 		KABC2= AC.Kinetic( [m[0]+m[1], m[2]], vCMABC2)
+		
 ### Calculate potential energies, U
 		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
 		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
@@ -656,33 +683,6 @@ def GetFinalData(WhichDir,ThisT,mode):
 # Calculate total energy in the system
 		EtotCMABC = np.sum(ECMABC, 0)
 		EtotCMABC2= np.sum(ECMABC2, 0)
-### Check for consistency
-#		EminABC = np.max(EtotCMABC)
-#		EmaxABC = np.min(EtotCMABC)
-#		dEABC   = (EmaxABC-EminABC)/EminABC
-		dEABC = EtotCMABC2[-1]-EtotCMABC2[0]
-
-		if abs(dEABC/EtotCMABC2[0])>0.02:
-			print('dEABC = {0} J, {1}% - large energy variation (ABC)'.format(
-			     ('% 7.4g' % dEABC), 
-				 ('% 7.4g' % float(100*dEABC/EtotCMABC2[0])) ))
-		else:
-			print('dEABC = {0} J'.format( ('% 7.4g' % dEABC) ))
-
-### Save dE for Prx sims
-		Esumnames = ['EBi','EBf','ECi','ECf','dEBe33','dECe33']
-		Esum = [   EtotCMAB[0],   EtotCMAB[-1], 
-				 EtotCMABC2[0], EtotCMABC2[-1], 
-					 dEAB/1e33,		dEABC/1e33]
-		if 'Prx' in WhichDir:
-			if '01' in WhichDir:
-				PrxSum=open('Proxlike/Plots/PrxSum.txt','w')
-				PrxSum.write(' '.join([('% 11s' % i) for i in Esumnames])+'\n')
-			else:
-				PrxSum=open('Proxlike/Plots/PrxSum.txt','a')
-			PrxSum.write(' '.join([('% 11.4g' % i) for i in Esum])+'\n')
-			PrxSum.close()
-
 ### Get orbital parameters
 		# dist. from C to CM(AB)
 		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
@@ -705,18 +705,29 @@ def GetFinalData(WhichDir,ThisT,mode):
 			 +', eC = '+('% 6.4g'%(eC[-1]))
 			 +', iC = '+('% 6.4g'%(iC[-1])) )
 
-########## Get object's fate and collision/ejection time from info.out #######
-	name,dest,time = AC.ReadInfo(WhichDir)
-	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
-	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
+### Check for consistency
+		dEpsC = epsC[-1]-epsC[0]
 
-	for j in range(len(name)):
-		if (name[j] == 'AlCenB'):
-			DestB = dest[j].rjust(8)
-			TimeB = time[j].rjust(13)
-		if (name[j] == 'PrxCen'):
-			DestC = dest[j].rjust(8)
-			TimeC = time[j].rjust(13)
+		if abs(dEpsC/epsC[0])>0.02:
+			print('dEpsC = {0} J, {1}% - large energy variation (ABC)'.format(
+			     ('% 7.4g' % dEpsC), 
+				 ('% 7.4g' % float(100*dEpsC/epsC[0])) ))
+		else:
+			print('dEpsC = {0} J'.format( ('% 7.4g' % dEpsC) ))
+
+### Save dE for Prx sims
+#		Esumnames = ['EBi','EBf','ECi','ECf','dEBe33','dECe33']
+#		Esum = [   EtotCMAB[0],   EtotCMAB[-1], 
+#				 EtotCMABC2[0], EtotCMABC2[-1], 
+#					 dEAB/1e33,		dEABC/1e33]
+#		if 'Prx' in WhichDir:
+#			if '01' in WhichDir:
+#				PrxSum=open('Proxlike/Plots/PrxSum.txt','w')
+#				PrxSum.write(' '.join([('% 11s' % i) for i in Esumnames])+'\n')
+#			else:
+#				PrxSum=open('Proxlike/Plots/PrxSum.txt','a')
+#			PrxSum.write(' '.join([('% 11.4g' % i) for i in Esum])+'\n')
+#			PrxSum.close()
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
 	if ((DestC=='ejected') & (ECMABC[2,-1]<0.)):
@@ -725,8 +736,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 		print('B: Energy weirdness!!!')
 
 ### Return all the data
-	return 	  rAB,   vAB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB,  eps,\
-			rC_AB, vC_AB, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
+	return 	  rAB,   vAB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
+			rC_AB, vC_AB, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
 			aAB, eAB, iAB, aC, eC, iC, \
 			UABC2, KABC2, ECMABC2, EtotCMABC2,	\
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
@@ -743,14 +754,12 @@ def WriteAEI(WhichDir,ThisT,mode='triple'):
 	from mks_constants import G, mSun, AU, day, m, mu
 
 ### Column width in output
-	wn = 5
-	ws = str(wn)
-	print(ws+'bla')
-	fmt='% '+ws+'.3g'
+	wn = [9]+2*[9,9,11,9,9,9]
+	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
-	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB, epsB,\
-	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
+	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
+	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
 	aB, eB, iB, aC, eC, iC,	\
 	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
@@ -758,29 +767,31 @@ def WriteAEI(WhichDir,ThisT,mode='triple'):
 
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
-				[(fmt % i) for i in t],
-				[(fmt % i) for i in rB/AU],
-				[(fmt % i) for i in vB],
-				[(fmt % i) for i in epsB],
-				[(fmt % i) for i in aB/AU],
-				[(fmt % i) for i in eB],
-				[(fmt % i) for i in iB],
-				[(fmt % i) for i in rC/AU],
-				[(fmt % i) for i in vC],
-				[(fmt % i) for i in epsC],
-				[(fmt % i) for i in aC/AU],
-				[(fmt % i) for i in eC],
-				[(fmt % i) for i in iC] ]))
-	print(data.shape)
+				[(  '%9.3e' % i) for i in     t],
+				[(  '%9.3f' % i) for i in rB/AU],
+				[(  '%9.2f' % i) for i in    vB],
+				[('% 11.4e' % i) for i in  epsB],
+				[( '% 9.1f' % i) for i in aB/AU],
+				[(  '%9.5f' % i) for i in    eB],
+				[(  '%9.3f' % i) for i in    iB],
+				[(  '%9.3f' % i) for i in rC/AU],
+				[(  '%9.2e' % i) for i in    vC],
+				[('% 11.4e' % i) for i in  epsC],
+				[( '% 9.1f' % i) for i in aC/AU],
+				[(  '%9.5f' % i) for i in    eC],
+				[(  '%9.3f' % i) for i in    iC] ]))
+	datalist = [' '.join(row)+'\n' for row in data]
+
 	hdr = np.array(['t','rB', 'vB', 'epsB', 'aB', 'eB', 'iB',
 						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC'])
-	hdr = b''.join([i.rjust(wn+1) for i in hdr])+'\n'
-	print(hdr)
+	hdr = ' '.join([hdr[i].rjust(wn[i]) for i in range(len(hdr))])+'\n'
+
 ### Write data to file
 	f = WhichDir+'/Out/AeiOutFiles/TimeData.txt'
-	TimeFile=open(f,'wb')
+	TimeFile=open(f,'w')
 	TimeFile.write(hdr)
-	np.savetxt(f, data, delimiter=' ')
+	for row in datalist:
+		TimeFile.write(row)
 	TimeFile.close()
 
 ###############################################################################
@@ -813,8 +824,8 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB,  dEAB, epsB,\
-	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEABC, epsC,\
+	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
+	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
 	aAB, eAB, iAB, aC, eC, iC,	\
 	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
@@ -834,22 +845,22 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	if ((wantsum==True) & (mode=='triple')):
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
 			    str(round(rB[-1]/AU,2)),
-			    ('% 9.3g' % EtotCMAB[-1]),
+			    ('% 9.3g' % epsB[-1]),
 			    str(round(aAB[-1]/AU,2)),
 			    str(round(eAB[-1]   ,2)),
 			    str(round(iAB[-1]   ,1)),
 			    str(round(rC[ntC-1]/AU,1)),
-			    ('% 9.3g' % EtotCMABC2[-1]),
+			    ('% 9.3g' % epsC[-1]),
 			    str(round( aC[-1]/AU,2)),
 			    str(round( eC[-1]   ,2)),
 			    str(round( iC[-1]   ,1)),
 		        str(round(log10(float(TimeB)),5)), DestB,
 			    str(round(log10(float(TimeC)),5)), DestC, 
-				('% 9.3g' % dEAB), ('% 9.3g' % dEABC), '\n']
+				('% 9.3g' %dEpsB), ('% 9.3g' % dEpsC), '\n']
 		headerfields=['aB','eB','iB','aC','eC','iC',
 					 'rBf','EBf','aBf','eBf','iBf',
 					 'rCf','ECf','aCf','eCf','iCf',
-					 'logtB','destB','logtC','destC', 'dEAB','dEABC', '\n']
+					 'logtB','destB','logtC','destC', 'dEAB','dEpsC', '\n']
 		sumspaces=[
 			len(aeiIn[0]),len(aeiIn[1]),len(aeiIn[2]),
 				len(aeiIn[3]),len(aeiIn[4]),len(aeiIn[5]), 
@@ -908,9 +919,6 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 #	import subprocess
 #	import rvtest as rv
 	from mks_constants import AU
-
-	print(isinstance(EB[-1],float))
-	print(isinstance(EC[-1],float))
 
 ### Write to summary.out, but only if the simulation is ending:
 ### Determine status of each star in each survival criterion,
