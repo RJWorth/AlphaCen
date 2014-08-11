@@ -15,6 +15,6 @@ mkdir Proxlike/$2
 mv Proxlike/$2/Original/Out/merc_AC$1 Proxlike/$2/Original/Out/merc_ext
 
 ### Make extension directory
-\cp -rp Proxlike/$2/Original Proxlike/$2/$ext
-\cp -r  Proxlike/param$ext.dmp Proxlike/$2/$ext/Out/param.dmp
+#\cp -rp Proxlike/$2/Original Proxlike/$2/$ext
+#\cp -r  Proxlike/param$ext.dmp Proxlike/$2/$ext/Out/param.dmp
 

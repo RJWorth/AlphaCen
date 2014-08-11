@@ -1,187 +1,187 @@
 ******************* CDir1 *******************
- aB =      26.66, eB =  0.1281, iB =  0.1321
- dEpsB =    6084 J, -0.01793%
+ aB =      24.72, eB =  0.5564, iB =   73.7
+ dEpsB =    6865 J, -0.01876%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =       -273, eC =  1.499, iC =  68.16
-dEpsC =  1.66e+04 J
-	    stop = FFFF,               Time = 1e3 yrs
+ aC =       1185, eC =  0.7181, iC =  50.62
+dEpsC = -2.099e+04 J,   2.663% - large energy variation (ABC)
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
+	 bigstop = False,                                  WhichTime = 7
+	writeparam.bash,          stop time = 365.25e9
 ******************* CDir2 *******************
- aB =      25.84, eB =  0.09634, iB =  0.05293
- dEpsB =   -4730 J,  0.01351%
+ aB =      27.24, eB =  0.3974, iB =  0.2267
+ dEpsB =  1.255e+04 J, -0.03777%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =      222.1, eC =  0.7593, iC =   70.9
-dEpsC =    2040 J
-	    stop = FFFF,               Time = 1e3 yrs
+ aC =       9794, eC =  0.7045, iC =  10.22
+dEpsC = -3.485e+05 J,  -139.1% - large energy variation (ABC)
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
 ******************* CDir3 *******************
- aB =      25.09, eB =  0.2297, iB =  0.006216
- dEpsB =   -1518 J,  0.00421%
+ aB =      24.39, eB =  0.3539, iB =  13.43
+ dEpsB =   -3236 J,  0.008724%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -155.6, eC =  5.949, iC =  58.13
-dEpsC =   -7037 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir4 *******************
- aB =      25.56, eB =  0.3419, iB =  0.005105
- dEpsB =  1.433e+04 J, -0.04046%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =       -115, eC =  5.973, iC =  76.35
-dEpsC = -1.193e+04 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir5 *******************
- aB =      25.96, eB =  0.2233, iB =  0.06009
- dEpsB =    6212 J, -0.01782%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =      407.5, eC =  0.2423, iC =  63.09
-dEpsC =    3464 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir6 *******************
- aB =      25.68, eB =  0.09772, iB =  0.2278
- dEpsB = -4.006e+04 J,  0.1139%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =       -314, eC =  1.297, iC =  34.84
-dEpsC =  6.668e+04 J,   2.232% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir7 *******************
- aB =       26.4, eB =  0.3931, iB =  0.1203
- dEpsB =   891.3 J, -0.002601%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -353.2, eC =  1.493, iC =  139.6
-dEpsC =   40.41 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir8 *******************
- aB =       24.8, eB =    0.1, iB =  0.008703
- dEpsB =    4679 J, -0.01283%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -90.32, eC =  3.249, iC =  137.9
-dEpsC = -2.295e+04 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir9 *******************
- aB =      24.76, eB =  0.1601, iB =  0.0005509
- dEpsB =   -1714 J,  0.004691%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -210.1, eC =  1.984, iC =  24.13
-dEpsC = -1.501e+04 J
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* CDir10 *******************
- aB =      27.23, eB =  0.3266, iB =  0.002538
- dEpsB =    3780 J, -0.01138%
-	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC = -1.263e+04, eC =  1.004, iC =  13.47
-dEpsC =   -9988 J,  -11.62% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e3 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e4
-******************* SDir1 *******************
-(2, 4601, 6)
- aC =       1120, eC =  0.8269, iC =  4.593
-dEpsC = -2.601e+04 J,   3.132% - large energy variation (ABC)
-True
-True
-	    stop = FFFF,               Time = 1e7 yrs
-Testing for errors
-  Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e8
-******************* SDir2 *******************
-(2, 4601, 6)
- aC =      358.9, eC =  0.686, iC =  57.76
-dEpsC =  2.835e+04 J
-True
-True
-	    stop = FFFF,               Time = 1e7 yrs
+ aC =        235, eC =  0.4655, iC =  60.14
+dEpsC =   -5889 J
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 2
-	writeparam.bash,          stop time = 365.25e8
-******************* SDir3 *******************
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir4 *******************
+ aB =      23.91, eB =  0.4323, iB =  4.061
+ dEpsB = -1.023e+04 J,  0.02706%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =  1.179e+04, eC =  0.7466, iC =  96.81
-dEpsC = -7.429e+05 J,  -112.3% - large energy variation (ABC)
-True
-True
-	    stop = FFFF,               Time = 1e7 yrs
+ aC =      394.8, eC =  0.3133, iC =  1.407
+dEpsC =    4742 J
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
 	 bigstop = False,                                  WhichTime = 4
-	writeparam.bash,          stop time = 365.25e8
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir5 *******************
+ aB =      25.96, eB =   0.34, iB =  53.61
+ dEpsB =    3433 J, -0.009849%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =      407.7, eC =  0.2454, iC =  24.09
+dEpsC =    4297 J
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir6 *******************
+ aB =      25.93, eB =  0.3231, iB =   37.4
+ dEpsB =   -5234 J,   0.015%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =      438.4, eC =  0.3544, iC =   21.2
+dEpsC =   -2872 J
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 5
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir7 *******************
+ aB =      26.96, eB =  0.5948, iB =  68.83
+ dEpsB =   -2994 J,  0.008924%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =      404.3, eC =  0.2443, iC =  88.75
+dEpsC =  -718.2 J
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 2
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir8 *******************
+ aB =      26.63, eB =  0.2011, iB =  0.1274
+ dEpsB = -5.267e+04 J,  0.1553%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =  1.624e+04, eC =  0.4217, iC =  43.79
+dEpsC = -7.078e+05 J,  -109.1% - large energy variation (ABC)
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 4
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir9 *******************
+ aB =      25.69, eB =  0.2084, iB =  2.741
+ dEpsB = -3.049e+04 J,  0.08667%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =       6852, eC =   0.93, iC =  97.69
+dEpsC = -3.698e+05 J,  -160.9% - large energy variation (ABC)
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 5
+	writeparam.bash,          stop time = 365.25e9
+******************* CDir10 *******************
+ aB =       27.2, eB =  0.5411, iB =  4.162
+ dEpsB = -4.314e+04 J,  0.1299%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =       7259, eC =  0.963, iC =  80.94
+dEpsC = -2.181e+05 J,  -253.7% - large energy variation (ABC)
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 1
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir1 *******************
+ aB =      25.94, eB =  0.404, iB =  33.79
+ dEpsB =    -722 J,  0.00207%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =       8048, eC =  0.8083, iC =  112.4
+dEpsC = -3.004e+05 J,  -165.8% - large energy variation (ABC)
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+  Error check passed
+	 bigstop =  True,                                  WhichTime = 4
+Bigstop reached! Proxima-like system.
+******************* SDir2 *******************
+ aB =      24.73, eB =  0.4751, iB =  37.42
+ dEpsB =    3528 J, -0.009644%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =      158.3, eC =  0.2769, iC =  89.94
+dEpsC =  1.446e+04 J
+	    stop = FFFF,               Time = 1e8 yrs
+Testing for errors
+  Error check passed
+	 bigstop = False,                                  WhichTime = 3
+	writeparam.bash,          stop time = 365.25e9
+******************* SDir3 *******************
+ aB =      27.21, eB =  0.361, iB =  0.8171
+ dEpsB =    3132 J, -0.009422%
+	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
+ aC =  1.177e+04, eC =  0.4208, iC =  94.97
+dEpsC = -7.43e+05 J,  -112.3% - large energy variation (ABC)
+	    stop = TTFF,               Time = 1e9 yrs
+Testing for errors
+  Error check passed
+	 bigstop =  True,                                  WhichTime = 4
+Bigstop reached! Proxima-like system.
 ******************* SDir4 *******************
- aB =      23.39, eB =  0.4896, iB =  0.1834
- dEpsB = -1.114e+04 J,  0.02881%
+ aB =      25.24, eB =  0.4608, iB =  167.8
+ dEpsB =    1326 J, -0.0037%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =      -1218, eC =  10.62, iC =  159.8
-dEpsC = -1.174e+06 J,  -59.86% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e5 yrs
+ aC =      764.8, eC =  0.4989, iC =  33.81
+dEpsC =   -8225 J
+	    stop = FFFF,               Time = 1e8 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e6
+	 bigstop = False,                                  WhichTime = 7
+	writeparam.bash,          stop time = 365.25e9
 ******************* SDir5 *******************
- aB =      24.77, eB =  0.4456, iB =  1.836
- dEpsB = -8.25e+05 J,   2.311%
+ aB =      27.64, eB =  0.2317, iB =  10.54
+ dEpsB =  -918.8 J,  0.002807%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -228.1, eC =  66.99, iC =  52.31
-dEpsC =  1.813e+06 J,   75.76% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e5 yrs
+ aC =       6145, eC =  0.6382, iC =  78.64
+dEpsC = -3.495e+05 J,  -180.7% - large energy variation (ABC)
+	    stop = TTFF,               Time = 1e9 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e6
+	 bigstop =  True,                                  WhichTime = 3
+Bigstop reached! Proxima-like system.
 ******************* SDir6 *******************
- aB =      28.06, eB =  0.3578, iB =  0.3703
- dEpsB =    7910 J, -0.02453%
+ aB =      23.96, eB =  0.8006, iB =  27.41
+ dEpsB = -1.567e+06 J,   4.331%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -256.8, eC =  39.23, iC =  61.78
-dEpsC = -2.349e+06 J,  -38.61% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e5 yrs
+ aC =       6977, eC =  0.7224, iC =  78.24
+dEpsC =  6.64e+06 J,  -97.97% - large energy variation (ABC)
+	    stop = TTFF,               Time = 1e9 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e6
+	 bigstop =  True,                                  WhichTime = 3
+Bigstop reached! Proxima-like system.
 ******************* SDir7 *******************
- aB =      26.81, eB =  0.3944, iB =  0.2281
- dEpsB =  1.579e+04 J, -0.04678%
+	FindCM       m = [' 1.1', ' 0.934']
+ aB =      24.37, eB =  0.3813, iB =  0.02617
+ dEpsB = -2.395e+04 J,  0.06457%
 	FindCM       m = [' 1.1', ' 0.934', ' 0.123']
- aC =     -128.3, eC =  27.78, iC =  96.29
-dEpsC = -2.882e+06 J,  -27.81% - large energy variation (ABC)
-	    stop = FFFF,               Time = 1e5 yrs
+ aC =     -259.9, eC =  100.3, iC =  178.6
+dEpsC = -1.396e+06 J,  -27.44% - large energy variation (ABC)
+	    stop = FFFT,               Time = 1e6 yrs
 Testing for errors
   Error check passed
-	 bigstop = False,                                  WhichTime = 1
-	writeparam.bash,          stop time = 365.25e6
+	 bigstop = False,                                  WhichTime = 10

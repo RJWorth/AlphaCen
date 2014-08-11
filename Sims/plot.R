@@ -408,7 +408,7 @@ par(mfrow=c(1,2),mar=c(4,4,1,0))
 # Initial distribution, a and e for B and C
 # make plot borders
 plot(.1,.1, pch='.', 
-	xlim=c(1e1,max(c(aC,rCf[surv]))), ylim=c(0,1.0),log='x',
+	xlim=c(1e1,max(c(aC,rCf[surv]))), ylim=c(0,1.1),log='x',
 	main='',xlab='',ylab='e')
 mtext(1,text='a (AU)',line=2.5,cex=1.2)
 
@@ -449,7 +449,7 @@ points(aC[surv], eC[surv], pch=20, col=indC[surv])
 #	leg3=as.expression(substitute(phantom(0) < 10^t1 , list(t1=log10(tcut))))
 #	leg3=''
 	leg6=as.expression(substitute(phantom(1) < 10^t1 , list(t1=log10(tcut))))
-legend('bottomright', cex=.8, ncol=2, pch=20,
+legend('topleft', cex=.8, ncol=2, pch=20,
 	col=c('white',allcols[1:3],'white',allcols[4:6]),
 	legend=c(	expression(t[B] ~ (yrs)),leg4,leg5,leg6,
 				expression(t[C] ~ (yrs)),leg4,leg5,leg6))

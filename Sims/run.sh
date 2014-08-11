@@ -28,10 +28,10 @@ iCmax=180.0
 
 vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
-maxtime=9	# = log(years)
+maxtime=5	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=10	# = number of iterations to run
+niter=1	# = number of iterations to run
 user='yes'	# use user module?
 
 ### Write files.in
@@ -86,10 +86,10 @@ echo '	timerange '$timerange
 		stop=$(cat $1/stopfile.txt)
 		if [ $stop = 'True' ]; then
 			break
-		fi
-
+		else
 		# Write param.dmp file for next timestep
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
+		fi
 	done	#timerange
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then

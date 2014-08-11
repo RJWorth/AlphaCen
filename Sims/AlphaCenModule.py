@@ -771,7 +771,7 @@ def WriteAEI(WhichDir,ThisT,mode='triple'):
 				[(  '%9.3f' % i) for i in rB/AU],
 				[(  '%9.2f' % i) for i in    vB],
 				[('% 11.4e' % i) for i in  epsB],
-				[( '% 9.1f' % i) for i in aB/AU],
+				[( '% 9.2f' % i) for i in aB/AU],
 				[(  '%9.5f' % i) for i in    eB],
 				[(  '%9.3f' % i) for i in    iB],
 				[(  '%9.3f' % i) for i in rC/AU],
