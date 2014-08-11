@@ -31,7 +31,7 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=1	# = number of iterations to run
+niter=1 	# = number of iterations to run
 user='yes'	# use user module?
 
 ### Write files.in
