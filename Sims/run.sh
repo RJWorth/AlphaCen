@@ -28,10 +28,10 @@ iCmax=180.0
 
 vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
-maxtime=9	# = log(years)
+maxtime=4	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=1 	# = number of iterations to run
+niter=10	# = number of iterations to run
 user='yes'	# use user module?
 
 ### Write files.in
@@ -51,6 +51,9 @@ echo '	timerange '$timerange
 	for j in $itrange
 	do
 	echo 'run: '$1', '$j
+	# Start clock for iteration
+	t3=$(date +%s)
+	# Clean out old sim
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
 	#### Randomize B and C parameters (a, e, i)
@@ -61,7 +64,6 @@ echo '	timerange '$timerange
 	# Compile mercury
 	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
 		#j in, to fix colors
-
 	### Loop over time lengths
 	for k in $timerange; do
 
@@ -91,6 +93,12 @@ echo '	timerange '$timerange
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
 		fi
 	done	#timerange
+	# Get end time
+	endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
+	# Stop clock for iteration
+	t4=$(date +%s)
+	echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
+	# Check for bigstop flag to stop the 'niter' loop
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
 		echo 'Bigstop reached! Proxima-like system.'
