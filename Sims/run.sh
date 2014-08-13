@@ -28,7 +28,7 @@ iCmax=180.0
 
 vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
-maxtime=4	# = log(years)
+maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
 niter=10	# = number of iterations to run
@@ -93,16 +93,25 @@ echo '	timerange '$timerange
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
 		fi
 	done	#timerange
-	# Get end time
-	endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
-	# Stop clock for iteration
-	t4=$(date +%s)
-	echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
+	if [ $k = 9 ]; then
+		# Get end time
+		endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
+		# Stop clock for iteration
+		t4=$(date +%s)
+		echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
+	fi
 	# Check for bigstop flag to stop the 'niter' loop
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
 		echo 'Bigstop reached! Proxima-like system.'
 		./email.sh $1 $j'/'$niter 'Proxima-like system!'
+		break
+	fi
+	# Check continuation flag to stop the 'niter' loop
+	cont=$(cat ContinuationFlag.txt)
+	if [ $cont = 'True' ]; then
+		echo 'Iterations stopped by flag.'
+		./email.sh $1 $j'/'$niter 'Iterations stopped'
 		break
 	fi
 done	#niter
