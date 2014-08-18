@@ -8,8 +8,8 @@ machine=$(hostname -s)
 
 cent=A		# placeholder; this currently does nothing
 
-mA=1.105	# mSun, actual = 1.105
-mB=0.934	# mSun, actual = 0.934
+mA=0.123	# mSun, actual = 1.105
+mB=0.123	# mSun, actual = 0.934
 mC=0.123	# mSun, actual = 0.123
 
 aBmin=23.4	# AU
@@ -31,8 +31,8 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=10	# = number of iterations to run
-user='yes'	# use user module?
+niter=50	# = number of iterations to run
+user='yes'	# use user-defined forces?
 
 ### Write files.in
 ./writefiles.bash $1 $vers
@@ -80,10 +80,17 @@ echo '	timerange '$timerange
 		fi
 		cd $1/Out;	./elem;	cd ../..
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
-
 		### Summarize iteration; write if stop conditions reached
 		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple")'
 
+		# For long simulations, write looptime
+		if [ $k -ge 7 ]; then
+			# Get end time
+			endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
+			# Stop clock for iteration
+			t4=$(date +%s)
+			echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
+		fi	# k>=7
 		# If stopfile=true, don't continue this simulation
 		stop=$(cat $1/stopfile.txt)
 		if [ $stop = 'True' ]; then
@@ -91,15 +98,8 @@ echo '	timerange '$timerange
 		else
 		# Write param.dmp file for next timestep
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
-		fi
+		fi	# stop
 	done	#timerange
-	if [ $k = 9 ]; then
-		# Get end time
-		endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
-		# Stop clock for iteration
-		t4=$(date +%s)
-		echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
-	fi
 	# Check for bigstop flag to stop the 'niter' loop
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
@@ -109,9 +109,9 @@ echo '	timerange '$timerange
 	fi
 	# Check continuation flag to stop the 'niter' loop
 	cont=$(cat ContinuationFlag.txt)
-	if [ $cont = 'True' ]; then
-		echo 'Iterations stopped by flag.'
-		./email.sh $1 $j'/'$niter 'Iterations stopped'
+	if [ $cont = 'False' ]; then
+		echo 'Iterations stopped by continuation flag.'
+		./email.sh $1 $j'/'$niter 'Iterations stopped by continuation flag'
 		break
 	fi
 done	#niter

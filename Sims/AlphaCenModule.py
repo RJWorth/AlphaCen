@@ -165,6 +165,15 @@ def Elem(WhichDir):
 	nElem=AC.FileLength(WhichDir+'/Out/element.out')
 	elem=ElemFile.readlines()
 	ElemFile.close()
+### Check for '*****' entries, trigger bigstop if found
+#	bigstop=False
+#	if ("*" in elem[5].split()[1:4]):
+#		bigstop=True
+#		print('element.out contains *** entries')
+#		BigStopFile=open(WhichDir+'/bigstopfile.txt','w')
+#		BigStopFile.write(str(bigstop)+'\n')
+#		BigStopFile.close()
+
 ### create vectors to hold a,e,i, x,y,z for CnB and Prx
 	jstB=map(add, [5,7,6],fRnd)		# digits+dec points
 	jstC=map(add, [9,7,6],fRnd)
@@ -821,7 +830,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	aeiIn=AC.InitParams(WhichDir)
 
 ### Get final orbits from element.out
-	B, C = AC.Elem(WhichDir)
+#	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
 	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\

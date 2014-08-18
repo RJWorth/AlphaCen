@@ -6,13 +6,17 @@ machine=$(hostname -s)
 
 ### Simulation parameters
 
-cent=A
+cent=A		# placeholder; this currently does nothing
 
-aBmin=23.4
+mA=0.123	# mSun, actual = 1.105
+mB=0.123	# mSun, actual = 0.934
+mC=0.123	# mSun, actual = 0.123
+
+aBmin=23.4	# AU
 aBmax=28.1
-eBmin=0.0
+eBmin=0.0	# 0 to 1
 eBmax=0.52
-iBmin=0.0
+iBmin=0.0	# degrees
 iBmax=0.0
 
 aCmin=1.0	# *aB(1+eB)/(1-eC), i.e. min(periapse of C) = this*(apoapse of B)
@@ -22,30 +26,29 @@ eCmax=0.75
 iCmin=0.0
 iCmax=180.0
 
-vers='ury6_2_debug.for'	# merc+vers=filename for mercury
+vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=1	# = number of iterations to run
+niter=1 	# = number of iterations to run
 user='yes'	# use user-defined forces?
 
 ### Write files.in
-./writefiles.sh $1		# for .for versions
-#./writefiles.bash $1	# for debugging.f vers
+./writefiles.bash $1 $vers
 
 ### Range for iterations
-#if [ $machine = chloe ]; then
+if [ $machine = chloe ]; then
 #	itrange=$(jot $niter 1)	# start at y, go up x-1 steps?
-#	timerange=$(jot $(echo "$maxtime-$mintime+1" | bc) $mintime)
-#else
+	timerange=$(jot $(echo "$maxtime-$mintime+1" | bc) $mintime)
+else
 #	itrange=$(seq 1 $niter)	# go from x to y
-#	timerange=$(seq $mintime $maxtime)
-#fi
+	timerange=$(seq $mintime $maxtime)
+fi
 #echo 'itrange '$itrange
-#echo 'timerange '$timerange
+echo 'timerange '$timerange
 ### Do iterations
-#	for j in $itrange
+	j=1	#	for j in $itrange
 #	do
 #	echo 'run: '$1', '$j
 	\rm $1/Out/*.dmp
@@ -54,13 +57,12 @@ user='yes'	# use user-defined forces?
 #		python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j',"'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax')'
 
 	# Write param.in file
-#	./writeparam.bash $1 $mintime $output $step $mintime $user
+	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
 	# Compile mercury
 	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
 		#j in, to fix colors
-
 	### Loop over time lengths
-#	for k in $timerange; do
+	for k in $timerange; do
 
 		#### Run mercury
 		cd $1/Out;	./merc_AC$1;	cd ../..
@@ -77,29 +79,29 @@ user='yes'	# use user-defined forces?
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 
 		### Summarize iteration; write if stop conditions reached
-#		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'","1","A",1e9,1e9)'
+		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple")'
 
 		# If stopfile=true, don't continue this simulation
-#		stop=$(cat $1/stopfile.txt)
-#		if [ $stop = 'True' ]; then
-#			break
-#		fi
-
+		stop=$(cat $1/stopfile.txt)
+		if [ $stop = 'True' ]; then
+			break
+		else
 		# Write param.dmp file for next timestep
-#		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user
-#	done	#timerange
-#	bigstop=$(cat $1/bigstopfile.txt)
-#	if [ $bigstop = 'True' ]; then
-#		echo 'Bigstop reached! Proxima-like system.'
+		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
+		fi
+	done	#timerange
+	bigstop=$(cat $1/bigstopfile.txt)
+	if [ $bigstop = 'True' ]; then
+		echo 'Bigstop reached! Proxima-like system.'
 #		./email.sh $1 $j'/'$niter 'Proxima-like system!'
-#		break
-#	fi
+		break
+	fi
 #done	#niter
 
 # Write stop time for this directory:
 t2=$(date +%s)
 
-echo $1"	"$machine"	"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
+#echo $1"	"$machine"	"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
 #./email.sh $1 $j'/'$niter 'AC finished'
 

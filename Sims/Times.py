@@ -63,12 +63,9 @@ def TimeRemaining(Dir):
 ### Write information to terminal
 	print('{0}: {1}/{2} bytes, {3:.1f}% complete, t = {4:.3g}.'.format(
 			Dir,xvSize,MaxSize, CompletedFraction*100.,CurrentYear))
-	print('Average rate: {0:.3f} bytes/second.'.format(Rate))
-	print('Estimated time til 1e{0} yrs: {1:6.1f} minutes.'.format(Next,
-		TimeRemaining/60.))
-	print('                              {0:6.2f} hours.  '.format(
-		TimeRemaining/3600.))
-	print('                              {0:6.2f} days.   '.format(
-		TimeRemaining/(24.*3600.)))
-	print('Expected time of completion: {0}'.format(tf))
+	print('    Average rate: {0:.3f} bytes/second.'.format(Rate))
+	print('    Expected time of completion: {0}'.format(tf))
+	print('    Next:  Min  /   Hr  /    D    to completion')
+	print('    1e{0} {1:6.1f}  {2:6.2f}  {3:6.2f}'.format(
+		Next,TimeRemaining/60.,TimeRemaining/3600.,TimeRemaining/(24.*3600.)))
 
