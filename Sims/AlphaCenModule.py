@@ -42,7 +42,7 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 def MakeBigRand(WhichDir,WhichTime, cent,
 	aBmin, aBmax, eBmin, eBmax, iBmin, iBmax,
 	aCmin, aCmax, eCmin, eCmax, iCmin, iCmax, 
-	mB=0.934, mC=0.123):
+	mA=1.105, mB=0.934, mC=0.123):
 	'''Pick random parameters for the stars and make a new big.in'''
 
 	print('	MakeBigRand  '+WhichDir+'/In/big.in,                          '+
@@ -53,16 +53,10 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	import numpy, os
 	from random import random, uniform
 	from math import pi, sin, cos
-#	from decimal import Decimal, getcontext
-#	getcontext().prec = 6
+	from mks_constants import mSun
 
 ### Constants
-	AU   = 1.496e13			# cm/AU
-	day  = 24.*3600.		# s/day
-	MSun = 1.989e33			# g
-	MB   = mB				# in MSun
-	MC   = mC				# in MSun
-	rad  = 2*pi/360.		# multiply degrees by this to get radians
+	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
 
 ### Pick random a, e, i and g, n, m for B and C
 	aB = uniform(aBmin, aBmax)
@@ -357,11 +351,6 @@ def wrtCM(xv, xvCM):
 	from operator import add
 	import numpy as np	
 
-### Constants
-#	mSun	= 1.9891e30		# kg
-#	m = m/mSun
-#	M = sum(m)
-
 ### Number of timesteps being looked at
 	nobjs =xv.shape[0]
 	nsteps=xv.shape[1]
@@ -409,6 +398,26 @@ def Eps(r, v, mu):
 	eps = v**2./2.-mu/r
 
 	return(eps)
+
+###############################################################################
+def kEps(v):
+	'''Calculate specific orbital energy
+	where r is the distance between two stars, v is the relative velocity.
+	Final units should be J/kg or m^2/s^2.'''
+
+	keps = v**2./2.
+
+	return(keps)
+
+###############################################################################
+def uEps(r, mu):
+	'''Calculate specific orbital energy
+	where r is the distance between two stars, v is the relative velocity.
+	Final units should be J/kg or m^2/s^2.'''
+
+	ueps = -mu/r
+
+	return(ueps)
 
 ###############################################################################
 def mr(m):
@@ -488,7 +497,7 @@ def i(hz, hbar):
 	return(np.array(i))
 
 ###############################################################################
-def GetFinalData(WhichDir,ThisT,mode):
+def GetFinalData(WhichDir,ThisT,mode, m):
 	'''Read in data, calculate derived values, and output for 
 	writing/plotting/etc.'''
 
@@ -502,9 +511,12 @@ def GetFinalData(WhichDir,ThisT,mode):
 #	from operator import add
 #	import subprocess
 #	import rvtest as rv
-	from mks_constants import G, mSun, AU, day, m, mu
+	from mks_constants import G, mSun, AU, day
 	from numpy import log10
 
+	assert all(m > 10.)	# make sure units are kg, not mSun
+	mu=G*sum(m)
+	
 	assert (mode=='triple') | (mode=='binary')
 
 	if (mode == 'binary'):
@@ -585,21 +597,24 @@ def GetFinalData(WhichDir,ThisT,mode):
 	vCMAB = np.array([ AC.XVtoV(xvAB[i,:,:]) for i in range(nobjs) ])
 ########################## Energies #####################################
 # Get kinetic energy = (1/2)mv^2
-	KCMAB = AC.Kinetic(m[0:2],vCMAB[0:2,:])
+#	KCMAB = AC.Kinetic(m[0:2],vCMAB[0:2,:])
 # Get potential energy = GMm/r
-	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB[0:ntB]),
-					   AC.Potential(m[0],m[1], rAB[0:ntB]) ])
+#	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB[0:ntB]),
+#					   AC.Potential(m[0],m[1], rAB[0:ntB]) ])
 # Get total energy = K+U
-	ECMAB = KCMAB+UCMAB
+#	ECMAB = KCMAB+UCMAB
 
 ### This should be constant
-	EtotCMAB = np.sum(ECMAB, 0)
+#	EtotCMAB = np.sum(ECMAB, 0)
 
 ### Get orbital parameters
 	# grav. paramater for binary
 	mu2 = G*(m[0]+m[1])
 	# specific orbital energy
+	print(m)
 	epsB = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
+	kB   = AC.kEps(vAB[0:ntB])
+	uB   = AC.uEps(rAB[0:ntB], mu2)
 	# semimajor axis
 	aAB = AC.a(epsB, mu2)
 
@@ -674,24 +689,24 @@ def GetFinalData(WhichDir,ThisT,mode):
 		rAB_C2  = AC.Distance(xvABC2[0,:,:], xvABC2[1,:,:])
 ########################## Energies #####################################
 ### Calculate kinetic energies, K
-		KCMABC = AC.Kinetic(m, vCMABC)
-		KABC2= AC.Kinetic( [m[0]+m[1], m[2]], vCMABC2)
+#		KCMABC = AC.Kinetic(m, vCMABC)
+#		KABC2= AC.Kinetic( [m[0]+m[1], m[2]], vCMABC2)
 		
 ### Calculate potential energies, U
-		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
-		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
-		UAC_CMABC = AC.Potential(m[1],m[2], rBC_ABC)
-		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
-                            UAB_CMABC+UBC_CMABC,
-                            UBC_CMABC+UAC_CMABC ])
-		UABC2    = np.array([ AC.Potential( m[0]+m[1], m[2], rAB_C2),
-							  AC.Potential( m[0]+m[1], m[2], rAB_C2) ])
+#		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
+#		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
+#		UAC_CMABC = AC.Potential(m[1],m[2], rBC_ABC)
+#		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
+#                            UAB_CMABC+UBC_CMABC,
+#                            UBC_CMABC+UAC_CMABC ])
+#		UABC2    = np.array([ AC.Potential( m[0]+m[1], m[2], rAB_C2),
+#							  AC.Potential( m[0]+m[1], m[2], rAB_C2) ])
 # Calculate total energy per object, E=K+U
-		ECMABC = KCMABC+UCMABC
-		ECMABC2= KABC2+UABC2
+#		ECMABC = KCMABC+UCMABC
+#		ECMABC2= KABC2+UABC2
 # Calculate total energy in the system
-		EtotCMABC = np.sum(ECMABC, 0)
-		EtotCMABC2= np.sum(ECMABC2, 0)
+#		EtotCMABC = np.sum(ECMABC, 0)
+#		EtotCMABC2= np.sum(ECMABC2, 0)
 ### Get orbital parameters
 		# dist. from C to CM(AB)
 		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
@@ -699,6 +714,8 @@ def GetFinalData(WhichDir,ThisT,mode):
 		vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
 		# specific orbital energy
 		epsC  = AC.Eps(rC_AB, vC_AB, mu)
+		kC    = AC.kEps(vC_AB)
+		uC    = AC.uEps(rC_AB, mu)
 		# semimajor axis
 		aC = AC.a(epsC, mu)
 
@@ -739,20 +756,19 @@ def GetFinalData(WhichDir,ThisT,mode):
 #			PrxSum.close()
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
-	if ((DestC=='ejected') & (ECMABC[2,-1]<0.)):
+	if ((DestC=='ejected') & (epsC[-1]<0.)):
 		print('C: Energy weirdness!!!')
-	if ((DestB=='ejected') & ( ECMAB[1,-1]<0.)):
+	if ((DestB=='ejected') & (epsB[-1]<0.)):
 		print('B: Energy weirdness!!!')
 
 ### Return all the data
-	return 	  rAB,   vAB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
-			rC_AB, vC_AB, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
+	return 	  rAB,   vAB, dEpsB, epsB, kB, uB, \
+			rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
 			aAB, eAB, iAB, aC, eC, iC, \
-			UABC2, KABC2, ECMABC2, EtotCMABC2,	\
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT,mode='triple'):
+def WriteAEI(WhichDir,ThisT,m,mode='triple'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
@@ -760,19 +776,21 @@ def WriteAEI(WhichDir,ThisT,mode='triple'):
 ### Needed modules
 	import numpy as np
 	import AlphaCenModule as AC
-	from mks_constants import G, mSun, AU, day, m, mu
+	from mks_constants import G, mSun, AU, day
+
+	m  = [i*mSun for i in m]
+	mu = G*sum(m)
 
 ### Column width in output
 	wn = [9]+2*[9,9,11,9,9,9]
 	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
-	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
-	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
+	rB, vB, dEpsB, epsB,\
+	rC, vC, dEpsC, epsC,\
 	aB, eB, iB, aC, eC, iC,	\
-	UABC2, KABC2, ECMABC2, EtotCMABC2, \
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
-													WhichDir, ThisT, mode)
+													WhichDir, ThisT, mode, m)
 
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
@@ -805,7 +823,8 @@ def WriteAEI(WhichDir,ThisT,mode='triple'):
 
 ###############################################################################
 def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
-			wantsum=True,wantplot=False,mode='triple',cent='A'):
+			wantsum=True,wantplot=False,mode='triple',cent='A',
+			mA=1.105, mB=0.934, mC=0.123):
 	'''A program to read the important bits and record in summary.txt'''
 		
 	print('	Summary      '+WhichDir+',                          WhichTime = '+
@@ -819,12 +838,14 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	from operator import add
 	import subprocess
 #	import rvtest as rv
-	from mks_constants import G, mSun, AU, day, m, mu
+	from mks_constants import G, mSun, AU, day
 
 	np.set_printoptions(precision=2)
 ### Stellar masses
-	m = np.array(m)
-	mA, mB, mC = m[0], m[1], m[2]
+	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
+	m  = np.array([mA,mB,mC])
+	M  = sum(m)
+	mu = G*M
 
 ### Get initial parameters from 
 	aeiIn=AC.InitParams(WhichDir)
@@ -833,21 +854,32 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 #	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	rB, vB,  EtotCMAB,  ECMAB,  KCMAB,  UCMAB, dEpsB, epsB,\
-	rC, vC, EtotCMABC, ECMABC, KCMABC, UCMABC, dEpsC, epsC,\
-	aAB, eAB, iAB, aC, eC, iC,	\
-	UABC2, KABC2, ECMABC2, EtotCMABC2, \
+	rB, vB, dEpsB, epsB, kB, uB, \
+	rC, vC, dEpsC, epsC, kC, uC, \
+	aB, eB, iB, aC, eC, iC,	\
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
-													WhichDir, ThisT, mode)
+													WhichDir, ThisT, mode, m)
 
 ##################################### Plot ################################
 ### Make plots of sim
-	if ((machine != 'chloe') & (wantplot==True)):
-		AC.MakePlots('binary',WhichDir, t, EtotCMAB, 
-					 ECMAB, KCMAB, UCMAB, rB, suffix='_AB')
-		if (mode=='triple'):
-			AC.MakePlots('triple',WhichDir, t[0:ind], EtotCMABC2, 
-						 ECMABC2, KABC2, UABC2, rC, suffix='_ABC')
+	if (wantplot==True):
+		if (machine != 'chloe'):
+			AC.MakePlots('binary',WhichDir, t, epsB, kB, uB,
+						 rB, m, suffix='_AB')
+			if (mode=='triple'):
+				AC.MakePlots('triple',WhichDir, t[0:ind], epsC, kC, uC,
+							 rC, m, suffix='_ABC')
+# Plot energies over time
+			import matplotlib.pyplot as plt
+
+			plt.plot(t, epsB/(m[0]+m[1]),      'r-')
+			plt.plot(t, epsC/(m[0]+m[1]+m[2]), 'b-')
+			plt.xlabel('time (years)')
+			plt.ylabel('Epsilon')
+			plt.title('Energy')
+			plt.xscale('log')
+			plt.savefig(WhichDir+'/EpsvsT.png')
+			plt.clf()
 
 #################################### Write ################################
 ### Arrange data nicely
@@ -855,9 +887,9 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
 			    str(round(rB[-1]/AU,2)),
 			    ('% 9.3g' % epsB[-1]),
-			    str(round(aAB[-1]/AU,2)),
-			    str(round(eAB[-1]   ,2)),
-			    str(round(iAB[-1]   ,1)),
+			    str(round(aB[-1]/AU,2)),
+			    str(round(eB[-1]   ,2)),
+			    str(round(iB[-1]   ,1)),
 			    str(round(rC[ntC-1]/AU,1)),
 			    ('% 9.3g' % epsC[-1]),
 			    str(round( aC[-1]/AU,2)),
@@ -909,13 +941,13 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
-	                     rB/AU, EtotCMAB[:], rC/AU, EtotCMABC2[:],
-	                     aAB[-1], eAB[-1], aC[-1], eC[-1], 
+	                     rB/AU, epsB, rC/AU, epsC,
+	                     aB[-1], eB[-1], aC[-1], eC[-1], 
 						 TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
 def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
-                  rB, EB, rC, EC, 
+                  rB, epsB, rC, epsC, 
                   aBf, eBf, aCf, eCf, 
 				  TimeB, TimeC, DestB, DestC):
 	'''Determine if simulation is ending, and write data if so	'''
@@ -961,20 +993,20 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### Weird circumstances that I want to stop and investigate:
 	print('Testing for errors')
 	tests=np.array([float(i) for i in summary[7:16]])
-	if ( (float(EB[-1])<0.) & Bejectd ):
+	if ( (float(epsB[-1])<0.) & Bejectd ):
 		if ( aBf*(1+eBf)>=1e5 ):
 			print('B ejected due to extremely large orbit')
 		else:
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT (B)**')			
-	if ( (float(EC[-1])<0.) & Cejectd ):
+	if ( (float(esC[-1])<0.) & Cejectd ):
 		if ( aCf*(1+eCf)>=1e5 ):
 			print('C ejected due to extremely large orbit')
 		else:
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT (C)**')			
-	if ((isBmaxT & isCmaxT) & (((float(EB[-1])>0.) & (not Bejectd)) | 
-		 					   ((float(EC[-1])>0.) & (not Cejectd)) ) ):
+	if ((isBmaxT & isCmaxT) & (((float(epsB[-1])>0.) & (not Bejectd)) | 
+		 					   ((float(epsC[-1])>0.) & (not Cejectd)) ) ):
 		bigstop = True
 		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
 	elif (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
@@ -1041,22 +1073,20 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 	return(True)
 
 ############################################################################
-def MakePlots(version, WhichDir, t, Etot, E, K, U, r, suffix=''):
+def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	'''Make plots of parameters from this run'''
 
 	print('	MakePlots    '+WhichDir)
 
 ### Modules
-	from mks_constants import G, mSun, AU, day, m, mu
+	from mks_constants import G, mSun, AU, day
 	import numpy as np
 	from numpy import sin, pi
 	import matplotlib
 	matplotlib.use('Agg', warn=False)
 	import matplotlib.pyplot as plt
 
-	nobj= E.shape[0]
-	if (nobj != 2):
-		print('Too many objects in E -- plot two objects')
+	mu = G*sum(m)
 
 # Assign colors
 	if version=='binary':
@@ -1067,27 +1097,23 @@ def MakePlots(version, WhichDir, t, Etot, E, K, U, r, suffix=''):
 		print('MakePlots version name invalid! Pick "binary" or "triple".')
 
 # Plot energies vs. separation
-	plt.plot(r/AU,   Etot, 'ks')
-	for i in range(nobj):
-		plt.plot(r/AU, E[i,:], c[i]+'s',
-				 r/AU, U[i,:], c[i]+'o',
-				 r/AU, K[i,:], c[i]+'^',
-				)
-#	plt.legend(('System total','A total','B total','A potential','A kinetic'),
-#	           'lower right')
+	plt.plot(r/AU, eps, 'ks')
+	plt.plot(r/AU,   u, 'bo',
+			 r/AU,   k, 'r^',
+			)
+	plt.legend(('Epsilon total','Potential','Kinetic'),
+	           'lower right')
 	plt.xlabel('Separation (AU)')
-	plt.ylabel('Energy (J)')
+	plt.ylabel('Specific energy (J/kg)')
 	plt.title('Energies')
 	plt.savefig(WhichDir+'/EvsR'+suffix+'.png')
 	plt.clf()
 	
 # Plot energies over time
-	plt.plot(t, Etot, 'k-')
-	for i in range(nobj):
-		plt.plot(t, E[i,:], c[i]+'-',
-				 t, U[i,:], c[i]+'--',
-				 t, K[i,:], c[i]+'-.',
-	        )
+	plt.plot(t, eps, 'k-')
+	plt.plot(t,   u, 'bo',
+			 t,   k, 'r^',
+			)
 	plt.xlabel('time (years)')
 	plt.ylabel('Energy (J)')
 	plt.title('Energies')
