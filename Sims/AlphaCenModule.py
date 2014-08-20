@@ -53,26 +53,26 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	import numpy, os
 	from random import random, uniform
 	from math import pi, sin, cos
-	from mks_constants import mSun
+#	from mks_constants import mSun
 
 ### Constants
-	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
+#	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
 
 ### Pick random a, e, i and g, n, m for B and C
 	aB = uniform(aBmin, aBmax)
 	eB = uniform(eBmin, eBmax)
 	iB = uniform(iBmin, iBmax)
-	gB, nB, mB = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
+	gB, nB, MB = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
 
 	eC = uniform(eCmin, eCmax)
 	iC = uniform(iCmin, iCmax)
-	gC, nC, mC = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
+	gC, nC, MC = uniform(0.0, 360.0), uniform(0.0, 360.0), uniform(0.0, 360.0)
 
 	aCfactor = aB*(1+eB)/(1-eC)
 	aC = uniform(aCmin*aCfactor, aCmax*aCfactor)
 
-	aei = [[repr(aB), repr(eB), repr(iB), repr(gB), repr(nB), repr(mB)], 
-		   [repr(aC), repr(eC), repr(iC), repr(gC), repr(nC), repr(mC)]]
+	aei = [[repr(aB), repr(eB), repr(iB), repr(gB), repr(nB), repr(MB)], 
+		   [repr(aC), repr(eC), repr(iC), repr(gC), repr(nC), repr(MC)]]
 
 ### Read generic big.in file header	
 	BigHeadFile=open('BigHeader.txt','r')
@@ -81,12 +81,12 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 
 ### First lines for each object
 	if (cent == 'A'):
-		BigFirstLines=(['AlCenB      m=0.934  r=3.0\n'])
+		BigFirstLines=(['AlCenB      m='mB'  r=3.0\n'])
 		names=['AlCenB']
 	if (cent == 'B'):
-		BigFirstLines=(['AlCenA      m=1.105  r=3.0\n'])
+		BigFirstLines=(['AlCenA      m='mA'  r=3.0\n'])
 		names=['AlCenA']
-	BigFirstLines.append('PrxCen     m=0.123  r=3.0\n')
+	BigFirstLines.append('PrxCen     m='mC'  r=3.0\n')
 	names.append('PrxCen')
 
 ### Spin
@@ -103,13 +103,13 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 		InParams.write('                 aB                  eB'+\
 		'                  iB                  aC                  eC'+\
 		'                  iC                 gB                  nB'+\
-		'                  mB                  gC                  nC'+\
-		'                  mC\n')
+		'                  MB                  gC                  nC'+\
+		'                  MC\n')
 	InParams.write(" ".join([repr(aB).rjust(19), repr(eB).rjust(19), 
 													repr(iB).rjust(19), 
 	repr(aC).rjust(19), repr(eC).rjust(19), repr(iC).rjust(19),
-	repr(gB).rjust(19), repr(nB).rjust(19), repr(mB).rjust(19), 
-	repr(gC).rjust(19), repr(nC).rjust(19), repr(mC).rjust(19),"\n"]))
+	repr(gB).rjust(19), repr(nB).rjust(19), repr(MB).rjust(19), 
+	repr(gC).rjust(19), repr(nC).rjust(19), repr(MC).rjust(19),"\n"]))
 	InParams.close()
 
 ###############################################################################
@@ -1111,9 +1111,11 @@ def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	
 # Plot energies over time
 	plt.plot(t, eps, 'k-')
-	plt.plot(t,   u, 'bo',
-			 t,   k, 'r^',
+	plt.plot(t,   u, 'b-',
+			 t,   k, 'r-',
 			)
+	plt.legend(('Epsilon total','Potential','Kinetic'),
+	           'lower right')
 	plt.xlabel('time (years)')
 	plt.ylabel('Energy (J)')
 	plt.title('Energies')
