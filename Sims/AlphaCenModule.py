@@ -81,12 +81,12 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 
 ### First lines for each object
 	if (cent == 'A'):
-		BigFirstLines=(['AlCenB      m='mB'  r=3.0\n'])
+		BigFirstLines=([ 'AlCenB     m={0}  r=3.0\n'.format(mB)])
 		names=['AlCenB']
 	if (cent == 'B'):
-		BigFirstLines=(['AlCenA      m='mA'  r=3.0\n'])
+		BigFirstLines=([ 'AlCenA     m={0}  r=3.0\n'.format(mA)])
 		names=['AlCenA']
-	BigFirstLines.append('PrxCen     m='mC'  r=3.0\n')
+	BigFirstLines.append('PrxCen     m={0}  r=3.0\n'.format(mC))
 	names.append('PrxCen')
 
 ### Spin
@@ -111,6 +111,82 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	repr(gB).rjust(19), repr(nB).rjust(19), repr(MB).rjust(19), 
 	repr(gC).rjust(19), repr(nC).rjust(19), repr(MC).rjust(19),"\n"]))
 	InParams.close()
+
+###########################################################################
+### Make a random cluster of small objects around preselected ones
+### to write to small.in
+def MakeSmallTestDisk(WhichDir,WhichTime,n,planet,da,dv):
+	n=int(n)
+### Needed modules
+	import numpy as np
+	import os, filelen
+	from random import random
+	from math   import pi, sin, cos
+	from mks_constants import AU, day
+
+	here=os.getcwd()
+	
+	print('MakeSmallTestDisk '+WhichDir+'/In/small.in  '+WhichTime+'  n='+str(n))
+
+### Constants/variables
+#	AU = 1.496e13					#cm/AU
+#	day = 24.*3600.					#s/day
+	maxaspread=da/AU				#in AU
+	maxvspread=dv*day/AU			#in AU/day
+	
+	small=['M'+str(i) for i in range(n)]
+	smallxv=['' for i in range(n)]
+
+### Generate slightly randomized rocks at different phases of Jupiter or Saturn's orbit
+	for j in range(0,len(small)):
+		### Pick a random timestep
+		if planet=='J':
+			filename=here+'/'+WhichDir+'/In/InitElemFiles/Jupiter12Yr.aei'
+		if planet=='S':
+			filename=here+'/'+WhichDir+'/In/InitElemFiles/Saturn29Yr.aei'
+		AEILen=filelen.file_len(filename)-5
+		timestep=5+int(AEILen*random())
+		### Get Jupiter/Saturn's info at this point
+		File=open(filename,'r')
+		for k in range(timestep):
+			thisline=File.readline().split()
+		bigxv=thisline[6:]
+
+		### Generate random variation
+		phi1=2*pi*random()
+		theta1=-pi/2+pi*random()
+		r=maxaspread*random()
+		v=maxvspread*random()
+		phi2=2*pi*random()
+		theta2=-pi/2+pi*random()
+
+		x=r*cos(phi1)*cos(theta1)
+		y=r*sin(phi1)*cos(theta1)
+		z=r*sin(theta1)
+		u=v*cos(phi2)*cos(theta2)
+		v=v*sin(phi2)*cos(theta2)
+		w=v*sin(theta2)
+
+		### Coords = Jupiter/Saturn coords plus random variation
+		smallxv[j]=[float(bigxv[0])+x, float(bigxv[1])+y, float(bigxv[2])+z,
+		float(bigxv[3])+u, float(bigxv[4])+v, float(bigxv[5])+w]
+
+### Write small.in
+	smallheader="    m=1.0012066e-17  r=0.001 d=2.0\n"
+	smalls="  0.0 0.0 0.0\n"
+	smallfile=open(whichdir+'/In/small.in','w')
+	smallfile.write(")O+_06 Small-body initial data  (WARNING: Do not delete this line!!)\n")
+	smallfile.write(") Lines beginning with `)' are ignored.\n")
+	smallfile.write(")---------------------------------------------------------------------\n")
+	smallfile.write("style (Cartesian, Asteroidal, Cometary) = Cartesian\n")
+	smallfile.write(")---------------------------------------------------------------------\n")
+	for j in range(len(small)):
+		smallfile.write(small[j]+smallheader)
+		smallfile.write("  "+repr(smallxv[j][0])+"  "+repr(smallxv[j][1])+"  "+repr(smallxv[j][2])+"\n")
+		smallfile.write("  "+repr(smallxv[j][3])+"  "+repr(smallxv[j][4])+"  "+repr(smallxv[j][5])+"\n")
+		smallfile.write(smalls)
+
+	smallfile.close()
 
 ###############################################################################
 def InitParams(WhichDir):
@@ -645,16 +721,6 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 	if (mode=='triple'):
 #		nobjs = 3
 		ind=min(ntB,ntC)
-# get output times
-#		LastxvB_A_AU = AC.ReadAei(WhichDir, filenames[0], ind-1, ind+4)
-#		LastxvA_A_AU = np.zeros_like(LastxvB_A_AU)
-#		LastxvC_A_AU = AC.ReadAei(WhichDir, filenames[1], ind-1, ind+4)
-
-#		xvA_AU=np.array([
-#                np.concatenate(( xvA_A_AU, np.zeros((max(ntC-ntB,0.),6)) )),
-#                np.concatenate((xvB_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
-#                np.concatenate((xvC_A_AU,np.zeros((max(ntB-ntC,0.),6))))])
-
 ### If B is ejected before C, exend the AB CM, and set equal to A during that
 		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
 			xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xvA[0,ntB:ntC,:]) )
@@ -662,19 +728,15 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 			xvAB  = AC.wrtCM(xvA[:,0:ntC,:], xvCM_AB)
 
 ### Combine three stars into a 3D array
-#		xvA_Triple_AU = np.array([ xvA_A_AU[0:ind,:], 
-#								   xvB_A_AU[0:ind,:], 
-#								   xvC_A_AU[0:ind,:] ])
 		xvA_Triple_AU = xvA_AU[:, 0:ntC, :]
-### Convert to mks units
+		# Convert to mks units
 		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
-### suffix '2' => treating AB as one star at their CM, AB-C as binary
+		# suffix '2' => treating AB as one star at their CM, AB-C as binary
 		xvA_Triple2 = np.array([ xvCM_AB[0:ntC,:], xvA[2,0:ntC,:] ])
 ### Find the coordinates of the center of momentum
 		xvCM_ABC = AC.FindCM( m, xvA_Triple) 
 		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
 			xvCM_ABC[0:ntB, :] = AC.FindCM( [m[0], 0., m[2]], xvA_Triple[:, 0:ntB, :]) 
-#		xvCM_ABC2= AC.FindCM( [ m[0]+m[1], m[2] ], xvA_Triple2) 
 ### Convert to center-of-momentum units
 		xvABC  = AC.wrtCM(xvA_Triple,  xvCM_ABC)
 		xvABC2 = AC.wrtCM(xvA_Triple2, xvCM_ABC)
@@ -683,42 +745,23 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		vCMABC = np.array([ AC.XVtoV( xvABC[i,:,:]) for i in range(nobjs) ])
 		vCMABC2= np.array([ AC.XVtoV(xvABC2[i,:,:]) for i in range(2) ])
 ### Get distances between stars
-		rAB_ABC = AC.Distance(xvABC[0,:,:], xvABC[1,:,:])
-		rBC_ABC = AC.Distance(xvABC[1,:,:], xvABC[2,:,:])
-		rAC_ABC = AC.Distance(xvABC[0,:,:], xvABC[2,:,:])
+		rAB_ABC = AC.Distance( xvABC[0,:,:], xvABC[1,:,:])
+		rBC_ABC = AC.Distance( xvABC[1,:,:], xvABC[2,:,:])
+		rAC_ABC = AC.Distance( xvABC[0,:,:], xvABC[2,:,:])
 		rAB_C2  = AC.Distance(xvABC2[0,:,:], xvABC2[1,:,:])
 ########################## Energies #####################################
-### Calculate kinetic energies, K
-#		KCMABC = AC.Kinetic(m, vCMABC)
-#		KABC2= AC.Kinetic( [m[0]+m[1], m[2]], vCMABC2)
-		
-### Calculate potential energies, U
-#		UAB_CMABC = AC.Potential(m[0],m[1], rAB_ABC)
-#		UBC_CMABC = AC.Potential(m[0],m[2], rAC_ABC)
-#		UAC_CMABC = AC.Potential(m[1],m[2], rBC_ABC)
-#		UCMABC = np.array([ UAB_CMABC+UAC_CMABC, 
-#                            UAB_CMABC+UBC_CMABC,
-#                            UBC_CMABC+UAC_CMABC ])
-#		UABC2    = np.array([ AC.Potential( m[0]+m[1], m[2], rAB_C2),
-#							  AC.Potential( m[0]+m[1], m[2], rAB_C2) ])
-# Calculate total energy per object, E=K+U
-#		ECMABC = KCMABC+UCMABC
-#		ECMABC2= KABC2+UABC2
-# Calculate total energy in the system
-#		EtotCMABC = np.sum(ECMABC, 0)
-#		EtotCMABC2= np.sum(ECMABC2, 0)
 ### Get orbital parameters
 		# dist. from C to CM(AB)
 		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
 		# vel. of C wrt CM(AB)
 		vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
-		# specific orbital energy
+### Specific orbital energy
 		epsC  = AC.Eps(rC_AB, vC_AB, mu)
 		kC    = AC.kEps(vC_AB)
 		uC    = AC.uEps(rC_AB, mu)
+### Orbital parameters
 		# semimajor axis
 		aC = AC.a(epsC, mu)
-
 		# specific angular momentum (r x v) of B wrt A
 		hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
 		# magnitude of h
@@ -732,6 +775,7 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 			 +', iC = '+('% 6.4g'%(iC[-1])) )
 
 ### Check for consistency
+		# Change in energy
 		dEpsC = epsC[-1]-epsC[0]
 
 		if abs(dEpsC/epsC[0])>0.02:
@@ -741,19 +785,6 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		else:
 			print('dEpsC = {0} J'.format( ('% 7.4g' % dEpsC) ))
 
-### Save dE for Prx sims
-#		Esumnames = ['EBi','EBf','ECi','ECf','dEBe33','dECe33']
-#		Esum = [   EtotCMAB[0],   EtotCMAB[-1], 
-#				 EtotCMABC2[0], EtotCMABC2[-1], 
-#					 dEAB/1e33,		dEABC/1e33]
-#		if 'Prx' in WhichDir:
-#			if '01' in WhichDir:
-#				PrxSum=open('Proxlike/Plots/PrxSum.txt','w')
-#				PrxSum.write(' '.join([('% 11s' % i) for i in Esumnames])+'\n')
-#			else:
-#				PrxSum=open('Proxlike/Plots/PrxSum.txt','a')
-#			PrxSum.write(' '.join([('% 11.4g' % i) for i in Esum])+'\n')
-#			PrxSum.close()
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
 	if ((DestC=='ejected') & (epsC[-1]<0.)):
@@ -864,11 +895,11 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Make plots of sim
 	if (wantplot==True):
 		if (machine != 'chloe'):
-			AC.MakePlots('binary',WhichDir, t, epsB, kB, uB,
-						 rB, m, suffix='_AB')
+			AC.MakePlots(	 'binary',WhichDir, t, epsB, kB, uB,
+						 		rB, m, suffix='_AB')
 			if (mode=='triple'):
 				AC.MakePlots('triple',WhichDir, t[0:ind], epsC, kC, uC,
-							 rC, m, suffix='_ABC')
+								rC, m, suffix='_ABC')
 # Plot energies over time
 			import matplotlib.pyplot as plt
 
@@ -989,7 +1020,7 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### If a Proxima-like C was created, stop the whole series of runs
 	bigstop=False
 	if (isBmaxT & isCmaxT):
-		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (EC[-1] <= 0.)
+		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (epsC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
 	print('Testing for errors')
 	tests=np.array([float(i) for i in summary[7:16]])
@@ -999,7 +1030,7 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		else:
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT (B)**')			
-	if ( (float(esC[-1])<0.) & Cejectd ):
+	if ( (float(epsC[-1])<0.) & Cejectd ):
 		if ( aCf*(1+eCf)>=1e5 ):
 			print('C ejected due to extremely large orbit')
 		else:
@@ -1009,8 +1040,8 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		 					   ((float(epsC[-1])>0.) & (not Cejectd)) ) ):
 		bigstop = True
 		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
-	elif (np.isnan(float(EB[-1])) | np.isnan(float(EC[-1])) | 
-	      np.isinf(float(EB[-1])) | np.isinf(float(EC[-1])) ):
+	elif (np.isnan(float(epsB[-1])) | np.isnan(float(epsC[-1])) | 
+	      np.isinf(float(epsB[-1])) | np.isinf(float(epsC[-1])) ):
 		bigstop = True
 		print('**BIGSTOP ENERGY ERROR**')
 	elif ( any(np.isnan(tests))   | 

@@ -31,7 +31,7 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=50	# = number of iterations to run
+niter=5 	# = number of iterations to run
 user='yes'	# use user-defined forces?
 
 ### Write files.in
@@ -57,7 +57,7 @@ echo '	timerange '$timerange
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
 	#### Randomize B and C parameters (a, e, i)
-	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax', '$mB','$mC')'
+	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax', mB='$mB',mC='$mC')'
 
 	# Write param.in file
 	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
@@ -81,7 +81,7 @@ echo '	timerange '$timerange
 		cd $1/Out;	./elem;	cd ../..
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
-		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple")'
+		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
 
 		# For long simulations, write looptime
 		if [ $k -ge 7 ]; then
@@ -103,8 +103,8 @@ echo '	timerange '$timerange
 	# Check for bigstop flag to stop the 'niter' loop
 	bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
-		echo 'Bigstop reached! Proxima-like system.'
-		./email.sh $1 $j'/'$niter 'Proxima-like system!'
+		echo 'Bigstop reached! Proxima-like system?'
+		./email.sh $1 $j'/'$niter 'Proxima-like system?'
 		break
 	fi
 	# Check continuation flag to stop the 'niter' loop
