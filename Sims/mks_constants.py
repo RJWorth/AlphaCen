@@ -8,9 +8,13 @@ AU			= 1.49597871e11	# m
 day			= 24*3600.		# s
 
 ### Masses for AlphaCen system
-mA, mB, mC = 1.105*mSun, 0.934*mSun, 0.123*mSun
-m 			= [mA, mB, mC]
-M 			= mA+mB+mC
-mu 			= G*M
+#mA, mB, mC = 1.105*mSun, 0.934*mSun, 0.123*mSun
+#m 			= [mA, mB, mC]
+#M 			= mA+mB+mC
+#mu 			= G*M
 
+### Conversion factors
+from math import pi
+deg2rad = 2*pi/360.
+rad2deg = 360./2*pi
 
