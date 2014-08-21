@@ -113,13 +113,35 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	InParams.close()
 
 ###########################################################################
-### Read in big.in parameters
+### Get orbital parameters of an object from big.in or small.in
+def GetObjParams(filepath,obj):
+
+	import numpy as np
+
+### Read in *.in file
+	f=open(filepath)
+	infile=f.readlines()
+	f.close()
+
+### Find obj in infile
+	for i,row in enumerate(infile):
+		print(i,row)
+		if (infile[i][0] != ')'):
+			if (row.split()[0] == obj):
+				objrow = i
+
+### Extract orbital parameters (aei gnM or xyz uvw)
+	x, y, z = infile[objrow+1].split()
+	u, v, w = infile[objrow+2].split()
+#	s1, s2, s3 = infile[objrow+3].split()
+
+	return(x,y,z, u,v,w)
 
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
 #   BUT WHAT FRAME ARE THEY IN???
 def El2X(a,e,i,g,n,l):
-'''Convert orbital elements to cartesian for an ellipse (e < 1). 
+	'''Convert orbital elements to cartesian for an ellipse (e < 1). 
 Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	gm = grav const * (central + secondary mass)
 	q = perihelion distance
@@ -171,32 +193,34 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	d23 =       cg*si
 
 ### Ellipse
-	if (e == 1.0):
+	assert (e < 1.0)	# haven't finished the other cases yet
+	if (e < 1.0):
 		romes = sqrt(1.0 - e*e)
-		temp = mco_kep (e,l)
+		temp = mco_kep(e,l)
 		se, ce = sin(temp), cos(temp)
 		z1 = a * (ce - e)
 		z2 = a * romes * se
 		temp = sqrt(gm/a) / (1.0 - e*ce)
 		z3 = -se * temp
 		z4 = romes * ce * temp
-	elif (e == 1.0) then
+#	elif (e == 1.0) then
 ### Parabola
-		ce = orbel_zget(l)
-		z1 = q * (1.0 - ce*ce)
-		z2 = 2.0 * q * ce
-		z4 = sqrt(2.0*gm/q) / (1.0 + ce*ce)
-	 	z3 = -ce * z4
-	else:
+#		ce = orbel_zget(l)
+#		z1 = q * (1.0 - ce*ce)
+#		z2 = 2.0 * q * ce
+#		z4 = sqrt(2.0*gm/q) / (1.0 + ce*ce)
+#	 	z3 = -ce * z4
+#	elif (e > 1.):
 ### Hyperbola
-		romes = sqrt(e*e - 1.0)
-		temp = orbel_fhybrid(e,l)
-		se, ce = sin(temp), cos(temp)
-		z1 = a * (ce - e)
-		z2 = -a * romes * se
-		temp = sqrt(gm/abs(a)) / (e*ce - 1.0)
-		z3 = -se * temp
-		z4 = romes * ce * temp
+#		romes = sqrt(e*e - 1.0)
+#		temp = orbel_fhybrid(e,l)
+#		se, ce = sin(temp), cos(temp)
+#		z1 = a * (ce - e)
+#		z2 = -a * romes * se
+#		temp = sqrt(gm/abs(a)) / (e*ce - 1.0)
+#		z3 = -se * temp
+#		z4 = romes * ce * temp
+	
 ###
 	x = d11 * z1  +  d21 * z2
 	y = d12 * z1  +  d22 * z2
@@ -209,7 +233,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 
 ###############################################################################
 def KeplerEllipse():
-'''Solves Kepler's equation for eccentricities less than one.
+	'''Solves Kepler's equation for eccentricities less than one.
  Algorithm from A. Nijenhuis (1991) Cel. Mech. Dyn. Astron. 51, 319-330.
 
   e = eccentricity
@@ -229,9 +253,9 @@ def KeplerEllipse():
 	sign = 1.0
 	if (l > pi):
 		l = twopi - l
-		sign = -1.d0
+		sign = -1.0
 
-	ome = 1.d0 - e
+	ome = 1.0 - e
 #-----------------------------
 	if (l >= .45 | e < .55):
 ### Regions A,B or C in Nijenhuis
@@ -241,7 +265,7 @@ def KeplerEllipse():
 			u1 = ome
 		elif (l > (pi-1.0-e)):
 			u1 = (l+e*pi)/(1.0+e)
-	    else:
+		else:
 			u1 = l + e
 
 ### Improved value using Halley's method
@@ -257,8 +281,8 @@ def KeplerEllipse():
 			dsn = -dsn
 		f2 = e*sn
 		f0 = u1 - f2 - l
-		f1 = 1.d0 - e*dsn
-		u2 = u1 - f0/(f1 - .5d0*f0*f2/f1)
+		f1 = 1.0 - e*dsn
+		u2 = u1 - f0/(f1 - .5*f0*f2/f1)
 
 #---------------------
 	else:
@@ -297,11 +321,11 @@ def KeplerEllipse():
 	ss = 1.0
 	cc = 1.0
 
-	ss = x*x2/6.*(1. - x2/20.*(1. - x2/42.*(1. - x2/72.*(1. -
-     %   x2/110.*(1. - x2/156.*(1. - x2/210.*(1. - x2/272.)))))))
-	cc =   x2/2.*(1. - x2/12.*(1. - x2/30.*(1. - x2/56.*(1. -
-     %   x2/ 90.*(1. - x2/132.*(1. - x2/182.*(1. - x2/240.*(1. -
-     %   x2/306.))))))))
+	ss = x*x2/6.*(1. - x2/20. *(1. - x2/42. *(1. - x2/72. *(1. -
+         x2/110.*(1. - x2/156.*(1. - x2/210.*(1. - x2/272.)))))))
+	cc =   x2/2.*(1. - x2/12. *(1. - x2/30. *(1. - x2/56. *(1. -
+         x2/ 90.*(1. - x2/132.*(1. - x2/182.*(1. - x2/240.*(1. -
+         x2/306.))))))))
 
 	if (big):
 		z1 = cc + z3 - 1.0
@@ -330,35 +354,49 @@ def KeplerEllipse():
 
 
 ###########################################################################
-### Make a random cluster of small objects around preselected ones
-### to write to small.in
-def MakeSmallTestDisk(WhichDir,WhichTime,n,m,planet,da,dv):
-	n=int(n)
-### Needed modules
-	import numpy as np
-	import os, filelen
-	from random import random
-	from math   import pi, sin, cos
-	from mks_constants import AU, day, mSun
+def MakeSmallTestDisk(WhichDir,WhichTime,n,m):
+	'''Make a disk of small objects around A and B
+ and write to small.in'''
 
-	here=os.getcwd()
-	
 	print('MakeSmallTestDisk {0}/In/small.in  {1}  n={2}'.format(
 			WhichDir, WhichTime, n))
 
-### Constants/variables
-#	AU = 1.496e13					#cm/AU
-#	day = 24.*3600.					#s/day
+### Needed modules
+	import AlphaCenModule as AC
+	import numpy as np
+	import os, filelen
+	from random import random
+	from math import pi, sin, cos
+	from mks_constants import AU, day, mSun
 
+### Objects per disk (one disk each around A and B)
+	n=int(n)
+
+### Get path of starting directory
+	here=os.getcwd()
+	
 ### Parameters
-	m = m/mSun						# mSun
+	m = m/mSun						# small object mass, mSun
 	r = 0.001						# Hill radii for interaction
 	d = 2.0							# g/cm^3
-	maxaspread=da/AU				#in AU
-	maxvspread=dv*day/AU			#in AU/day
 	
-	names=['M'+str(i) for i in range(n)]
-	smallxv=['' for i in range(n)]
+### Small object parameters
+	# List of small object names
+	names    = ['M'+str(i) for i in range(2*n)]
+	# disk spacing
+	a = amin + (amax-amin)* 10**(np.array(range(n-1))/float(n-2))/n
+
+
+	# aei parameters for each object, relative to central object
+	smallaei = np.array([[0. for j in range(6)] for i in range(2*n)])
+	# Small object xv's relative to central object
+	smallxv  = np.array([[0. for j in range(6)] for i in range(2*n)])
+
+### Get orbital parameters for central objects (in aei)
+	aeiA = [0., 0., 0., 0., 0., 0.]
+	aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
+### Transform aei to xyz
+	xvB  = AC.El2X(aeiB)
 
 ### Generate slightly randomized rocks at different phases of Jupiter or Saturn's orbit
 	for j in range(0,len(names)):
