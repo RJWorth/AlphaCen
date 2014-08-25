@@ -1143,7 +1143,6 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 				AC.MakePlots('triple',WhichDir, t[0:ind], epsC, kC, uC,
 								rC, m, suffix='_ABC')
 # Plot energies over time
-			print(t.shape,epsB.shape,epsC.shape)
 			import matplotlib.pyplot as plt
 
 			plt.plot(t,        epsB/(m[0]+m[1]),      'r-')
@@ -1244,13 +1243,13 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	print('	Testing for errors')
 	tests=np.array([float(i) for i in summary[7:16]])
 	if ( (float(epsB[-1])<0.) & Bejectd ):
-		if ( aBf*(1+eBf)>=1e5 ):
+		if ( aBf*(1+eBf)/AU >= 1e5 ):
 			print('B ejected due to extremely large orbit')
 		else:
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT (B)**')			
 	if ( (float(epsC[-1])<0.) & Cejectd ):
-		if ( aCf*(1+eCf)>=1e5 ):
+		if ( aCf*(1+eCf)/AU >= 1e5 ):
 			print('C ejected due to extremely large orbit')
 		else:
 			bigstop = True
@@ -1261,16 +1260,17 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
 	elif (np.isnan(float(epsB[-1])) | np.isnan(float(epsC[-1])) | 
 	      np.isinf(float(epsB[-1])) | np.isinf(float(epsC[-1])) ):
-		bigstop = True
-		print('**BIGSTOP ENERGY ERROR**')
+#		bigstop = True
+		print('**BIGSTOP ENERGY ERROR** -- continuing')
 	elif ( any(np.isnan(tests))   | 
 		   any(np.isinf(tests))   ):
 		bigstop = True
 		print('**BIGSTOP NONSENSICAL OUTPUTS**')
 		print(tests)
-#	elif (Bejectd & Cejectd):
-#		bigstop = True
-#		print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
+	elif (AC.FileLength(WhichDir+'/Out/AeiOutFiles/AlCenB.aei') < 
+		  AC.FileLength(WhichDir+'/Out/AeiOutFiles/PrxCen.aei')):
+		bigstop = True
+		print('**Fewer timesteps for B than C -- TEST FOR CONSISTENCY**')
 	else:
 		print('	  Error check passed')
 
