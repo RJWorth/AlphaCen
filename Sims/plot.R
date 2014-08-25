@@ -108,6 +108,7 @@ grow  = (surv  & rCf>aC)
 #	 grow[is.na(grow)]=FALSE
 #prox = (rCf*(1+eCf)>10000 & !is.na(rCf))
 prox  = (surv  & aCf*(1+eCf)>10000)
+doub  = !is.na(destB) & !is.na(destC)
 
 # too huge (falsely counted as ejection in Mercury)
 huge = ((!is.na(destB) & eBf < 1.) | (!is.na(destC) & eCf < 1.))
@@ -130,12 +131,13 @@ huge = ((!is.na(destB) & eBf < 1.) | (!is.na(destC) & eCf < 1.))
 
 
 ### Write totals
-i=signif(c(mean(brkn),mean(surv),mean(grow),mean(prox))*100,3)
+i=signif(c(mean(brkn),mean(surv),mean(grow),mean(prox),mean(doub))*100,3)
 cat(paste(dim(SumAll)[1],'recent simulations\n'))
 cat(paste("broken sims (NAs, etc) = ",i[1],'% (',sum(brkn),')\n',sep=''))
 cat(paste("sims with no ejection  = ",i[2],'% (',sum(surv),')\n',sep=''))
 cat(paste("sims where C moves out = ",i[3],'% (',sum(grow),')\n',sep=''))
 cat(paste("Proxima-like sims      = ",i[4],'% (',sum(prox),')\n',sep=''))
+cat(paste("double ejection        = ",i[5],'% (',sum(doub),')\n',sep=''))
 
 if (runtype==1)	{
 	nsims=dim(SumAll)[1]+dim(SumAll061914)[1]+dim(SumAll061714)[1]
