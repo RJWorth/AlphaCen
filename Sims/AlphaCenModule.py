@@ -125,7 +125,6 @@ def GetObjParams(filepath,obj):
 
 ### Find obj in infile
 	for i,row in enumerate(infile):
-		print(i,row)
 		if (infile[i][0] != ')'):
 			if (row.split()[0] == obj):
 				objrow = i
@@ -444,7 +443,6 @@ def MakeSmallTestDisk(WhichDir,WhichTime,n,m):
 	SmlFirstLines=[]
 	for i in names:
 		SmlFirstLines.append(i+SmlParams)
-	print(SmlFirstLines)
 
 ### Spin
 ### No spin for all objects
@@ -545,7 +543,7 @@ def Elem(WhichDir):
 def ReadAei(whichdir, filename, index1=-1, index2=0):
 	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
 
-	print('	ReadAei      '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+	print('	--ReadAei      '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
 
 ### Modules needed
@@ -570,7 +568,7 @@ def ReadAei(whichdir, filename, index1=-1, index2=0):
 def GetT(whichdir, filename, index1=-1, index2=0):
 	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
 
-	print('	GetT         '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+	print('	--GetT         '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
 
 ### Modules needed
@@ -660,7 +658,7 @@ def FindCM(m, xv):
 
 	from mks_constants import mSun	
 
-	print('	FindCM       m = '+str([('% 1.3g' % (i/mSun)) for i in m]))
+	print('	--FindCM       m = '+str([('% 1.3g' % (i/mSun)) for i in m]))
 
 ### Modules needed
 	from operator import add
@@ -709,27 +707,27 @@ def wrtCM(xv, xvCM):
 	return(xv2CM)
 
 ###############################################################################
-def Kinetic(m, v):
-	'''Calculate kinetic energy
-	where r is the distance between two stars, v is the relative velocity'''
-
-	import numpy as np
-
-	K = [(1./2.)*m[i]*v[i,:]**2. for i in range(len(v[:,0]))]
-
-	return(np.array(K))
-
+#def Kinetic(m, v):
+#	'''Calculate kinetic energy
+#	where r is the distance between two stars, v is the relative velocity'''
+#
+#	import numpy as np
+#
+#	K = [(1./2.)*m[i]*v[i,:]**2. for i in range(len(v[:,0]))]
+#
+#	return(np.array(K))
+#
 ###############################################################################
-def Potential(m1, m2, r):
-	'''Calculate potential energy of one object due to another
-	where r is the distance between two stars, v is the relative velocity'''
-
-	from mks_constants import G
-
-	U = -G*m1*m2/r
-	U = U/2.		# correction to avoid counting U twice
-
-	return(U)
+#def Potential(m1, m2, r):
+#	'''Calculate potential energy of one object due to another
+#	where r is the distance between two stars, v is the relative velocity'''
+#
+#	from mks_constants import G
+#
+#	U = -G*m1*m2/r
+#	U = U/2.		# correction to avoid counting U twice
+#
+#	return(U)
 
 ###############################################################################
 def Eps(r, v, mu):
@@ -797,31 +795,12 @@ def a(eps, mu):
 	return(np.array(a))
 
 ###############################################################################
-#def a(E, m, mu):
-#	'''Calculate semimajor axis of an object's orbit'''
-
-#	from mks_constants import G
-### Needed modules
-#	import numpy as np
-#	import AlphaCenModule as AC
-
-#	mr = AC.mr(m)	# reduced mass
-
-#	a = -mu/(2.*(E/mr))
-
-#	return(np.array(a))
-
-###############################################################################
 def e(a, eps, hbar, mu):
 	'''Calculate eccentricity of an object's orbit'''
 
 ### Needed modules
 	import numpy as np
 
-#	print(2.*eps*hbar**2)
-#	print(mu**2)
-
-#	print(2.*eps*hbar**2/mu**2)
 	e = (1.+2.*eps*hbar**2/mu**2)**0.5
 
 	return(np.array(e))
@@ -843,7 +822,7 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 	'''Read in data, calculate derived values, and output for 
 	writing/plotting/etc.'''
 
-	print('	GetFinalData '+WhichDir)
+	print('	-GetFinalData  '+WhichDir)
 
 ### Needed modules
 	import numpy as np
@@ -881,11 +860,11 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 	Bind = [4,ntB+4]
 	Cind = [4,ntC+4]
 
+#------------------------------------------------------------------------------
 ########## Get object's fate and collision/ejection time from info.out #######
 	name,dest,time = AC.ReadInfo(WhichDir)
 	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
 	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
-
 	for j in range(len(name)):
 		if (name[j] == 'AlCenB'):
 			DestB = dest[j].rjust(8)
@@ -894,7 +873,9 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 			DestC = dest[j].rjust(8)
 			TimeC = time[j].rjust(13)
 
+#------------------------------------------------------------------------------
 ############# Read in original x and v values ###########################
+#------------------------------------------------------------------------------
 ### NOTATION:
 # 3D array: xvA = xv of all objects w.r.t. CMA (in AU units)
 # xvA[i,j,k] = xv of object i, time j, column k
@@ -909,26 +890,29 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 # get output times
 	xvB_A_AU		= AC.ReadAei(WhichDir, filenames[0], Bind[0], Bind[1])
 	xvA_A_AU		= np.zeros_like(xvB_A_AU)
+	nanCB, nanBC = np.empty((max(ntC-ntB,0.),6)), np.empty((max(ntB-ntC,0.),6))
+	nanCB[:], nanBC[:] = np.NAN, np.NAN
 	if (mode == 'triple'):
 		xvC_A_AU	= AC.ReadAei(WhichDir, filenames[1], Cind[0], Cind[1])
 ### Combine three stars into a 3D array
 		xvA_AU=np.array([
-                np.concatenate((xvA_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
-                np.concatenate((xvB_A_AU,np.zeros((max(ntC-ntB,0.),6)))),
-                np.concatenate((xvC_A_AU,np.zeros((max(ntB-ntC,0.),6))))])
+                np.concatenate( (xvA_A_AU, nanCB) ),
+                np.concatenate( (xvB_A_AU, nanCB) ),
+                np.concatenate( (xvC_A_AU, nanBC) )])
 	else:
 ### Or two stars, if just a binary system
 		xvA_AU=np.array([xvA_A_AU, xvB_A_AU])
-
 ### 1st dimension of array should be the number of stars
 	assert(np.shape(xvA_AU)[0]) == nobjs
-##################### Convert to mks units ##############################
+### Convert to mks units
 	xvA = AC.AUtoMKS(xvA_AU)
 ### Get distances between stars (== rAij_AU*AU), and rel. velocity
 	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
 	vAB = AC.XVtoV(xvA[1,:,:])
 
+#------------------------------------------------------------------------------
 ######################## Binary system: #################################
+#------------------------------------------------------------------------------
 # CMAB = Center of momentum frame of A+B
 ### Find the coordinates of the center of momentum
 	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,0:ntB,:]) 
@@ -937,23 +921,11 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 ### Get r, v in CM units
 	rCMAB = np.array([ AC.XVtoR(xvAB[i,:,:]) for i in range(nobjs) ])
 	vCMAB = np.array([ AC.XVtoV(xvAB[i,:,:]) for i in range(nobjs) ])
-########################## Energies #####################################
-# Get kinetic energy = (1/2)mv^2
-#	KCMAB = AC.Kinetic(m[0:2],vCMAB[0:2,:])
-# Get potential energy = GMm/r
-#	UCMAB = np.array([ AC.Potential(m[0],m[1], rAB[0:ntB]),
-#					   AC.Potential(m[0],m[1], rAB[0:ntB]) ])
-# Get total energy = K+U
-#	ECMAB = KCMAB+UCMAB
-
-### This should be constant
-#	EtotCMAB = np.sum(ECMAB, 0)
-
+#---------------------------- Energies ----------------------------------------
 ### Get orbital parameters
 	# grav. paramater for binary
 	mu2 = G*(m[0]+m[1])
 	# specific orbital energy
-	print(m)
 	epsB = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
 	kB   = AC.kEps(vAB[0:ntB])
 	uB   = AC.uEps(rAB[0:ntB], mu2)
@@ -967,22 +939,10 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 	eAB = AC.e(aAB, epsB, hbarA, mu2)
 	# inclination
 	iAB = AC.i(hA[:,2], hbarA)
-	print(' aB = '+('% 10.4g'%(aAB[-1]/AU))
-		 +', eB = '+('% 6.4g'%(eAB[-1]))
-		 +', iB = '+('% 6.4g'%(iAB[-1])))
 
-### Check for consistency
-	dEpsB = epsB[-1]-epsB[0]
-
-	if abs(dEpsB/epsB[0])<0.05:
-		print(' dEpsB = '+ ('% 7.4g' % dEpsB)+' J, '+
-			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'  )
-	else:
-		print(' dEpsB = '+('% 7.4g' % dEpsB)+' J, '+
-			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'+
-			  ' - large energy variation (AB)')
-
-###################### Triple system: ########################################
+#------------------------------------------------------------------------------
+####################### Triple system: ########################################
+#------------------------------------------------------------------------------
 ### Only relevant if B and C both survived
 	if (mode=='triple'):
 #		nobjs = 3
@@ -1011,11 +971,11 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		vCMABC = np.array([ AC.XVtoV( xvABC[i,:,:]) for i in range(nobjs) ])
 		vCMABC2= np.array([ AC.XVtoV(xvABC2[i,:,:]) for i in range(2) ])
 ### Get distances between stars
-		rAB_ABC = AC.Distance( xvABC[0,:,:], xvABC[1,:,:])
-		rBC_ABC = AC.Distance( xvABC[1,:,:], xvABC[2,:,:])
-		rAC_ABC = AC.Distance( xvABC[0,:,:], xvABC[2,:,:])
+		rAB_ABC = AC.Distance( xvABC[0,:,:],  xvABC[1,:,:])
+		rBC_ABC = AC.Distance( xvABC[1,:,:],  xvABC[2,:,:])
+		rAC_ABC = AC.Distance( xvABC[0,:,:],  xvABC[2,:,:])
 		rAB_C2  = AC.Distance(xvABC2[0,:,:], xvABC2[1,:,:])
-########################## Energies #####################################
+#----------------------------------- Energies ---------------------------------
 ### Get orbital parameters
 		# dist. from C to CM(AB)
 		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
@@ -1036,21 +996,36 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		eC    = AC.e(aC, epsC, hbarC, mu)
 		# inclination
 		iC    = AC.i(hC[:,2], hbarC)
-		print(' aC = '+('% 10.4g'%(aC[-1]/AU))
-			 +', eC = '+('% 6.4g'%(eC[-1]))
-			 +', iC = '+('% 6.4g'%(iC[-1])) )
 
-### Check for consistency
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+### Print results
+	print('	  aB = '+('% 10.4g'%(aAB[-1]/AU))
+		 +', eB = '+('% 6.4g'%(eAB[-1]))
+		 +', iB = '+('% 6.4g'%(iAB[-1])))
+
+	print('	  aC = '+('% 10.4g'%(aC[-1]/AU))
+		 +', eC = '+('% 6.4g'%(eC[-1]))
+		 +', iC = '+('% 6.4g'%(iC[-1])) )
+	### Check for consistency
 		# Change in energy
-		dEpsC = epsC[-1]-epsC[0]
+	dEpsB = epsB[-1]-epsB[0]
+	dEpsC = epsC[-1]-epsC[0]
 
-		if abs(dEpsC/epsC[0])>0.02:
-			print('dEpsC = {0} J, {1}% - large energy variation (ABC)'.format(
-			     ('% 7.4g' % dEpsC), 
-				 ('% 7.4g' % float(100*dEpsC/epsC[0])) ))
-		else:
-			print('dEpsC = {0} J'.format( ('% 7.4g' % dEpsC) ))
+	if abs(dEpsB/epsB[0])<0.05:
+		print('	  dEpsB = '+ ('% 7.4g' % dEpsB)+' J, '+
+			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'  )
+	else:
+		print('	  dEpsB = '+('% 7.4g' % dEpsB)+' J, '+
+			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'+
+			  ' - large energy variation (AB)')
 
+	if abs(dEpsC/epsC[0])>0.02:
+		print('	  dEpsC = {0} J, {1}% - large energy variation (ABC)'.format(
+		     ('% 7.4g' % dEpsC), 
+			 ('% 7.4g' % float(100*dEpsC/epsC[0])) ))
+	else:
+		print('	  dEpsC = {0} J'.format( ('% 7.4g' % dEpsC) ))
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
 	if ((DestC=='ejected') & (epsC[-1]<0.)):
@@ -1058,6 +1033,7 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 	if ((DestB=='ejected') & (epsB[-1]<0.)):
 		print('B: Energy weirdness!!!')
 
+#------------------------------------------------------------------------------
 ### Return all the data
 	return 	  rAB,   vAB, dEpsB, epsB, kB, uB, \
 			rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
@@ -1124,7 +1100,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 			mA=1.105, mB=0.934, mC=0.123):
 	'''A program to read the important bits and record in summary.txt'''
 		
-	print('	Summary      '+WhichDir+',                          WhichTime = '+
+	print('	Summary        '+WhichDir+',                          WhichTime = '+
 		  WhichTime)
 
 ### Needed modules
@@ -1167,10 +1143,11 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 				AC.MakePlots('triple',WhichDir, t[0:ind], epsC, kC, uC,
 								rC, m, suffix='_ABC')
 # Plot energies over time
+			print(t.shape,epsB.shape,epsC.shape)
 			import matplotlib.pyplot as plt
 
-			plt.plot(t, epsB/(m[0]+m[1]),      'r-')
-			plt.plot(t, epsC/(m[0]+m[1]+m[2]), 'b-')
+			plt.plot(t,        epsB/(m[0]+m[1]),      'r-')
+			plt.plot(t[0:ind], epsC/(m[0]+m[1]+m[2]), 'b-')
 			plt.xlabel('time (years)')
 			plt.ylabel('Epsilon')
 			plt.title('Energy')
@@ -1211,30 +1188,6 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 		header =[ headerfields[i].rjust(sumspaces[i]+1) 
 							for i in range(len(sumspaces))]
 		header[0]=header[0][2:]
-
-#		header = '  aB    eB   iB     aC    eC    iC'+\
-#			'    rBf       EBf'+\
-#			'     aBf   eBf    iBf'+\
-#			'       rCf       ECf'+\
-#			'       aCf    eCf    iCf'+\
-#			'   logtB    destB   logtC    destC\n'
-#		summary = aeiIn+\
-#			    [str(round(rAB[-1]/AU,2)).rjust(6)]			+\
-#			    [('% 7.2g' % EtotCMAB[-1]).rjust(9)]		+\
-#			    [str(round(aAB[-1]/AU,2)).rjust(7)]			+\
-#			    [str(round(eAB[-1]   ,2)).rjust(5)]			+\
-#			    [str(round(iAB[-1]   ,1)).rjust(6)]			+\
-#			    [str(round(rCMAB[2,ntC-1]/AU,1)).rjust(9)]	+\
-#			    [('% 7.2g' % EtotCMABC2[-1]).rjust(9)]		+\
-#			    [str(round( aC[-1]/AU,2)).rjust(9)]			+\
-#			    [str(round( eC[-1]   ,2)).rjust(6)]			+\
-#			    [str(round( iC[-1]   ,1)).rjust(6)]			+\
-#		        [str(round(log10(float(TimeB)),5)).rjust(7)]			+\
-#				[DestB]										+\
-#			    [str(round(log10(float(TimeC)),5)).rjust(7)]			+\
-#				[DestC]+['\n']
-
-
 
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
@@ -1288,7 +1241,7 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	if (isBmaxT & isCmaxT):
 		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (epsC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
-	print('Testing for errors')
+	print('	Testing for errors')
 	tests=np.array([float(i) for i in summary[7:16]])
 	if ( (float(epsB[-1])<0.) & Bejectd ):
 		if ( aBf*(1+eBf)>=1e5 ):
@@ -1315,11 +1268,11 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		bigstop = True
 		print('**BIGSTOP NONSENSICAL OUTPUTS**')
 		print(tests)
-	elif (Bejectd & Cejectd):
-		bigstop = True
-		print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
+#	elif (Bejectd & Cejectd):
+#		bigstop = True
+#		print('**DOUBLE EJECTION -- TEST FOR CONSISTENCY**')
 	else:
-		print('  Error check passed')
+		print('	  Error check passed')
 
 	print('	 bigstop = '+str(bigstop).rjust(5)+',                       '+
 		  '           WhichTime = '+str(WhichTime))
@@ -1373,7 +1326,7 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	'''Make plots of parameters from this run'''
 
-	print('	MakePlots    '+WhichDir)
+	print('	-MakePlots     '+WhichDir)
 
 ### Modules
 	from mks_constants import G, mSun, AU, day
