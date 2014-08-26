@@ -1143,8 +1143,8 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 # Plot energies over time
 			import matplotlib.pyplot as plt
 
-			plt.plot(t,        epsB/(m[0]+m[1]),      'r-')
-			plt.plot(t[0:ind], epsC/(m[0]+m[1]+m[2]), 'b-')
+			plt.plot(t,        epsB*(m[0]+m[1]),      'r-')
+			plt.plot(t[0:ind], epsC*(m[0]+m[1]+m[2]), 'b-')
 			plt.xlabel('time (years)')
 			plt.ylabel('Epsilon')
 			plt.title('Energy')
