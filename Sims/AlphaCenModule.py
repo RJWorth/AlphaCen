@@ -1000,32 +1000,30 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 ### Print results
-	print('	  aB = '+('% 10.4g'%(aAB[-1]/AU))
-		 +', eB = '+('% 6.4g'%(eAB[-1]))
-		 +', iB = '+('% 6.4g'%(iAB[-1])))
+	print('	  aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
+				  aAB[-1]/AU,       eAB[-1],       iAB[-1]         ) )
+	print('	  aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
+				   aC[-1]/AU,        eC[-1],        iC[-1]         ) )
 
-	print('	  aC = '+('% 10.4g'%(aC[-1]/AU))
-		 +', eC = '+('% 6.4g'%(eC[-1]))
-		 +', iC = '+('% 6.4g'%(iC[-1])) )
 	### Check for consistency
 		# Change in energy
 	dEpsB = epsB[-1]-epsB[0]
 	dEpsC = epsC[-1]-epsC[0]
 
 	if abs(dEpsB/epsB[0])<0.05:
-		print('	  dEpsB = '+ ('% 7.4g' % dEpsB)+' J, '+
-			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'  )
+		print('	  dEpsB = {0:10.4g} J, {1:7.4g}%'.format(
+													dEpsB,100.*dEpsB/epsB[0]) )
 	else:
-		print('	  dEpsB = '+('% 7.4g' % dEpsB)+' J, '+
-			 ('% 7.4g' % float(100*dEpsB/epsB[0]))+'%'+
-			  ' - large energy variation (AB)')
+		print('	  dEpsB = {0:10.4g} J, {1:7.4g}% - large energy variation (AB)'.format(
+													dEpsB,100.*dEpsB/epsB[0]) )
 
 	if abs(dEpsC/epsC[0])>0.02:
-		print('	  dEpsC = {0} J, {1}% - large energy variation (ABC)'.format(
-		     ('% 7.4g' % dEpsC), 
-			 ('% 7.4g' % float(100*dEpsC/epsC[0])) ))
+		print('	  dEpsC = {0:10.4g} J, {1:7.4g}% - large energy variation (ABC)'.format(
+													dEpsC,100.*dEpsC/epsC[0]) )
 	else:
-		print('	  dEpsC = {0} J'.format( ('% 7.4g' % dEpsC) ))
+		print('	  dEpsC = {0:10.4g} J, {1:7.4g}%'.format(
+													dEpsC,100.*dEpsC/epsC[0]) )
+
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
 	if ((DestC=='ejected') & (epsC[-1]<0.)):
