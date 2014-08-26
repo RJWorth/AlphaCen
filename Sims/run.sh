@@ -1,5 +1,6 @@
 #!/bin/sh
-############################################################################### 
+###############################################################################
+# Run the simulation in directory $1, with parameters set below
 # Start time
 t1=$(date +%s)
 machine=$(hostname -s)
@@ -31,7 +32,7 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=5 	# = number of iterations to run
+niter=10 	# = number of iterations to run
 user='yes'	# use user-defined forces?
 
 ### Write files.in
@@ -47,6 +48,16 @@ else
 fi
 echo '	itrange '$itrange
 echo '	timerange '$timerange
+
+# Compile mercury and element
+gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
+if [ $machine = chloe ]; then	
+	gfortran-4.2 -w -O1 -o $1/Out/elem Files/elem.for 	
+		#j in, to fix colors
+else
+	gfortran -w -O1 -o $1/Out/elem Files/elem.for 		
+		#j in, to fix colors
+fi
 ### Do iterations
 	for j in $itrange
 	do
@@ -61,23 +72,13 @@ echo '	timerange '$timerange
 
 	# Write param.in file
 	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
-	# Compile mercury
-	gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
-		#j in, to fix colors
 	### Loop over time lengths
 	for k in $timerange; do
 
 		#### Run mercury
 		cd $1/Out;	./merc_AC$1;	cd ../..
 
-		### Compile and run Element to get orbit details
-		if [ $machine = chloe ]; then	
-			gfortran-4.2 -w -O1 -o $1/Out/elem Files/elem.for 	
-				#j in, to fix colors
-		else
-			gfortran -w -O1 -o $1/Out/elem Files/elem.for 		
-				#j in, to fix colors
-		fi
+		### Run Element to get orbit details
 		cd $1/Out;	./elem;	cd ../..
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
