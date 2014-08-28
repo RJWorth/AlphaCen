@@ -129,6 +129,14 @@ faket=10^(((3*n):(9*n))/n)
 fakewt.c=PredictWallT(faket,  'chloe',coef)
 fakewt.s=PredictWallT(faket,'shapiro',coef)
 
+### Write the best fit coefficients to a file
+coef.array=rbind(coef[[1]][[1]], coef[[2]][[1]],
+				 coef[[1]][[2]], coef[[2]][[2]])
+	rownames(coef.array)=c( 'c.dbl','s.dbl','c.exp','s.exp' )
+	colnames(coef.array)=c( 'c','exponent' )
+sink('RunTimeCoefs.txt')
+print(coef.array)
+sink()
 
 ### Make pdf with plot of wall time vs. sim time (shows fit models)
 source('Files/PlotFileTimes.R')
