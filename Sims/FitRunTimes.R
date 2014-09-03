@@ -13,9 +13,12 @@ t.shrt = timevalues <= brk
 t.long = timevalues >= brk
 
 ### Read in wall vs sim time data
-times=read.table('looptimes.txt',skip=1)
+times=read.table('looptimes1.txt',skip=1)
 colnames(times)=c('dir','machine','it','logt','date','time','dt')
 attach(times)
+
+new=read.table('looptimes.txt',skip=1)
+colnames(new)=c('dir','machine','it','logt','date','time','b','dt')
 
 ### Indices for rows of times that are before/after break
 r.shrt = logt <= brk
@@ -102,6 +105,16 @@ for (i in 1:length(machines)){
 	for (j in 1:3)	c.f[[i]][[j]]=signif( coef[[i]][[j]], p)	}
 
 ### Prediction function based on models
+PredictWTfromB = function(bytes, coef.all)	{
+	# For chloe, simt>1e6
+	C   = coef.all[[1]][[2]][1]
+	ex  = coef.all[[1]][[2]][2]
+	int = -126072
+	m   =   66773
+
+	wt  = C * (10^(-int*ex/m)) * (10^(ex*bytes/m))
+	return(wt)	}
+
 PredictWallT.dbl = function(simt, coef)	{
 	WallT = coef[1]^(simt^(coef[2]))
 	return(WallT)	}

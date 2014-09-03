@@ -11,6 +11,7 @@ else
 #	Dirs=(SDir4 CDir3 CDir6)
 fi
 
+echo '   Dir        Yr       Elapsed/Expected     Prediction (old / new)'
 for i in ${Dirs[*]}
 do
 

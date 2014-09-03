@@ -88,9 +88,10 @@ fi
 		if [ $k -ge 7 ]; then
 			# Get end time
 			endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
+			size=$(python -c 'import os;print(os.path.getsize("'$1'/Out/xv.out"))')
 			# Stop clock for iteration
 			t4=$(date +%s)
-			echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
+			echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$size'	'$(echo "$t4 - $t3"|bc ) >> looptimes.txt
 		fi	# k>=7
 		# If stopfile=true, don't continue this simulation
 		stop=$(cat $1/stopfile.txt)

@@ -1,5 +1,5 @@
 
-pdf('WallVsSimtime.pdf')
+#pdf('WallVsSimtime.pdf')
 plot(10^logt,dt, pch=20, log='xy', xlab='sim time (yrs)',ylab='walltime (s)',col=machine)
 points(10^logsimt, realt[1,], pch=8,col='black',cex=1.75)
 points(10^logsimt, realt[2,], pch=8,col='red',cex=1.75)
@@ -9,8 +9,8 @@ lines(10^timevalues[t.shrt], realt.dbl[[1]], lty=2, col = "black")
 lines(10^timevalues[t.shrt], realt.dbl[[2]], lty=2, col = "red")
 lines(10^timevalues[t.long], realt.exp[[1]], lty=1, col = "black")
 lines(10^timevalues[t.long], realt.exp[[2]], lty=1, col = "red")
-#lines(10^timevalues[t.long], realt.lin[[1]], lty=3, col = "black")
-#lines(10^timevalues[t.long], realt.lin[[2]], lty=3, col = "red")
+
+points(10^new$logt, new$dt, col='blue', pch=20)
 
 ### Show fit models
 Cform1=bquote( t[wall] == .(c.f[[1]][[1]][1])^t[sim]^.(c.f[[1]][[1]][2]) )
@@ -38,5 +38,5 @@ legend('topleft',
 	pch=c(     20,    20,      NA,       20,      8),
 	pt.cex=c(   1,     1,       0,       1,    1.75))
 
-dev.off()
+#dev.off()
 
