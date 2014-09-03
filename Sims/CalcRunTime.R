@@ -1,13 +1,13 @@
 ###############################################################################
 ### Calculate average runtime per sim
 runtime=read.table('runtime.txt')
-#runtime=read.table(paste(prefix,'runtime.txt',sep=''))
-prefix='Plots/'
 
 if(dim(runtime)[2]==6) {
 	colnames(runtime)=c('Dir','machine','n','user','vers','t')
-	runtime$nmax=as.numeric(sapply(strsplit(as.vector(runtime$n),'/'), "[[", 2))
-	runtime$n = as.numeric(sapply(strsplit(as.vector(runtime$n),'/'), "[[", 1))}
+	nlist=strsplit(as.vector(runtime$n),'/')
+	for (i in 1:length(nlist)) if (length(nlist[[i]])<2) nlist[[i]]=c(nlist[[i]],NA)
+	runtime$nmax= as.numeric(sapply(nlist, "[[", 2))
+	runtime$n   = as.numeric(sapply(nlist, "[[", 1))	}
 if(dim(runtime)[2]==5) colnames(runtime)=c('Dir','machine','n','user','t')
 if(dim(runtime)[2]==2) {
 	colnames(runtime)=c('Dir','t')
