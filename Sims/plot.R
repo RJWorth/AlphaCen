@@ -1,10 +1,27 @@
+### Make plots and such for the suite of simulations indicated.
+### run from command line:
+#   R CMD BATCH -1 plot.R
 
-cat('hi from R!\n')
+### Get run version from input variable
+args <- commandArgs(trailingOnly = F)
+if (length(args) >2) options(echo = FALSE)
+version <- sub("-","",args[length(args)])
+
+print(args)
+
+### If version not specified, try using version = 1
+if (length(version) == 0 | 
+	version=="-no-readline" | 
+	version=="/usr/lib64/R/bin/exec/R") {
+		print('no args')
+		version = 1	}
+
+### Packages
 library(xtable)
 
 ### Settings
-version	= 1				# 1 for run normally
-r.prx 	= 10000.		# cutoff distance to be called 'proxima-like'
+r.prx 	= 10000.		# min apoapse to be called 'proxima-like'
+r.big 	= 20000.		# max apoapse to be called 'proxima-like'
 DoCalcRunTime = TRUE	# Whether to run the calc time script
 
 ### Files to read data from
@@ -37,7 +54,7 @@ surv  = (is.na(destB) & is.na(destC) & eCf <1. & !brkn)
 # growth index (did C move outward?)
 grow  = (surv  & aCf>aC)
 # proxima-like index
-prox  = (surv  & aCf*(1+eCf)>r.prx)
+prox  = (surv  & aCf*(1+eCf)>=r.prx & aCf*(1+eCf)<=r.big)
 # double-ejection index
 doub  = !is.na(destB) & !is.na(destC)
 
@@ -47,23 +64,26 @@ huge = ((!is.na(destB) & eBf < 1.) | (!is.na(destC) & eCf < 1.))
 
 ###############################################################################
 ### Write totals
-i=signif(c(mean(brkn),mean(surv),mean(grow),mean(prox),mean(doub))*100,3)
+i=signif(c(
+	mean(brkn),mean(surv),mean(grow),mean(prox),mean(doub),mean(huge)
+			)*100,3)
 cat(paste(dim(SumAll)[1],'recent simulations\n'))
 cat(paste("broken sims (NAs, etc) = ",i[1],'% (',sum(brkn),')\n',sep=''))
 cat(paste("sims with no ejection  = ",i[2],'% (',sum(surv),')\n',sep=''))
 cat(paste("sims where C moves out = ",i[3],'% (',sum(grow),')\n',sep=''))
 cat(paste("Proxima-like sims      = ",i[4],'% (',sum(prox),')\n',sep=''))
 cat(paste("double ejection        = ",i[5],'% (',sum(doub),')\n',sep=''))
+cat(paste("Large orbit, false ejc = ",i[6],'% (',sum(huge),')\n',sep=''))
 
 summaryrow=data.frame( nsims=dim(SumAll)[1], 
 						surv=i[2], prox=i[4], doub=i[5], brkn=i[1] )
-	if (version==2) 	rownames(summaryrow)=c('Current mass') else {
-					rownames(summaryrow)=c('Equal mass')	}
-print(xtable(summaryrow), file=paste(prefix,'summaryrow.tex',sep=''),
-	only.contents = getOption("xtable.only.contents", TRUE),
-	include.colnames = getOption("xtable.include.colnames", FALSE),
-	hline.after = getOption("xtable.hline.after", NULL ) )
+if (version==2)	rownames(summaryrow)=c('Current masses') else {
+				rownames(summaryrow)=c('Equal masses')	}
 
+print(xtable(summaryrow), file=paste(prefix,'summaryrow.tex',sep=''),
+	only.contents    = TRUE,
+	include.colnames = FALSE,
+	hline.after      = NULL  )
 
 ###############################################################################
 # Define cut and max times
@@ -196,26 +216,25 @@ sink()
 ###############################################################################
 ### Print latex table of binary parameters in proxima-like systems
 
-Bparams=cbind(aB,eB,iB, aBf, eBf, iBf)[prox,]
+Bparams = data.frame( rep(' ',length(aB)),aB,eB,iB, aBf, eBf, iBf)[prox,]
+	colnames(Bparams)[1] = ' '
 print(xtable(Bparams), file=paste(prefix,'Bparams.tex',sep=''),
-	only.contents = getOption("xtable.only.contents", TRUE),
-	include.rownames = getOption("xtable.include.rownames", FALSE) )
+	only.contents    = TRUE,
+	include.rownames = FALSE,
+	include.colnames = FALSE,
+	hline.after      = NULL  )
 
-Cparams=cbind(aC,eC,iC, aCf, eCf, iCf)[prox,]
+Cparams = data.frame( rep(' ',length(aB)), aC,eC,iC, aCf, eCf, iCf)[prox,]
+	colnames(Cparams)[1] = ' '
 print(xtable(Cparams), file=paste(prefix,'Cparams.tex',sep=''),
-	only.contents = getOption("xtable.only.contents", TRUE),
-	include.rownames = getOption("xtable.include.rownames", FALSE) )
+	only.contents    = TRUE,
+	include.rownames = FALSE,
+	include.colnames = FALSE,
+	hline.after      = NULL  )
 
 ###############################################################################
 detach(SumAll)
 
-
-
-
-
-
-
-
-
+if (length(args) > 2) q('no')
 
 
