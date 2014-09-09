@@ -13,12 +13,14 @@ t.shrt = timevalues <= brk
 t.long = timevalues >= brk
 
 ### Read in wall vs sim time data
-times=read.table('looptimes1.txt',skip=1)
-colnames(times)=c('dir','machine','it','logt','date','time','dt')
-attach(times)
+old=read.table('looptimes1.txt',skip=1)
+colnames(old)=c('dir','machine','it','logt','date','time','dt')
 
 new=read.table('looptimes.txt',skip=1)
 colnames(new)=c('dir','machine','it','logt','date','time','b','dt')
+
+times=old
+attach(times)
 
 ### Indices for rows of times that are before/after break
 r.shrt = logt <= brk
@@ -30,6 +32,9 @@ times2=times[r.long,]
 # for logt>5, a regular exponential is best
 
 ###############################################################################
+
+maxb=rep(0,length(simt))
+for (j in 1:length(simt)) maxb[j]=max(new$b[new$logt==log10(simt[j])])
 
 ### Create empty arrays to fill below for each machine
 realt=rbind(simt,simt)
