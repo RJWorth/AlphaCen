@@ -12,9 +12,9 @@ dev.off()
 ########################################################################
 ### Plot initial params, color coded by survival ########################
 ### a vs a
-pdf(paste(prefix,'aa.pdf',sep=''))
-plot(aB,aC, pch=pindC, col=ind)
-dev.off()
+#pdf(paste(prefix,'aa.pdf',sep=''))
+#plot(aB,aC, pch=pindC, col=ind)
+#dev.off()
 
 ###############################################################################
 ### Histograms of all parameters
@@ -78,30 +78,36 @@ dev.off()
 ### set up histogram counts:
 hdaBs = hist(daB[surv], br=br.daB,plot=F)$counts
 hdaBp = hist(daB[prox], br=br.daB,plot=F)$counts
+hdaBh = hist(daB[huge], br=br.daB,plot=F)$counts
 
 hdeBs = hist(deB[surv],  br=br.de,plot=F)$counts
 hdeBp = hist(deB[prox],  br=br.de,plot=F)$counts
+hdeBh = hist(deB[huge],  br=br.de,plot=F)$counts
 
 hdiBs = hist(diB[surv],  br=br.di,plot=F)$counts
 hdiBp = hist(diB[prox],  br=br.di,plot=F)$counts
+hdiBh = hist(diB[huge],  br=br.di,plot=F)$counts
 
 hdaCs = hist(daC[surv], br=br.daC,plot=F)$counts
 hdaCp = hist(daC[prox], br=br.daC,plot=F)$counts
+hdaCh = hist(daC[huge], br=br.daC,plot=F)$counts
 
 hdeCs = hist(deC[surv],  br=br.de,plot=F)$counts
 hdeCp = hist(deC[prox],  br=br.de,plot=F)$counts
+hdeCh = hist(deC[huge],  br=br.de,plot=F)$counts
 
 hdiCs = hist(diC[surv],  br=br.di,plot=F)$counts
 hdiCp = hist(diC[prox],  br=br.di,plot=F)$counts
+hdiCh = hist(diC[huge],  br=br.di,plot=F)$counts
 
 pdf(paste(prefix,'changes.pdf',sep=''),width=9,height=6)
 par(mfrow=c(2,3))
 ### plot daB
-barplot(rbind(hdaBp,hdaBs-hdaBp), space=0, 
+barplot(rbind(hdaBh,hdaBp,hdaBs-hdaBp-hdaBp,), space=0, 
 	xlab='change in aB (AU)',ylab='Counts', main='aBf-aB')
 	axis(1,at=(0:(n1/2))*2, lab=signif(br.daB[(0:(n1/2))*2+1],3) )
-legend('topleft',legend=c('Surviving simulations','Proxima-like'),
-	fill=grey.colors(2)[2:1])
+legend('topleft',legend=c('Surviving simulations','Proxima-like','Huge'),
+	fill=grey.colors(2)[3:1])
 
 ### plot deB
 barplot(rbind(hdeBp,hdeBs-hdeBp), space=0, 
@@ -132,49 +138,49 @@ dev.off()
 
 ###############################################################################
 ### Plot inclinations
-pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
-par(mfrow=c(2,3))
+#pdf(paste(prefix,'inc.pdf',sep=''),width=9,height=6)
+#par(mfrow=c(2,3))
 
-hC   = hist( iC,      br=br.i,plot=F)$counts
-hCs  = hist( iC[surv],br=br.i,plot=F)$counts
+#hC   = hist( iC,      br=br.i,plot=F)$counts
+#hCs  = hist( iC[surv],br=br.i,plot=F)$counts
 
-hC2  = hist(iCf,      br=br.i,plot=F)$counts
-hC2s = hist(iCf[surv],br=br.i,plot=F)$counts
+#hC2  = hist(iCf,      br=br.i,plot=F)$counts
+#hC2s = hist(iCf[surv],br=br.i,plot=F)$counts
 
-hB2  = hist(iBf,      br=br.i,plot=F)$counts
-hB2s = hist(iBf[surv],br=br.i,plot=F)$counts
+#hB2  = hist(iBf,      br=br.i,plot=F)$counts
+#hB2s = hist(iBf[surv],br=br.i,plot=F)$counts
 
 ### iC, with iC of surviving systems colored in
-barplot(rbind(hCs,hC-hCs), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Initial iC')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(rbind(hCs,hC-hCs), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Initial iC')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iC, with iCf of surviving systems colored in
-barplot(rbind(hC2s,hC2-hC2s), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Final iC')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(rbind(hC2s,hC2-hC2s), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Final iC')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iB, with iBf of surviving systems colored in
-barplot(rbind(hB2s,hB2-hB2s), space=0, 
-	xlab='i (degrees)',ylab='Counts', main='Final iB')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(rbind(hB2s,hB2-hB2s), space=0, 
+#	xlab='i (degrees)',ylab='Counts', main='Final iB')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iC of surviving systems as % of total iC in that bin
-barplot(100*(hCs/hC), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(100*(hCs/hC), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iCf of surviving systems as % of total iCf in that bin
-barplot(100*(hC2s/hC2), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(100*(hC2s/hC2), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
 ### iBf of surviving systems as % of total iBf in that bin
-barplot(100*(hB2s/hB2), space=0, 
-	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
-	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
+#barplot(100*(hB2s/hB2), space=0, 
+#	xlab='i (degrees)',ylab='Percent', main='Surviving Systems')
+#	axis(1,at=n1*(0:4)/4, lab=180*(0:4)/4)
 
-dev.off()
+#dev.off()
 #######################################################################
 ### Side-by-side input and output parameters
 pdf(paste(prefix,'ae_io.pdf',sep=''),width=8, height=4)
@@ -255,95 +261,94 @@ mtext(2,text='e',line=2.5,cex=1.2, outer=TRUE)
 dev.off()
 ########################################################################
 # aB in vs. out
-pdf(paste(prefix,'ai_af.pdf',sep=''),width=7.5, height=7.5)
-par(mfrow=c(2,2))
+#pdf(paste(prefix,'ai_af.pdf',sep=''),width=7.5, height=7.5)
+#par(mfrow=c(2,2))
 
-plot(aB, abs(aBf), pch='.', col=indB, log='xy',#xlim=c(1,max(aBf, na.rm=T)),
-	main='Final vs. initial semimajor axis for B',
-	xlab='Initial a (AU)', ylab='Final a (AU)')
-points(aB[surv], aBf[surv], pch=20, col=indB[surv])
-abline(0,1, lty=2)
+#plot(aB, abs(aBf), pch='.', col=indB, log='xy',#xlim=c(1,max(aBf, na.rm=T)),
+#	main='Final vs. initial semimajor axis for B',
+#	xlab='Initial a (AU)', ylab='Final a (AU)')
+#points(aB[surv], aBf[surv], pch=20, col=indB[surv])
+#abline(0,1, lty=2)
 
-plot(aC, abs(aCf), pch='.', col=indC, log='xy',xlim=c(1,max(aCf, na.rm=T)),
-	main='Final vs. initial semimajor axis for C',
-	xlab='Initial a (AU)', ylab='Final a (AU)')
-points(aC[surv], aCf[surv], pch=20, col=indC[surv])
-abline(0,1, lty=2)
+#plot(aC, abs(aCf), pch='.', col=indC, log='xy',xlim=c(1,max(aCf, na.rm=T)),
+#	main='Final vs. initial semimajor axis for C',
+#	xlab='Initial a (AU)', ylab='Final a (AU)')
+#points(aC[surv], aCf[surv], pch=20, col=indC[surv])
+#abline(0,1, lty=2)
 
-plot(aB, abs(rBf), pch='.', col=indB, log='xy',#xlim=c(1,max(rBf, na.rm=T)),
-	main='Final position vs. initial semimajor axis for B',
-	xlab='Initial a (AU)', ylab='Final r (AU)')
-points(aB[surv], rBf[surv], pch=20, col=indB[surv])
-abline(0,1, lty=2)
+#plot(aB, abs(rBf), pch='.', col=indB, log='xy',#xlim=c(1,max(rBf, na.rm=T)),
+#	main='Final position vs. initial semimajor axis for B',
+#	xlab='Initial a (AU)', ylab='Final r (AU)')
+#points(aB[surv], rBf[surv], pch=20, col=indB[surv])
+#abline(0,1, lty=2)
 
-plot(aC, abs(rCf), pch='.', col=indC, log='xy',xlim=c(1,max(rCf, na.rm=T)),
-	main='Final position vs. initial semimajor axis for C',
-	xlab='Initial a (AU)', ylab='Final r (AU)')
-points(aC[surv], rCf[surv], pch=20, col=indC[surv])
-abline(0,1, lty=2)
+#plot(aC, abs(rCf), pch='.', col=indC, log='xy',xlim=c(1,max(rCf, na.rm=T)),
+#	main='Final position vs. initial semimajor axis for C',
+#	xlab='Initial a (AU)', ylab='Final r (AU)')
+#points(aC[surv], rCf[surv], pch=20, col=indC[surv])
+#abline(0,1, lty=2)
 
-dev.off()
+#dev.off()
 #########################################################################
 # Final distribution, a and e for B and C, only where C moved outward
-pdf(paste(prefix,'C_growth.pdf',sep=''),width=4, height=4)
-plot(.1,.1, 
-	xlim=c(1e1,max(c(aC,aCf[grow]))), ylim=c(0,1.0),log='x',
-	main='Output Parameters',xlab='a (AU)',ylab='e')
-for (j in 1:sum(grow))	{
+#pdf(paste(prefix,'C_growth.pdf',sep=''),width=4, height=4)
+#plot(.1,.1, 
+#	xlim=c(1e1,max(c(aC,aCf[grow]))), ylim=c(0,1.0),log='x',
+#	main='Output Parameters',xlab='a (AU)',ylab='e')
+#for (j in 1:sum(grow))	{
 # Draw line from initial to final position
-lines(c(aB[grow][j], aBf[grow][j]), c(eB[grow][j], eBf[grow][j]),
-	col=allcols[1], lwd=.5)
-lines(c(aC[grow][j], aCf[grow][j]), c(eC[grow][j], eCf[grow][j]),
-	col=allcols[5], lwd=.5)
+#lines(c(aB[grow][j], aBf[grow][j]), c(eB[grow][j], eBf[grow][j]),
+#	col=allcols[1], lwd=.5)
+#lines(c(aC[grow][j], aCf[grow][j]), c(eC[grow][j], eCf[grow][j]),
+#	col=allcols[5], lwd=.5)
 # Connect B and C from each sim
-lines(c(aBf[grow][j], aCf[grow][j]), c(eBf[grow][j], eCf[grow][j]),
-	lty=3, col='black', lwd=.5)
-	}
+#lines(c(aBf[grow][j], aCf[grow][j]), c(eBf[grow][j], eCf[grow][j]),
+#	lty=3, col='black', lwd=.5)
+#	}
 	# Plot final destinations of B (with fancy borders!)
-	for (j in 1:sum(grow))	{
-	points(aBf[grow][j], eBf[grow][j], pch=20, col=allcols[1],cex=.6)
-	points(aBf[grow][j], eBf[grow][j], pch=21, col='black',cex=.6)
-	}
+#	for (j in 1:sum(grow))	{
+#	points(aBf[grow][j], eBf[grow][j], pch=20, col=allcols[1],cex=.6)
+#	points(aBf[grow][j], eBf[grow][j], pch=21, col='black',cex=.6)
+#	}
 # Plot final destinations of C
-points(aCf[grow], eCf[grow], pch=20, col=indC[grow])
+#points(aCf[grow], eCf[grow], pch=20, col=indC[grow])
 
 # make lines showing approximately where C is supposed to be now
 #abline(v=)
 #abline(h=)
 
-dev.off()
+#dev.off()
 
 #########################################################################
 # Plot various parameters against time, to see if any tend to live longer
-pdf(paste(prefix,'time.pdf',sep=''), width=8, height=8)
-par(mfrow=c(2,2))
+#pdf(paste(prefix,'time.pdf',sep=''), width=8, height=8)
+#par(mfrow=c(2,2))
 
-plot(tB, aB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(aC)), log='x',
-	main='Time vs. initial a', xlab='Time (yrs)',ylab='a (AU)')
-points(tC, aC, pch='.', col=indC)
-points(tB[surv], aB[surv], pch=20, col=indB[surv])
-points(tC[surv], aC[surv], pch=20, col=indC[surv])
+#plot(tB, aB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(aC)), log='x',
+#	main='Time vs. initial a', xlab='Time (yrs)',ylab='a (AU)')
+#points(tC, aC, pch='.', col=indC)
+#points(tB[surv], aB[surv], pch=20, col=indB[surv])
+#points(tC[surv], aC[surv], pch=20, col=indC[surv])
 
-plot(tB, eB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(eC)), log='x',
-	main='Time vs. initial e', xlab='Time (yrs)',ylab='e')
-points(tC, eC, pch='.', col=indC)
-points(tB[surv], eB[surv], pch=20, col=indB[surv])
-points(tC[surv], eC[surv], pch=20, col=indC[surv])
+#plot(tB, eB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(eC)), log='x',
+#	main='Time vs. initial e', xlab='Time (yrs)',ylab='e')
+#points(tC, eC, pch='.', col=indC)
+#points(tB[surv], eB[surv], pch=20, col=indB[surv])
+#points(tC[surv], eC[surv], pch=20, col=indC[surv])
 
-plot(tB, iB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(iC)), log='x',
-	main='Time vs. initial i', xlab='Time (yrs)',ylab='i (degrees)')
-points(tC, iC, pch='.', col=indC)
-points(tB[surv], iB[surv], pch=20, col=indB[surv])
-points(tC[surv], iC[surv], pch=20, col=indC[surv])
+#plot(tB, iB, pch='.', col=indB, xlim=c(1e1,tmax), ylim=c(0, max(iC)), log='x',
+#	main='Time vs. initial i', xlab='Time (yrs)',ylab='i (degrees)')
+#points(tC, iC, pch='.', col=indC)
+#points(tB[surv], iB[surv], pch=20, col=indB[surv])
+#points(tC[surv], iC[surv], pch=20, col=indC[surv])
 
-plot.new()
-legend('bottomright', cex=.7, ncol=2, col=allcols,
-#	pch=c(20,replicate(ncols-1,21),20,replicate(ncols-1,21)),
-	pch=20,
-	legend=c('B = 1e10','1e5 < B < 1e10','B < 1e5',
-			 'C = 1e10','1e5 < C < 1e10','C < 1e5'))
+#plot.new()
+#legend('bottomright', cex=.7, ncol=2, col=allcols,
+#	pch=20,
+#	legend=c('B = 1e10','1e5 < B < 1e10','B < 1e5',
+#			 'C = 1e10','1e5 < C < 1e10','C < 1e5'))
 
-dev.off()
+#dev.off()
 
 ###############################################################################
 

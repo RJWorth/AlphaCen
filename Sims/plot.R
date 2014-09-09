@@ -55,11 +55,14 @@ surv  = (is.na(destB) & is.na(destC) & eCf <1. & !brkn)
 grow  = (surv  & aCf>aC)
 # proxima-like index
 prox  = (surv  & aCf*(1+eCf)>=r.prx & aCf*(1+eCf)<=r.big)
+# bigger than prox-like, but smaller than huge\
+bigr  = (surv  & aCf*(1+eCf)>r.big)
 # double-ejection index
 doub  = !is.na(destB) & !is.na(destC)
 
 # too huge (falsely counted as ejection in Mercury)
-huge = ((!is.na(destB) & eBf < 1.) | (!is.na(destC) & eCf < 1.))
+huge = ( ( (!is.na(destB) & eBf < 1.)   | 
+		   (!is.na(destC) & eCf < 1.) ) & !is.na(EBf) & !is.na(ECf))
 	huge[is.na(huge)]=FALSE
 
 ###############################################################################
@@ -190,9 +193,9 @@ br.aB  =          aBmin+(         aBmax-         aBmin)*(0:n1)/n1
 br.aC  =          aCmin+(         aCmax-         aCmin)*(0:n1)/n1
 br.daB = min(daB[surv])+(max(daB[surv])-min(daB[surv]))*(0:n1)/n1
 br.daC = min(daC[surv])+(max(daC[surv])-min(daC[surv]))*(0:n1)/n1
-br.e   =  1.*(0:n1)/n1
-br.de  =  -1.+2.*(0:n1)/n1
-br.i   = 180*(0:n1)/n1
+br.e   =          1.*(0:n1)/n1
+br.de  =  -1. +   2.*(0:n1)/n1
+br.i   =         180*(0:n1)/n1
 br.di  = -180.+2*180*(0:n1)/n1
 
 ### Plot cutoff line for proxima-like orbit (apocenter = 10,000 AU)
@@ -202,6 +205,8 @@ a.prx = round(r.prx/2):round(r.prx)
 e.prx = (r.prx/a.prx)-1.
 
 ###############################################################################
+### Create all the pdf plots
+
 source('MakePlots.R')
 
 ###############################################################################
