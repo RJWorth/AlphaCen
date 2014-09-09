@@ -32,7 +32,7 @@ mintime=3	# = log(years)
 maxtime=9	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
-niter=10 	# = number of iterations to run
+niter=10   	# = number of iterations to run
 user='yes'	# use user-defined forces?
 
 ### Write files.in
@@ -64,6 +64,7 @@ fi
 	echo 'run: '$1', '$j
 	# Start clock for iteration
 	t3=$(date +%s)
+	echo '================================================================'
 	# Clean out old sim
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
@@ -83,7 +84,6 @@ fi
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
 		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
-
 		# For long simulations, write looptime
 		if [ $k -ge 7 ]; then
 			# Get end time
@@ -99,6 +99,7 @@ fi
 			break
 		else
 		# Write param.dmp file for next timestep
+		echo '----------------------------------------------------------------'
 		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
 		fi	# stop
 	done	#timerange
