@@ -1,6 +1,6 @@
 #!/bin/bash
 ############################################################################### 
-# Write last few lines of each run.pipe file to get most recent changes
+# Write last n lines of each run.pipe file to get most recent changes
 # syntax: ./panpipes.sh n d
 
 # choose which directories (with second input d)
@@ -20,9 +20,10 @@ if [ $2 = 4 ]; then
 	prefix='Proxlike/Prx'
 	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22)
 fi
-
-
-# write last n lines, n = first input
+if [ $2 = 5 ]; then
+	prefix=''
+	Dirs=(SDir2 SDir6 CDir5 CDir8 CDir9 CDir10)
+fi
 
 \rm panpipes1.txt
 

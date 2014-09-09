@@ -17,21 +17,15 @@ if [ $machine = shapiro ]; then
 	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 	Dirs=()
 fi
-#if [ $machine = spaatz ]; then
-#	Dirs=(PDir1 PDir2 PDir3)
-#fi
-#if [ $machine = nova ]; then
-#	Dirs=(NDir1)
-#fi
 
 for i in ${Dirs[*]}
 do
 
-#	nice -n 10 ./FinishBroken.sh $i >> $i/run.pipe &
+#	nice -n 10 ./FinishBroken.sh $i 'equal' >> $i/run.pipe &
 	
 	nice -n 10 ./run.sh $i > $i/run.pipe &
 	echo 'master: '$i'  '$!
 
 done
 
-#  after above are finished, run finish.sh for summary.out file and R plots
+#  after above are finished, run finish.sh for SumAll.out file and R plots
