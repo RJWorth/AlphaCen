@@ -3,6 +3,7 @@
 ### Finish the last piece of a simulation interrupted during the 1e9 stage
 ### e.g: ./FinishBroken.sh Dir flag >> Dir/run.pipe &
 
+echo 'Finishing broken simulation: '$1' '$2
 cd $1/Out
 ./merc_AC$1
 ./elem
