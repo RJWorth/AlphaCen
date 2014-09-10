@@ -9,12 +9,12 @@ version <- sub("-","",args[length(args)])
 
 print(args)
 
-### If version not specified, try using version = 1
+### If version not specified, try using version specified here
 if (length(version) == 0 | 
 	version=="-no-readline" | 
 	version=="/usr/lib64/R/bin/exec/R") {
 		print('no args')
-		version = 1	}
+		version = 2	}
 
 ### Packages
 library(xtable)
@@ -27,10 +27,12 @@ DoCalcRunTime = TRUE	# Whether to run the calc time script
 ### Files to read data from
 ### Regular (current) version:
 if (version==1)	{
+	case  = 'Equal masses'
 	prefix='Plots/'			# Prefix for plot files
 	sumfiles = c('SumAll.out')
 	} else if (version==2)	{
 ### Older versions of sims (eps instead of E, no dE, unequal masses)
+	case  = 'True masses'
 	prefix='Saved/CurrentMasses/'			# Prefix for plot files
 	sumfiles=c(	'Saved/CurrentMasses/SumAll081414.out',
 				'Saved/CurrentMasses/SumAll080614.out',
@@ -44,49 +46,77 @@ if (DoCalcRunTime) source('CalcRunTime.R')
 ###############################################################################
 ### Read in Summary.out, normal
 source('ReadSumFiles.R')
-
+nsims=dim(SumAll)[1]
 ###############################################################################
-### Indices for the outcomes of simulations, with 2nd set including old sims
+### Indices for the outcomes of simulations
+# ejection indices (single-B, single-C, single-either, double)
+singB = ( !is.na(destB) & destB=='ejected' &  is.na(destC) )
+singC = (  is.na(destB) & destC=='ejected' & !is.na(destC) )
+sing  = (singB | singC)
+doub  = !is.na(destB) & !is.na(destC)
+# too huge (falsely counted as ejection in Mercury)
+huge = ( ( (!is.na(destB) & eBf < 1.)   | 
+		   (!is.na(destC) & eCf < 1.) ) & !is.na(EBf) & !is.na(ECf))
+	huge[is.na(huge)]=FALSE
+# collision, i.e. not 'ejected' and not NA/stable
+coll  = (( !is.na(destB) & destB!='ejected' ) | 
+		 ( !is.na(destC) & destC!='ejected' ) )
 # error in reading => na values
 brkn = is.na(aBf) | is.na(aCf) | is.na(eBf) | is.na(eCf)
 # survival index
 surv  = (is.na(destB) & is.na(destC) & eCf <1. & !brkn)
 # growth index (did C move outward?)
 grow  = (surv  & aCf>aC)
-# proxima-like index
-prox  = (surv  & aCf*(1+eCf)>=r.prx & aCf*(1+eCf)<=r.big)
-# bigger than prox-like, but smaller than huge\
-bigr  = (surv  & aCf*(1+eCf)>r.big)
-# double-ejection index
-doub  = !is.na(destB) & !is.na(destC)
+# proxima-like indice (10-20 kAU, 20+ kAU)
+prox1 = (surv  & aCf*(1+eCf)>=r.prx & aCf*(1+eCf)<=r.big)
+prox2 = (surv  & aCf*(1+eCf)>r.big)
+prox  = (prox1 | prox2)
 
-# too huge (falsely counted as ejection in Mercury)
-huge = ( ( (!is.na(destB) & eBf < 1.)   | 
-		   (!is.na(destC) & eCf < 1.) ) & !is.na(EBf) & !is.na(ECf))
-	huge[is.na(huge)]=FALSE
+### Data frame of plot point parameters
+fate=rep( NA, length(surv))
+	fate[surv]='surv'
+	fate[grow]  ='grow'
+	fate[prox1] ='prox1'
+	fate[prox2] ='prox2'
+	fate[huge]  ='huge'
+	fate[doub]  ='doub'
+	fate[coll]  ='coll'
+	fate[singB] ='singB'
+	fate[singC] ='singC'
+fate=as.factor(fate)
+pt=data.frame(	fate,
+				cols=rep( NA, length(surv)), 
+				pchs=rep( NA, length(surv)) )
+	pt$pchs[surv|grow|prox1|prox2|huge]=20
+	pt$pchs[doub|coll|singB|singC]     =4
+	pt$pchs[brkn]=8	# alternately use separate print command to add pch 4
+	pt$cols[surv]      ='blue'
+	pt$cols[grow]      ='green'
+	pt$cols[prox1|coll]='black'
+	pt$cols[prox2]     ='grey'
+	pt$cols[huge]      ='purple'
+	pt$cols[doub]      ='red'
+	pt$cols[singB]     ='orange'
+	pt$cols[singC]     =colors()[144]
 
 ###############################################################################
 ### Write totals
-i=signif(c(
-	mean(brkn),mean(surv),mean(grow),mean(prox),mean(doub),mean(huge)
-			)*100,3)
-cat(paste(dim(SumAll)[1],'recent simulations\n'))
-cat(paste("broken sims (NAs, etc) = ",i[1],'% (',sum(brkn),')\n',sep=''))
-cat(paste("sims with no ejection  = ",i[2],'% (',sum(surv),')\n',sep=''))
-cat(paste("sims where C moves out = ",i[3],'% (',sum(grow),')\n',sep=''))
-cat(paste("Proxima-like sims      = ",i[4],'% (',sum(prox),')\n',sep=''))
-cat(paste("double ejection        = ",i[5],'% (',sum(doub),')\n',sep=''))
-cat(paste("Large orbit, false ejc = ",i[6],'% (',sum(huge),')\n',sep=''))
-
-summaryrow=data.frame( nsims=dim(SumAll)[1], 
-						surv=i[2], prox=i[4], doub=i[5], brkn=i[1] )
-if (version==2)	rownames(summaryrow)=c('Current masses') else {
-				rownames(summaryrow)=c('Equal masses')	}
-
-print(xtable(summaryrow), file=paste(prefix,'summaryrow.tex',sep=''),
-	only.contents    = TRUE,
-	include.colnames = FALSE,
-	hline.after      = NULL  )
+indices=data.frame(	surv,grow,prox1,prox2,prox,huge,
+					singB,singC,sing,doub, coll, brkn)
+m=data.frame(t( signif( colMeans(indices)*100, 3) ))
+s=data.frame(t(          colSums(indices)         ))
+cat(paste(nsims,'recent simulations\n'))
+cat(paste("sims with no ejection  = ",m$surv ,'% (',s$surv ,')\n',sep=''))
+cat(paste("sims where C moves out = ",m$grow ,'% (',s$grow ,')\n',sep=''))
+cat(paste("Proxima-like sims      = ",m$prox ,'% (',s$prox ,')\n',sep=''))
+cat('\n')
+cat(paste("only B ejected         = ",m$singB,'% (',s$singB,')\n',sep=''))
+cat(paste("only C ejected         = ",m$singC,'% (',s$singC,')\n',sep=''))
+cat(paste("double ejection        = ",m$doub ,'% (',s$doub ,')\n',sep=''))
+cat(paste("Large orbit, false ejc = ",m$huge ,'% (',s$huge ,')\n',sep=''))
+cat('\n')
+cat(paste("Collision/other?       = ",m$coll ,'% (',s$coll ,')\n',sep=''))
+cat(paste("broken sims (NAs, etc) = ",m$brkn ,'% (',s$brkn ,')\n',sep=''))
 
 ###############################################################################
 # Define cut and max times
@@ -211,17 +241,40 @@ source('MakePlots.R')
 
 ###############################################################################
 ### Print proxima-like systems to a file (aCf>acutoff)
-acutoff=5000	# AU
-sink(paste(prefix,'proxlike.txt',sep=''))
-options(width=300)
-print(SumAll[prox,],row.names=FALSE)
-options(width=80)
-sink()
+#acutoff=5000	# AU
+#sink(paste(prefix,'proxlike.txt',sep=''))
+#options(width=300)
+#print(SumAll[prox,],row.names=FALSE)
+#options(width=80)
+#sink()
 
 ###############################################################################
+###################### Print tables for latex file
+### Print summary of these simulations by fate of system
+### read in current written version
+SumTable=read.table('SumTable.tex', colClasses='character',
+	sep='&',strip.white=TRUE, 
+	skip=2, comment.char='\\',
+	row.names=1,header=TRUE, check.names=FALSE)
+### update data in row for this version #
+#SumTable$'Broken'       =rep( m$brkn, 2)
+SumTable[,case]=c(toString(nsims), 
+	toString( m$surv),toString( m$grow),toString(m$prox),toString(m$huge), 	
+	toString(m$singB),toString(m$singC),toString(m$doub),toString(m$coll),
+	toString(m$brkn))
+
+xSumTable=xtable(SumTable)
+### write updated table back to the file
+print(xSumTable, file='SumTable.tex',
+	only.contents    = TRUE,
+#	include.colnames = FALSE,
+	hline.after      = c(0),
+	  )
+write('',file='SumTable.tex',append=TRUE)	# adds EOF
+#------------------------------------------------------------------------------
 ### Print latex table of binary parameters in proxima-like systems
 
-Bparams = data.frame( rep(' ',length(aB)),aB,eB,iB, aBf, eBf, iBf)[prox,]
+Bparams = data.frame( rep(' ',length(aB)),aB,eB,iB, aBf, eBf, iBf)[prox1,]
 	colnames(Bparams)[1] = ' '
 print(xtable(Bparams), file=paste(prefix,'Bparams.tex',sep=''),
 	only.contents    = TRUE,
@@ -229,7 +282,7 @@ print(xtable(Bparams), file=paste(prefix,'Bparams.tex',sep=''),
 	include.colnames = FALSE,
 	hline.after      = NULL  )
 
-Cparams = data.frame( rep(' ',length(aB)), aC,eC,iC, aCf, eCf, iCf)[prox,]
+Cparams = data.frame( rep(' ',length(aB)), aC,eC,iC, aCf, eCf, iCf)[prox1,]
 	colnames(Cparams)[1] = ' '
 print(xtable(Cparams), file=paste(prefix,'Cparams.tex',sep=''),
 	only.contents    = TRUE,
@@ -240,6 +293,7 @@ print(xtable(Cparams), file=paste(prefix,'Cparams.tex',sep=''),
 ###############################################################################
 detach(SumAll)
 
+### If called from shell command line, force exit from R
 if (length(args) > 2) q('no')
 
 

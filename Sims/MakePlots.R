@@ -77,60 +77,60 @@ dev.off()
 ### Plot changes
 ### set up histogram counts:
 hdaBs = hist(daB[surv], br=br.daB,plot=F)$counts
-hdaBp = hist(daB[prox], br=br.daB,plot=F)$counts
-hdaBh = hist(daB[huge], br=br.daB,plot=F)$counts
+hdaB1 = hist(daB[prox1], br=br.daB,plot=F)$counts
+hdaB2 = hist(daB[prox2], br=br.daB,plot=F)$counts
 
 hdeBs = hist(deB[surv],  br=br.de,plot=F)$counts
-hdeBp = hist(deB[prox],  br=br.de,plot=F)$counts
-hdeBh = hist(deB[huge],  br=br.de,plot=F)$counts
+hdeB1 = hist(deB[prox1],  br=br.de,plot=F)$counts
+hdeB2 = hist(deB[prox2],  br=br.de,plot=F)$counts
 
 hdiBs = hist(diB[surv],  br=br.di,plot=F)$counts
-hdiBp = hist(diB[prox],  br=br.di,plot=F)$counts
-hdiBh = hist(diB[huge],  br=br.di,plot=F)$counts
+hdiB1 = hist(diB[prox1],  br=br.di,plot=F)$counts
+hdiB2 = hist(diB[prox2],  br=br.di,plot=F)$counts
 
 hdaCs = hist(daC[surv], br=br.daC,plot=F)$counts
-hdaCp = hist(daC[prox], br=br.daC,plot=F)$counts
-hdaCh = hist(daC[huge], br=br.daC,plot=F)$counts
+hdaC1 = hist(daC[prox1], br=br.daC,plot=F)$counts
+hdaC2 = hist(daC[prox2], br=br.daC,plot=F)$counts
 
 hdeCs = hist(deC[surv],  br=br.de,plot=F)$counts
-hdeCp = hist(deC[prox],  br=br.de,plot=F)$counts
-hdeCh = hist(deC[huge],  br=br.de,plot=F)$counts
+hdeC1 = hist(deC[prox1],  br=br.de,plot=F)$counts
+hdeC2 = hist(deC[prox2],  br=br.de,plot=F)$counts
 
 hdiCs = hist(diC[surv],  br=br.di,plot=F)$counts
-hdiCp = hist(diC[prox],  br=br.di,plot=F)$counts
-hdiCh = hist(diC[huge],  br=br.di,plot=F)$counts
+hdiC1 = hist(diC[prox1],  br=br.di,plot=F)$counts
+hdiC2 = hist(diC[prox2],  br=br.di,plot=F)$counts
 
 pdf(paste(prefix,'changes.pdf',sep=''),width=9,height=6)
 par(mfrow=c(2,3))
 ### plot daB
-barplot(rbind(hdaBh,hdaBp,hdaBs-hdaBp-hdaBp,), space=0, 
+barplot(rbind(hdaB2,hdaB1,hdaBs-hdaB1-hdaB2), space=0, 
 	xlab='change in aB (AU)',ylab='Counts', main='aBf-aB')
 	axis(1,at=(0:(n1/2))*2, lab=signif(br.daB[(0:(n1/2))*2+1],3) )
-legend('topleft',legend=c('Surviving simulations','Proxima-like','Huge'),
+legend('topleft',legend=c('Surviving simulations','Proxima-like','Big'),
 	fill=grey.colors(2)[3:1])
 
 ### plot deB
-barplot(rbind(hdeBp,hdeBs-hdeBp), space=0, 
+barplot(rbind(hdeB2,hdeB1,hdeBs-hdeB1-hdeB2), space=0, 
 	xlab='change in eB',ylab='Counts', main='eBf-eB')
 	axis(1,at=(0:(n1/2))*2, lab=signif(  br.de[(0:(n1/2))*2+1],3) )
 
 ### plot diB
-barplot(rbind(hdiBp,hdiBs-hdiBp), space=0, 
+barplot(rbind(hdiB2,hdiB1,hdiBs-hdiB1-hdiB2), space=0, 
 	xlab='change in iB',ylab='Counts', main='iBf-iB')
 	axis(1,at=(0:(n1/2))*2, lab=signif(  br.di[(0:(n1/2))*2+1],3) )
 
 ### plot daC
-barplot(rbind(hdaCp,hdaCs-hdaCp), space=0, 
+barplot(rbind(hdaC2,hdaC1,hdaCs-hdaC1-hdaC2), space=0, 
 	xlab='change in aC (AU)',ylab='Counts', main='aCf-aC')
 	axis(1,at=(0:(n1/2))*2, lab=signif(br.daC[(0:(n1/2))*2+1],3) )
 
 ### plot deC
-barplot(rbind(hdeCp,hdeCs-hdeCp), space=0, 
+barplot(rbind(hdeC2,hdeC1,hdeCs-hdeC1-hdeC2), space=0, 
 	xlab='change in eC',ylab='Counts', main='eCf-eC')
 	axis(1,at=(0:(n1/2))*2, lab=signif(  br.de[(0:(n1/2))*2+1],3) )
 
 ### plot diC
-barplot(rbind(hdiCp,hdiCs-hdiCp), space=0, 
+barplot(rbind(hdiC2,hdiC1,hdiCs-hdiC1-hdiC2), space=0, 
 	xlab='change in iC',ylab='Counts', main='iCf-iC')
 	axis(1,at=(0:(n1/2))*2, lab=signif(  br.di[(0:(n1/2))*2+1],3) )
 
@@ -392,6 +392,13 @@ pairs(inpars,	upper.panel=p.fate, lower.panel=p.time)
 
 #pdf(paste(prefix,'outpairs.pdf',sep=''),width=10.5,height=8)
 pairs(outpars[surv,],	upper.panel=p.fate2, lower.panel=p.time2)
+dev.off()
+###############################################################################
+### Really huge pairs plot!
+p.fate2=function(x,y)	{points(x,y, pch=pt$pchs,cex=0.5, col=pt$cols)}
+
+pdf(paste(prefix,'hugepairs.pdf',sep=''),width=24,height=24)
+pairs(SumAll[,c(-4,-19,-21)],	upper.panel=p.fate2, lower.panel=p.time)
 dev.off()
 ###############################################################################
 
