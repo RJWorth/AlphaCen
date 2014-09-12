@@ -206,6 +206,7 @@ points(aB[indB!='red'], eB[indB!='red'], pch='.', col=indB[indB!='red'])
 points(aC, eC, pch='.', col=indC)
 # plot C from surviving systems bigger
 points(aC[surv], eC[surv], pch=20, col=indC[surv])
+points(aC[prox], eC[prox], pch=21, col='orange')
 # add something to proxima-like systems?
 # lines connecting B and C from each surviving sim
 	for (j in 1:sum(surv))	{
@@ -257,6 +258,7 @@ lines(c(aBf[surv][j], aCf[surv][j]), c(eBf[surv][j], eCf[surv][j]),
 	}
 # Plot final destinations of C
 points(aCf[surv], eCf[surv], pch=20, col=indC[surv])
+points(aCf[prox], eCf[prox], pch=21, col='orange')
 
 # Outer text
 mtext(2,text='e',line=2.5,cex=1.2, outer=TRUE)
@@ -402,7 +404,7 @@ dev.off()
 p.fate2=function(x,y)	{points(x,y, pch=pt$pchs,cex=0.5, col=pt$cols)}
 
 pdf(paste(prefix,'hugepairs.pdf',sep=''),width=24,height=24)
-pairs(SumAll[,c(-4,-19,-21:-23)],
+pairs(SumAll[,c(-4,-19,-21:-25)],
 	upper.panel=p.fate2, lower.panel=p.time)
 dev.off()
 ###############################################################################

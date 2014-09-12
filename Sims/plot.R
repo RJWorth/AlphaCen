@@ -4,17 +4,19 @@
 
 ### Get run version from input variable
 args <- commandArgs(trailingOnly = F)
+	print(length(args))
+	print(args)
 if (length(args) >2) options(echo = FALSE)
 version <- sub("-","",args[length(args)])
-
-print(args)
+	print(version)
 
 ### If version not specified, try using version specified here
 if (length(version) == 0 | 
 	version=="-no-readline" | 
+	version=="/usr/lib/R/bin/exec/R" | 
 	version=="/usr/lib64/R/bin/exec/R") {
 		print('no args')
-		version = 2	}
+		version = 1	}
 
 ### Packages
 library(xtable)
@@ -22,7 +24,7 @@ library(xtable)
 ### Settings
 r.prx 	= 10000.		# min apoapse to be called 'proxima-like'
 r.big 	= 20000.		# max apoapse to be called 'proxima-like'
-DoCalcRunTime = TRUE	# Whether to run the calc time script
+DoCalcRunTime = FALSE	# Whether to run the calc time script
 
 ### Files to read data from
 ### Regular (current) version:
@@ -73,6 +75,10 @@ prox2 = (surv  & aCf*(1+eCf)>r.big)
 prox  = (prox1 | prox2)
 
 ### Data frame of plot point parameters
+cat=c('brkn','doub','singB','singC','coll', 'surv','grow','prox1','prox2','huge')
+#colorRampPalette(brewer.pal(6,"Blues"))[6:2]	#(length(table.data))
+#colorRampPalette(brewer.pal(6,"Reds" ))[2:6]
+
 fate=rep( NA, length(surv))
 	fate[surv]='surv'
 	fate[grow]  ='grow'
