@@ -28,12 +28,12 @@ DoCalcRunTime = TRUE	# Whether to run the calc time script
 ### Regular (current) version:
 if (version==1)	{
 	case  = 'Equal masses'
-	prefix='Plots/'			# Prefix for plot files
+	prefix='../Paper/Inserts/EqualMasses/'			# Prefix for plot files
 	sumfiles = c('SumAll.out')
 	} else if (version==2)	{
 ### Older versions of sims (eps instead of E, no dE, unequal masses)
 	case  = 'True masses'
-	prefix='Saved/CurrentMasses/'			# Prefix for plot files
+	prefix='../Paper/Inserts/TrueMasses/'			# Prefix for plot files
 	sumfiles=c(	'Saved/CurrentMasses/SumAll081414.out',
 				'Saved/CurrentMasses/SumAll080614.out',
 				'Saved/CurrentMasses/SumAll072314.out' )
@@ -87,7 +87,7 @@ fate=as.factor(fate)
 pt=data.frame(	fate,
 				cols=rep( NA, length(surv)), 
 				pchs=rep( NA, length(surv)) )
-	pt$pchs[surv|grow|prox1|prox2|huge]=20
+	pt$pchs[surv|grow|prox1|prox2|huge]=19
 	pt$pchs[doub|coll|singB|singC]     =4
 	pt$pchs[brkn]=8	# alternately use separate print command to add pch 4
 	pt$cols[surv]      ='blue'
@@ -229,11 +229,17 @@ br.i   =         180*(0:n1)/n1
 br.di  = -180.+2*180*(0:n1)/n1
 
 ### Plot cutoff line for proxima-like orbit (apocenter = 10,000 AU)
-d = 100.	# density of points in the line
-a.prx = round(r.prx/2):round(r.prx)
+#d = 100.	# density of points in the line
+a1.prx = round(r.prx/2):round(r.prx)
+a2.prx = round(r.prx  ):round(r.prx*2)
 
-e.prx = (r.prx/a.prx)-1.
+e1.prx =   (r.prx/a1.prx)-1.
+e2.prx = (2*r.prx/a2.prx)-1.
 
+### Polygon vertices for shaded region showing most 'proxima-like' sims
+vertices.e = c(   1.0,   1.0,  -0.0,  -0.0)
+vertices.ap= c( 10000, 20000, 20000, 10000)
+vertices.a = vertices.ap/(1+vertices.e)
 ###############################################################################
 ### Create all the pdf plots
 
@@ -252,7 +258,8 @@ source('MakePlots.R')
 ###################### Print tables for latex file
 ### Print summary of these simulations by fate of system
 ### read in current written version
-SumTable=read.table('SumTable.tex', colClasses='character',
+SumTableFile='../Paper/Inserts/SumTable.tex'
+SumTable=read.table(SumTableFile, colClasses='character',
 	sep='&',strip.white=TRUE, 
 	skip=2, comment.char='\\',
 	row.names=1,header=TRUE, check.names=FALSE)
@@ -265,18 +272,19 @@ SumTable[,case]=c(toString(nsims),
 
 xSumTable=xtable(SumTable)
 ### write updated table back to the file
-print(xSumTable, file='SumTable.tex',
+print(xSumTable, file=SumTableFile,
 	only.contents    = TRUE,
 #	include.colnames = FALSE,
 	hline.after      = c(0),
 	  )
-write('',file='SumTable.tex',append=TRUE)	# adds EOF
+write('',file=SumTableFile,append=TRUE)	# adds EOF
 #------------------------------------------------------------------------------
 ### Print latex table of binary parameters in proxima-like systems
 
 Bparams = data.frame( rep(' ',length(aB)),aB,eB,iB, aBf, eBf, iBf)[prox1,]
 	colnames(Bparams)[1] = ' '
-print(xtable(Bparams), file=paste(prefix,'Bparams.tex',sep=''),
+print(xtable(Bparams[order(Bparams$aB),]), 
+	file=paste(prefix,'Bparams.tex',sep=''),
 	only.contents    = TRUE,
 	include.rownames = FALSE,
 	include.colnames = FALSE,
@@ -284,7 +292,8 @@ print(xtable(Bparams), file=paste(prefix,'Bparams.tex',sep=''),
 
 Cparams = data.frame( rep(' ',length(aB)), aC,eC,iC, aCf, eCf, iCf)[prox1,]
 	colnames(Cparams)[1] = ' '
-print(xtable(Cparams), file=paste(prefix,'Cparams.tex',sep=''),
+print(xtable(Cparams[order(Bparams$aB),]), 
+	file=paste(prefix,'Cparams.tex',sep=''),
 	only.contents    = TRUE,
 	include.rownames = FALSE,
 	include.colnames = FALSE,

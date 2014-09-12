@@ -235,7 +235,11 @@ plot(.1,.1,
 	main='',xlab='',ylab='')
 mtext(1,text='a (AU)',line=2.5,cex=1.2)
 # Plot line for orbit with apocenter = 10,000 AU
-lines( a.prx, e.prx, lty=2)
+polygon(c(a1.prx, a2.prx[length(a2.prx):1]), 
+		c(e1.prx, e2.prx[length(a2.prx):1]), 
+			col='gray',border='gray')
+#lines( a1.prx, e1.prx, lty=2)
+#lines( a2.prx[length(a2.prx):1], e2.prx[length(a2.prx):1], lty=2)
 for (j in 1:sum(surv))	{
 # Draw line from initial to final position
 lines(c(aB[surv][j], aBf[surv][j]), c(eB[surv][j], eBf[surv][j]),
@@ -398,7 +402,8 @@ dev.off()
 p.fate2=function(x,y)	{points(x,y, pch=pt$pchs,cex=0.5, col=pt$cols)}
 
 pdf(paste(prefix,'hugepairs.pdf',sep=''),width=24,height=24)
-pairs(SumAll[,c(-4,-19,-21)],	upper.panel=p.fate2, lower.panel=p.time)
+pairs(SumAll[,c(-4,-19,-21:-23)],
+	upper.panel=p.fate2, lower.panel=p.time)
 dev.off()
 ###############################################################################
 
