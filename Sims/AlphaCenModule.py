@@ -33,8 +33,8 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
-		infile.write("  "+xv[i][0]+"  "+xv[i][1]+"  "+xv[i][2]+"\n")
-		infile.write("  "+xv[i][3]+"  "+xv[i][4]+"  "+xv[i][5]+"\n")
+		infile.write("  {0}  {1}  {2}\n".format(xv[i][0],xv[i][1],xv[i][2]))
+		infile.write("  {0}  {1}  {2}\n".format(xv[i][3],xv[i][4],xv[i][5]))
 		infile.write(s[i])
 	infile.close()
 
@@ -134,12 +134,55 @@ def GetObjParams(filepath,obj):
 	u, v, w = infile[objrow+2].split()
 #	s1, s2, s3 = infile[objrow+3].split()
 
-	return(x,y,z, u,v,w)
+	return(float(x),float(y),float(z), float(u),float(v),float(w))
+
+###########################################################################
+### Get orbital parameters of an object from big.in or small.in
+def GetStellarMasses(WhichDir):
+
+	import numpy as np
+
+### Read in param.in and big.in files
+	par=open(WhichDir+'/In/param.in')
+	parfile=par.readlines()
+	par.close()
+
+	big=open(WhichDir+'/In/big.in')
+	bigfile=big.readlines()
+	big.close()
+	nbiglines = FileLength(WhichDir+'/In/big.in')
+
+### Find central body mass
+	for i,row in enumerate(parfile):
+		if (row[0] != ')'):
+			if 'central mass' in row:
+				mstar = [float(row.split()[4])]
+
+### Find header rows for each object in infile
+	# calculate
+	nbig = (nbiglines-6)/4
+	objrows = [6+i*4 for i in range(nbig)]
+
+	# or read from object names
+#	objrows = [0 for i in objs]
+#	for j,obj in enumerate(objs):
+#		for i,row in enumerate(bigfile):
+#			if (row[0] != ')'):
+#				if (row.split()[0] == obj):
+#					objrows[j] = i
+
+### Extract orbital parameters (aei gnM or xyz uvw)
+	for j,objrow in enumerate(objrows):
+		for item in bigfile[objrow].split():
+			if ('m=' in item) | ('m =' in item):
+				mstar.append(float(item.strip(' =m')))
+
+	return(mstar)
 
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
 #   BUT WHAT FRAME ARE THEY IN???
-def El2X(a,e,i,g,n,l):
+def El2X(el, m):
 	'''Convert orbital elements to cartesian for an ellipse (e < 1). 
 Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	gm = grav const * (central + secondary mass)
@@ -163,12 +206,17 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 #               M = mean anomaly (degrees)
 
 ### Modules used
+	from AlphaCenModule import KeplerEllipse
 	import numpy as np
 	from numpy import sqrt, sin, cos
-	from mks_constants import deg2rad,rad2deg
+	from mks_constants import deg2rad,rad2deg, G
+
+### Extract needed parameters from input list
+	a,e,i,g,n,M = [float(i) for i in el]
+	gm = G*sum(m)
 
 ### Convert input degrees to radians
-	i, g, n, m = deg2rad*i, deg2rad*g, deg2rad*n, deg2rad*m
+	i, g, n, M = deg2rad*i, deg2rad*g, deg2rad*n, deg2rad*M
 
 ### Pericenter
 	q = (1.-e)*a
@@ -191,11 +239,12 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	d22 = -z4 + z1*ci
 	d23 =       cg*si
 
-### Ellipse
 	assert (e < 1.0)	# haven't finished the other cases yet
+### Calculate ellipse
 	if (e < 1.0):
+	### Ellipse
 		romes = sqrt(1.0 - e*e)
-		temp = mco_kep(e,l)
+		temp = KeplerEllipse(e,M)
 		se, ce = sin(temp), cos(temp)
 		z1 = a * (ce - e)
 		z2 = a * romes * se
@@ -203,14 +252,14 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 		z3 = -se * temp
 		z4 = romes * ce * temp
 #	elif (e == 1.0) then
-### Parabola
+	### Parabola
 #		ce = orbel_zget(l)
 #		z1 = q * (1.0 - ce*ce)
 #		z2 = 2.0 * q * ce
 #		z4 = sqrt(2.0*gm/q) / (1.0 + ce*ce)
 #	 	z3 = -ce * z4
 #	elif (e > 1.):
-### Hyperbola
+	### Hyperbola
 #		romes = sqrt(e*e - 1.0)
 #		temp = orbel_fhybrid(e,l)
 #		se, ce = sin(temp), cos(temp)
@@ -231,7 +280,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	return(x,y,z,u,v,w)
 
 ###############################################################################
-def KeplerEllipse():
+def KeplerEllipse(e,oldl):
 	'''Solves Kepler's equation for eccentricities less than one.
  Algorithm from A. Nijenhuis (1991) Cel. Mech. Dyn. Astron. 51, 319-330.
 
@@ -256,7 +305,7 @@ def KeplerEllipse():
 
 	ome = 1.0 - e
 #-----------------------------
-	if (l >= .45 | e < .55):
+	if ((l >= .45) | (e < .55)):
 ### Regions A,B or C in Nijenhuis
 
 ### Rough starting value for eccentric anomaly
@@ -353,85 +402,112 @@ def KeplerEllipse():
 
 
 ###########################################################################
-def MakeSmallTestDisk(WhichDir,WhichTime,n,m):
+def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
 	'''Make a disk of small objects around A and B
  and write to small.in'''
 
-	print('MakeSmallTestDisk {0}/In/small.in  {1}  n={2}'.format(
-			WhichDir, WhichTime, n))
+	print('MakeSmallTestDisk {0}/In/small.in  n={1}'.format(
+			WhichDir, nmax))
 
 ### Needed modules
 	import AlphaCenModule as AC
 	import numpy as np
-	import os, filelen
 	from random import random
-	from math import pi, sin, cos
+	from numpy import pi, sin, cos, log
 	from mks_constants import AU, day, mSun
 
 ### Objects per disk (one disk each around A and B)
-	n=int(n)
+	nmax = int(nmax)
+	n1   = np.array(range(1,nmax+1))
+	n2   = np.array(range(1,nmax*2+1))
 
-### Get path of starting directory
-	here=os.getcwd()
-	
 ### Parameters
 	m = m/mSun						# small object mass, mSun
-	r = 0.001						# Hill radii for interaction
-	d = 2.0							# g/cm^3
+	r = 0.001						# Hill radii for small interactions
+	d = 2.0							# small obj density, g/cm^3
 	
-### Small object parameters
-	# List of small object names
-	names    = ['M'+str(i) for i in range(2*n)]
-	# disk spacing
-	a = amin + (amax-amin)* 10**(np.array(range(n-1))/float(n-2))/n
-
-
-	# aei parameters for each object, relative to central object
-	smallaei = np.array([[0. for j in range(6)] for i in range(2*n)])
-	# Small object xv's relative to central object
-	smallxv  = np.array([[0. for j in range(6)] for i in range(2*n)])
-
 ### Get orbital parameters for central objects (in aei)
+	mstars = AC.GetStellarMasses(WhichDir)
+
 	aeiA = [0., 0., 0., 0., 0., 0.]
 	aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
-### Transform aei to xyz
-	xvB  = AC.El2X(aeiB)
+	print(aeiB)
 
-### Generate slightly randomized rocks at different phases of Jupiter or Saturn's orbit
+### Transform aei to xyz
+	xvB  = AC.El2X(aeiB, [mstars[0],mstars[1]])
+
+### Small object parameters
+	# List of small object names
+	names    = ['M'+str(i) for i in n2]
+
+	# Determine disk boundaries (in AU)
+	amin = 0.01
+	peri = aeiB[0]*(1-aeiB[1])	# min distance btwn A and B
+	amax = peri/2
+	# disk spacing
+	a = amax - (amax-amin)*( log(nmax-n1+1)/log(nmax) )
+	print(a)
+
+	# aei parameters for each object, relative to central object
+#	smallaei = np.array([[0. for j in range(6)] for i in n1])
+	# Small object xv's
+	SmlXV  = np.array([[0. for j in range(6)] for i in n2])
+
+### Generate rocks
 	for j in range(0,len(names)):
 		### Pick a random timestep
-		if planet=='J':
-			filename='{0}/{1}/In/InitElemFiles/Jupiter12Yr.aei'.format(
-						here,WhichDir)
-		if planet=='S':
-			filename='{0}/{1}/In/InitElemFiles/Saturn29Yr.aei'.format(
-						here,WhichDir)
-		AEILen=filelen.file_len(filename)-5
-		timestep=5+int(AEILen*random())
+#		if planet=='J':
+#			filename='{0}/{1}/In/InitElemFiles/Jupiter12Yr.aei'.format(
+#						here,WhichDir)
+#		if planet=='S':
+#			filename='{0}/{1}/In/InitElemFiles/Saturn29Yr.aei'.format(
+#						here,WhichDir)
+#		AEILen=filelen.file_len(filename)-5
+#		timestep=5+int(AEILen*random())
 		### Get Jupiter/Saturn's info at this point
-		File=open(filename,'r')
-		for k in range(timestep):
-			thisline=File.readline().split()
-		bigxv=thisline[6:]
+#		File=open(filename,'r')
+#		for k in range(timestep):
+#			thisline=File.readline().split()
+#		bigxv=thisline[6:]
 
 		### Generate random variation
-		phi1=2*pi*random()
-		theta1=-pi/2+pi*random()
-		r=maxaspread*random()
-		v=maxvspread*random()
-		phi2=2*pi*random()
-		theta2=-pi/2+pi*random()
+#		phi1=2*pi*random()
+#		theta1=-pi/2+pi*random()
+#		r=maxaspread*random()
+#		v=maxvspread*random()
+#		phi2=2*pi*random()
+#		theta2=-pi/2+pi*random()
 
-		x=r*cos(phi1)*cos(theta1)
-		y=r*sin(phi1)*cos(theta1)
-		z=r*sin(theta1)
-		u=v*cos(phi2)*cos(theta2)
-		v=v*sin(phi2)*cos(theta2)
-		w=v*sin(theta2)
+#		x=r*cos(phi1)*cos(theta1)
+#		y=r*sin(phi1)*cos(theta1)
+#		z=r*sin(theta1)
+#		u=v*cos(phi2)*cos(theta2)
+#		v=v*sin(phi2)*cos(theta2)
+#		w=v*sin(theta2)
+
+### Spacing = logorithmic in a
+		thisa = a[(n2[j]-1)%nmax]
+
+### Angles = random
+		phi   = 2*pi*random()
+		theta =   pi*random()
+
+		x=0.
+		y=0.
+		z=0.
+		u=0.
+		v=0.
+		w=0.
 
 		### Coords = Jupiter/Saturn coords plus random variation
-		SmlXV[j]=[float(bigxv[0])+x, float(bigxv[1])+y, float(bigxv[2])+z,
-		float(bigxv[3])+u, float(bigxv[4])+v, float(bigxv[5])+w]
+		if   (j <  nmax):
+			SmlXV[j]=[float(aeiA[0])+x, float(aeiA[1])+y, float(aeiA[2])+z,
+					  float(aeiA[3])+u, float(aeiA[4])+v, float(aeiA[5])+w]
+		elif (j >= nmax):
+			SmlXV[j]=[float(aeiB[0])+x, float(aeiB[1])+y, float(aeiB[2])+z,
+					  float(aeiB[3])+u, float(aeiB[4])+v, float(aeiB[5])+w]
+		else:
+			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
 
 ### Read generic small.in file header	
 	SmlHeadFile=open('SmlHeader.txt','r')
@@ -448,7 +524,7 @@ def MakeSmallTestDisk(WhichDir,WhichTime,n,m):
 ### No spin for all objects
 	SmlS=["  0.0  0.0  0.0\n" for i in range(len(SmlFirstLines))]
 
-### Write big file
+### Write small file
 	AC.WriteObjInFile(
 	WhichDir,names,'small',SmlHeader,SmlFirstLines,SmlXV,SmlS)
 
