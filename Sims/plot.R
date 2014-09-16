@@ -29,13 +29,15 @@ DoCalcRunTime = FALSE	# Whether to run the calc time script
 ### Files to read data from
 ### Regular (current) version:
 if (version==1)	{
+	nmissing = 10				# number of sims lost on the 1e9 step
 	case  = 'Equal masses'
-	prefix='../Paper/Inserts/EqualMasses/'			# Prefix for plot files
+	prefix='../Paper/Inserts/EqualMasses/'	# Prefix for plot files
 	sumfiles = c('SumAll.out')
 	} else if (version==2)	{
 ### Older versions of sims (eps instead of E, no dE, unequal masses)
+	nmissing = 0				# number of sims lost on the 1e9 step
 	case  = 'True masses'
-	prefix='../Paper/Inserts/TrueMasses/'			# Prefix for plot files
+	prefix='../Paper/Inserts/TrueMasses/'	# Prefix for plot files
 	sumfiles=c(	'Saved/CurrentMasses/SumAll081414.out',
 				'Saved/CurrentMasses/SumAll080614.out',
 				'Saved/CurrentMasses/SumAll072314.out' )
@@ -49,6 +51,7 @@ if (DoCalcRunTime) source('CalcRunTime.R')
 ### Read in Summary.out, normal
 source('ReadSumFiles.R')
 nsims=dim(SumAll)[1]
+
 ###############################################################################
 ### Indices for the outcomes of simulations
 # ejection indices (single-B, single-C, single-either, double)
@@ -80,7 +83,7 @@ cat=c('brkn','doub','singB','singC','coll', 'surv','grow','prox1','prox2','huge'
 #colorRampPalette(brewer.pal(6,"Reds" ))[2:6]
 
 fate=rep( NA, length(surv))
-	fate[surv]='surv'
+	fate[surv]  ='surv'
 	fate[grow]  ='grow'
 	fate[prox1] ='prox1'
 	fate[prox2] ='prox2'
@@ -109,9 +112,22 @@ pt=data.frame(	fate,
 ### Write totals
 indices=data.frame(	surv,grow,prox1,prox2,prox,huge,
 					singB,singC,sing,doub, coll, brkn)
-m=data.frame(t( signif( colMeans(indices)*100, 3) ))
-s=data.frame(t(          colSums(indices)         ))
-cat(paste(nsims,'recent simulations\n'))
+
+### Correct for missing sims
+old = logtB>8 | logtC>8
+# fate of sims that got past the 1e8 step:
+rates = colMeans(indices[old,])
+corrections = rates*nmissing
+
+### Get percent and number of each type
+s.long=data.frame(t(          (colSums(indices)+corrections)         ))
+#m=data.frame(t( signif( (colMeans(indices)+corrections)*100, 3) ))
+m.long=s.long*100/(nsims+nmissing)
+s=signif(s.long, 3)
+m=signif(m.long, 3)
+
+### print output
+cat(paste(nsims+nmissing,'recent simulations\n'))
 cat(paste("sims with no ejection  = ",m$surv ,'% (',s$surv ,')\n',sep=''))
 cat(paste("sims where C moves out = ",m$grow ,'% (',s$grow ,')\n',sep=''))
 cat(paste("Proxima-like sims      = ",m$prox ,'% (',s$prox ,')\n',sep=''))
@@ -271,7 +287,7 @@ SumTable=read.table(SumTableFile, colClasses='character',
 	row.names=1,header=TRUE, check.names=FALSE)
 ### update data in row for this version #
 #SumTable$'Broken'       =rep( m$brkn, 2)
-SumTable[,case]=c(toString(nsims), 
+SumTable[,case]=c(toString(nsims+nmissing), 
 	toString( m$surv),toString( m$grow),toString(m$prox),toString(m$huge), 	
 	toString(m$singB),toString(m$singC),toString(m$doub),toString(m$coll),
 	toString(m$brkn))

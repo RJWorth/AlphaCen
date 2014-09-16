@@ -3,6 +3,7 @@
 ### Finish the last piece of a simulation interrupted during the 1e9 stage
 ### e.g: ./FinishBroken.sh Dir flag >> Dir/run.pipe &
 
+echo '\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/'
 echo 'Finishing broken simulation: '$1' '$2
 cd $1/Out
 ./merc_AC$1
@@ -16,7 +17,7 @@ if [ $2 = 'unequal' ]; then
 elif [ $2 = 'equal' ]; then
 	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e9, WhichTime="LAST", mA=.123, mB=.123, mC=.123)'
 else
-	echo 'invalid mass flag'
+	echo 'invalid mass flag -- summary not run'
 
 bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
