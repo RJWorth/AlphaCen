@@ -5,14 +5,14 @@ args <- commandArgs(trailingOnly = F)
 myarg <- sub("-","",args[length(args)])
 
 ### Variables
-dir=myarg		# which directory to use, as string
-#dir='Prx12/4-1'
+dir=myarg			# which directory to use, as string
+dir='Prx02/Disk'	# or uncomment this to specify a directory
 
 aeidir=paste('../Sims/Proxlike/',dir,'/Out/AeiOutFiles/',sep='')
 #aeidir=paste('../Sims/',dir,'/Control/',sep='')	#location of directory
 print(dir)
 
-mode = 'triple'	# binary or triple
+mode = 'binary'	# binary or triple
 ### Read aei for stars
 if (mode=='triple') starnames=c('AlCenB','PrxCen') else
 	if (mode=='binary') starnames=c('AlCenB')
@@ -22,6 +22,16 @@ for (j in 1:length(starnames)) stars[[j]]=read.table(
 	col.names=c('Time','a','e','i','mass','dens', 'x','y','z','vx','vy','vz')
 	)[,c(1:3,7:12)]
 t=as.numeric(as.vector(stars[[1]]$Time))
+
+disknames=rep( 'M', 100)
+	for (i in 1:100) disknames[i]=paste('M',i, sep='')
+print(disknames)
+disk=list()
+for (j in 1:length(disknames)) disk[[j]]=read.table(
+	paste(aeidir,disknames[j],'.aei',sep=''), header=F,skip=4,
+	col.names=c('Time','a','e','i','mass','dens', 'x','y','z','vx','vy','vz')
+	)[,c(1:3,7:12)]
+print(summary(disk))
 
 ### Get x and v in center-of-momentum frame
 ### Define masses

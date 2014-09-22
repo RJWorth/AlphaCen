@@ -27,14 +27,17 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 	'''Write big.in or small.in file'''
 
 	infile=open(WhichDir+'/In/'+filename+'.in','w')
+
 ### Header
 	for i in range(len(Header)):
 		infile.write(Header[i])
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
-		infile.write("  {0}  {1}  {2}\n".format(xv[i][0],xv[i][1],xv[i][2]))
-		infile.write("  {0}  {1}  {2}\n".format(xv[i][3],xv[i][4],xv[i][5]))
+		infile.write("  {0: 25.18}  {1: 25.18}  {2: 25.18}\n".format(
+												xv[i][0],xv[i][1],xv[i][2]))
+		infile.write("  {0: 25.18}  {1: 25.18}  {2: 25.18}\n".format(
+												xv[i][3],xv[i][4],xv[i][5]))
 		infile.write(s[i])
 	infile.close()
 
@@ -182,7 +185,7 @@ def GetStellarMasses(WhichDir):
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
 #   BUT WHAT FRAME ARE THEY IN???
-def El2X(el, m):
+def Merc_El2X(el, m):
 	'''Convert orbital elements to cartesian for an ellipse (e < 1). 
 Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	gm = grav const * (central + secondary mass)
@@ -206,7 +209,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 #               M = mean anomaly (degrees)
 
 ### Modules used
-	from AlphaCenModule import KeplerEllipse
+	from AlphaCenModule import Merc_KeplerEllipse
 	import numpy as np
 	from numpy import sqrt, sin, cos
 	from mks_constants import deg2rad,rad2deg, G
@@ -244,7 +247,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	if (e < 1.0):
 	### Ellipse
 		romes = sqrt(1.0 - e*e)
-		temp = KeplerEllipse(e,M)
+		temp = Merc_KeplerEllipse(e,M)
 		se, ce = sin(temp), cos(temp)
 		z1 = a * (ce - e)
 		z2 = a * romes * se
@@ -280,7 +283,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	return(x,y,z,u,v,w)
 
 ###############################################################################
-def KeplerEllipse(e,oldl):
+def Merc_KeplerEllipse(e,oldl):
 	'''Solves Kepler's equation for eccentricities less than one.
  Algorithm from A. Nijenhuis (1991) Cel. Mech. Dyn. Astron. 51, 319-330.
 
@@ -289,7 +292,7 @@ def KeplerEllipse(e,oldl):
   u = eccentric anomaly (   "   )'''
 #------------------------------------------------------------------------------
 
-	from math import pi, exp, log, sin, cos
+	from math import pi, exp, log, sin, cos, sqrt
 	twopi = 2.*pi
 	piby2 = pi/2.
 
@@ -402,7 +405,60 @@ def KeplerEllipse(e,oldl):
 
 
 ###########################################################################
-def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
+### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
+#   for orbit with no inclination
+def El2X(el, m):
+	'''Convert orbital elements to cartesian for an ellipse (e < 1) with zero inclination
+	mu = grav const * sum of masses
+	q = perihelion distance
+	e = eccentricity
+	i = inclination                 )
+	p = longitude of pericenter     )   in
+	la = longitude of ascending node) radians
+	f = true anomaly                )
+	E = eccentric anomaly           )
+	M = mean anomaly                )
+
+
+	x,y,z = Cartesian positions  ( units the same as a )
+	u,v,w =     "     velocities ( units the same as sqrt(mu/a) )'''
+
+### Modules used
+	import numpy as np
+	from numpy import sqrt, sin, cos, pi
+	from mks_constants import deg2rad,rad2deg, G
+
+### Extract needed parameters from input list
+	a,e,i,g,la,f = [float(i) for i in el]
+	mu = G*sum(m)
+
+### Convert input degrees to radians
+#	i, g, la = deg2rad*i, deg2rad*g, deg2rad*la
+	f = deg2rad*f
+
+### Calculate radius
+	r = a*(1-e**2)/(1+e*cos(f))
+
+### Position coords
+	x = r*cos(f)
+	y = r*sin(f)
+	z = 0.
+
+### Period
+	T = ( (4*pi**2/mu) * a**3 )**0.5
+
+### Mean motion
+	n = 2*pi/T
+
+### Velocity coords
+	u = -    sin(f)  * n*a/(1-e**2)**0.5
+	v =   (e+cos(f)) * n*a/(1-e**2)**0.5
+	w = 0.
+
+	return(x,y,z,u,v,w)
+	
+###########################################################################
+def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
 	'''Make a disk of small objects around A and B
  and write to small.in'''
 
@@ -413,40 +469,46 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
 	import AlphaCenModule as AC
 	import numpy as np
 	from random import random
-	from numpy import pi, sin, cos, log
-	from mks_constants import AU, day, mSun
+	from numpy import pi, sin, cos, log, sqrt
+	from mks_constants import G, AU, day, mSun
 
 ### Objects per disk (one disk each around A and B)
 	nmax = int(nmax)
 	n1   = np.array(range(1,nmax+1))
-	n2   = np.array(range(1,nmax*2+1))
-
-### Parameters
-	m = m/mSun						# small object mass, mSun
+	if (len(objs) > 0):
+		n2   = np.array(range(1,nmax*2+1))
+	else:
+		n2   = n1
+	
+### Other parameters
 	r = 0.001						# Hill radii for small interactions
 	d = 2.0							# small obj density, g/cm^3
 	
 ### Get orbital parameters for central objects (in aei)
-	mstars = AC.GetStellarMasses(WhichDir)
+	mstars = np.array(AC.GetStellarMasses(WhichDir))*mSun
 
 	aeiA = [0., 0., 0., 0., 0., 0.]
-	aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
-	print(aeiB)
+	if (len(objs) > 0):
+		aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
 
 ### Transform aei to xyz
-	xvB  = AC.El2X(aeiB, [mstars[0],mstars[1]])
+	if (len(objs) > 0):
+		xvB  = AC.El2X(aeiB, [mstars[0],mstars[1]])
 
 ### Small object parameters
 	# List of small object names
 	names    = ['M'+str(i) for i in n2]
 
 	# Determine disk boundaries (in AU)
-	amin = 0.01
-	peri = aeiB[0]*(1-aeiB[1])	# min distance btwn A and B
-	amax = peri/2
-	# disk spacing
-	a = amax - (amax-amin)*( log(nmax-n1+1)/log(nmax) )
-	print(a)
+	if (len(objs) > 0):
+		peri = aeiB[0]*(1-aeiB[1])	# min distance btwn A and B
+	else:
+		peri = 20.
+	amax = peri/2				# could experiment with this...
+	# disk spacing = logorithmic
+#	aspacing = amax - (amax-amin)*( log(nmax-n1+1)/log(nmax) )
+	# or disk spacing = linear
+	aspacing = (amin + (amax-amin)*( (n1-1)/float(nmax-1) ))
 
 	# aei parameters for each object, relative to central object
 #	smallaei = np.array([[0. for j in range(6)] for i in n1])
@@ -455,21 +517,6 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
 
 ### Generate rocks
 	for j in range(0,len(names)):
-		### Pick a random timestep
-#		if planet=='J':
-#			filename='{0}/{1}/In/InitElemFiles/Jupiter12Yr.aei'.format(
-#						here,WhichDir)
-#		if planet=='S':
-#			filename='{0}/{1}/In/InitElemFiles/Saturn29Yr.aei'.format(
-#						here,WhichDir)
-#		AEILen=filelen.file_len(filename)-5
-#		timestep=5+int(AEILen*random())
-		### Get Jupiter/Saturn's info at this point
-#		File=open(filename,'r')
-#		for k in range(timestep):
-#			thisline=File.readline().split()
-#		bigxv=thisline[6:]
-
 		### Generate random variation
 #		phi1=2*pi*random()
 #		theta1=-pi/2+pi*random()
@@ -485,19 +532,17 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
 #		v=v*sin(phi2)*cos(theta2)
 #		w=v*sin(theta2)
 
-### Spacing = logorithmic in a
-		thisa = a[(n2[j]-1)%nmax]
+### Assign orbital parameters
+		a        = aspacing[(n2[j]-1)%nmax]*AU
+		e,i, g,n = 0.0,0.0, 0.0,0.0,
+		M        = 360*random()		# mean anomaly
+#		E        =                  # eccentric anomaly
+#		f        = 360*random()		# true anomaly
 
-### Angles = random
-		phi   = 2*pi*random()
-		theta =   pi*random()
+#		x,y,z, u,v,w = AC.El2X([a,e,i, g,n,f], [sum(mstars),m])
+		x,y,z, u,v,w = AC.Merc_El2X([a,e,i, g,n,M], [sum(mstars),m])
 
-		x=0.
-		y=0.
-		z=0.
-		u=0.
-		v=0.
-		w=0.
+		x,y,z, u,v,w = x/AU,y/AU,z/AU, v*day/AU,u*day/AU,w*day/AU
 
 		### Coords = Jupiter/Saturn coords plus random variation
 		if   (j <  nmax):
@@ -509,13 +554,35 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e8):
 		else:
 			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
 
+### Why are the velocities so wrong?
+	vorb_actual = sqrt(SmlXV[:,3]**2+SmlXV[:,4]**2)
+	vorb_expect = sqrt( G*(mstars[0]+m)/(aspacing*AU))*day/AU
+
+	print(sum(mstars)/mSun)
+#	print(np.transpose(np.array((vorb_actual,vorb_expect))))
+#	import matplotlib
+#	matplotlib.use('Agg', warn=False)
+#	import matplotlib.pyplot as plt
+
+#	plt.plot(aspacing, vorb_actual, 'b-',
+#			 aspacing, vorb_expect, 'r--',
+#			)
+	#plt.legend(('Epsilon total','Potential','Kinetic'),
+	#           'lower right')
+	#plt.xlabel('time (years)')
+	#plt.ylabel('Energy (J)')
+	#plt.title('Energies')
+	#plt.xscale('log')
+#	plt.savefig('vorb_issue.png')
+#	plt.clf()
+
 ### Read generic small.in file header	
 	SmlHeadFile=open('SmlHeader.txt','r')
 	SmlHeader=SmlHeadFile.readlines()
 	SmlHeadFile.close()
 
 ### First lines for each object
-	SmlParams="    m={0}  r={1} d={2}\n".format(m, r, d)
+	SmlParams="    m={0}  r={1} d={2}\n".format(m/mSun, r, d)
 	SmlFirstLines=[]
 	for i in names:
 		SmlFirstLines.append(i+SmlParams)
@@ -1034,6 +1101,8 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		# Convert to mks units
 		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
 		# suffix '2' => treating AB as one star at their CM, AB-C as binary
+		print(xvCM_AB.shape, xvA.shape)
+		print(ntB,ntC)
 		xvA_Triple2 = np.array([ xvCM_AB[0:ntC,:], xvA[2,0:ntC,:] ])
 ### Find the coordinates of the center of momentum
 		xvCM_ABC = AC.FindCM( m, xvA_Triple) 
