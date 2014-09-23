@@ -13,7 +13,7 @@ mB=0.123
 mC=0.123
 
 newdisk=T	# generate a new disk, T or F
-amin=0.1	# minimum extent of disk, in AU
+amin=0.05	# minimum extent of disk, in AU
 
 newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# merc+vers=filename for mercury

@@ -34,11 +34,12 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
-		infile.write("  {0: 25.18}  {1: 25.18}  {2: 25.18}\n".format(
+		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
 												xv[i][0],xv[i][1],xv[i][2]))
-		infile.write("  {0: 25.18}  {1: 25.18}  {2: 25.18}\n".format(
+		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
 												xv[i][3],xv[i][4],xv[i][5]))
-		infile.write(s[i])
+		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
+												 s[i][0], s[i][1], s[i][2]))
 	infile.close()
 
 ###############################################################################
@@ -542,23 +543,22 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
 #		x,y,z, u,v,w = AC.El2X([a,e,i, g,n,f], [sum(mstars),m])
 		x,y,z, u,v,w = AC.Merc_El2X([a,e,i, g,n,M], [sum(mstars),m])
 
-		x,y,z, u,v,w = x/AU,y/AU,z/AU, v*day/AU,u*day/AU,w*day/AU
+		x,y,z, u,v,w = x/AU,y/AU,z/AU, u*day/AU,v*day/AU,w*day/AU
 
 		### Coords = Jupiter/Saturn coords plus random variation
 		if   (j <  nmax):
-			SmlXV[j]=[float(aeiA[0])+x, float(aeiA[1])+y, float(aeiA[2])+z,
-					  float(aeiA[3])+u, float(aeiA[4])+v, float(aeiA[5])+w]
+			cent = aeiA
 		elif (j >= nmax):
-			SmlXV[j]=[float(aeiB[0])+x, float(aeiB[1])+y, float(aeiB[2])+z,
-					  float(aeiB[3])+u, float(aeiB[4])+v, float(aeiB[5])+w]
+			cent = aeiB
 		else:
 			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
+		SmlXV[j]=[float(cent[0])+x, float(cent[1])+y, float(cent[2])+z,
+				  float(cent[3])+u, float(cent[4])+v, float(cent[5])+w]
 
 ### Why are the velocities so wrong?
 	vorb_actual = sqrt(SmlXV[:,3]**2+SmlXV[:,4]**2)
 	vorb_expect = sqrt( G*(mstars[0]+m)/(aspacing*AU))*day/AU
 
-	print(sum(mstars)/mSun)
 #	print(np.transpose(np.array((vorb_actual,vorb_expect))))
 #	import matplotlib
 #	matplotlib.use('Agg', warn=False)
@@ -589,7 +589,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
 
 ### Spin
 ### No spin for all objects
-	SmlS=["  0.0  0.0  0.0\n" for i in range(len(SmlFirstLines))]
+	SmlS=np.array([[0.,0.,0.] for i in range(len(SmlFirstLines))])
 
 ### Write small file
 	AC.WriteObjInFile(
