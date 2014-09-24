@@ -95,7 +95,7 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 
 ### Spin
 ### No spin for all objects
-	BigS=["  0.0  0.0  0.0\n" for i in range(len(BigFirstLines))]
+	BigS=np.array([[0.0,  0.0,  0.0] for i in range(len(BigFirstLines))])
 
 ### Write big file
 	AC.WriteObjInFile(
