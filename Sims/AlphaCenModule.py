@@ -34,11 +34,11 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
-		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
+		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
 												xv[i][0],xv[i][1],xv[i][2]))
-		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
+		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
 												xv[i][3],xv[i][4],xv[i][5]))
-		infile.write("  {0: 23.18}  {1: 23.18}  {2: 23.18}\n".format(
+		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
 												 s[i][0], s[i][1], s[i][2]))
 	infile.close()
 
@@ -54,7 +54,8 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 
 ### Needed modules
 	import AlphaCenModule as AC
-	import numpy, os
+	import os
+	import numpy as np
 	from random import random, uniform
 	from math import pi, sin, cos
 #	from mks_constants import mSun
@@ -75,8 +76,8 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	aCfactor = aB*(1+eB)/(1-eC)
 	aC = uniform(aCmin*aCfactor, aCmax*aCfactor)
 
-	aei = [[repr(aB), repr(eB), repr(iB), repr(gB), repr(nB), repr(MB)], 
-		   [repr(aC), repr(eC), repr(iC), repr(gC), repr(nC), repr(MC)]]
+	aei = [[aB, eB, iB, gB, nB, MB], 
+		   [aC, eC, iC, gC, nC, MC]]
 
 ### Read generic big.in file header	
 	BigHeadFile=open('BigHeader.txt','r')
@@ -459,7 +460,7 @@ def El2X(el, m):
 	return(x,y,z,u,v,w)
 	
 ###########################################################################
-def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
+def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,objs=['AlCenB']):
 	'''Make a disk of small objects around A and B
  and write to small.in'''
 
@@ -471,7 +472,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
 	import numpy as np
 	from random import random
 	from numpy import pi, sin, cos, log, sqrt
-	from mks_constants import G, AU, day, mSun
+	from mks_constants import G, AU, day, mSun, mEarth
 
 ### Objects per disk (one disk each around A and B)
 	nmax = int(nmax)
@@ -482,6 +483,9 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m=1e3,amin = 0.05,objs=['AlCenB']):
 		n2   = n1
 	
 ### Other parameters
+	if (m == 'default'):
+		mtot = mEarth				# total disk mass
+		m = mtot/nmax					# mass per disk particle
 	r = 0.001						# Hill radii for small interactions
 	d = 2.0							# small obj density, g/cm^3
 	
@@ -1101,8 +1105,8 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		# Convert to mks units
 		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
 		# suffix '2' => treating AB as one star at their CM, AB-C as binary
-		print(xvCM_AB.shape, xvA.shape)
-		print(ntB,ntC)
+#		print(xvCM_AB.shape, xvA.shape)
+#		print(ntB,ntC)
 		xvA_Triple2 = np.array([ xvCM_AB[0:ntC,:], xvA[2,0:ntC,:] ])
 ### Find the coordinates of the center of momentum
 		xvCM_ABC = AC.FindCM( m, xvA_Triple) 

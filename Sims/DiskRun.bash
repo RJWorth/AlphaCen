@@ -8,20 +8,20 @@ home=$(pwd)
 echo $home
 
 ### Simulation parameters
-mA=0.123
+mA=1.105
 mB=0.123
 mC=0.123
 
-newdisk=T	# generate a new disk, T or F
-amin=0.05	# minimum extent of disk, in AU
+newdisk=F	# generate a new disk, T or F
+amin=0.1	# minimum extent of disk, in AU
 
 newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# merc+vers=filename for mercury
 
 mintime=3	# = log(years)
-maxtime=3	# = log(years)
+maxtime=5	# = log(years)
 output=1	# = log(years)
-step=0.1	# = days
+step=10.0	# = days
 user='yes'	# use user-defined forces?
 
 ### Range for iterations
@@ -68,7 +68,7 @@ fi
 		cd $1/Out;	./elem;	cd $home
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
-		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
+#		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
 		# For long simulations, write looptime
 		if [ $k -ge 1 ]; then
 			# Get end time
@@ -76,7 +76,7 @@ fi
 			size=$(python -c 'import os;print(os.path.getsize("'$1'/Out/xv.out"))')
 			# Stop clock for iteration
 			t4=$(date +%s)
-			echo $1'	'$machine'	'$j'	'$k'	'${endtime:0:16}'	'$size'	'$(echo "$t4 - $t3"|bc ) >> disklooptimes.txt
+			echo $1'	'$k'	'$(echo "$t4 - $t3"|bc ) >> disktimes.txt
 		fi	# k>=7
 		# If stopfile=true, don't continue this simulation
 		stop=$(cat $1/stopfile.txt)
@@ -106,7 +106,7 @@ fi
 # Write stop time for this directory:
 t2=$(date +%s)
 
-R CMD BATCH '../Analysis/ReadDisk.R'
+R CMD BATCH -$1 '../Analysis/ReadDisk.R'
 
 #echo $1"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
