@@ -28,7 +28,6 @@ source('../Analysis/DiskUtils.R')
 n=100
 disknames=rep( 'M', n)
 	for (i in 1:n) disknames[i]=paste('M',i, sep='')
-print(disknames)
 
 starnames=c('AlCenA','AlCenB')
 nstars=length(starnames)
@@ -103,15 +102,21 @@ pairs(pairframe,pch=20,col=grays)
 dev.off()
 
 #plot(r(1,1:1001), keps(1,1:1001), pch=20)
-timeslice = 1:maxTlength	#(maxTlength-50):maxTlength,4:5]
-print(timeslice)
+time.all  =               1:maxTlength
+timeslice = (maxTlength-99):maxTlength
 
 pdf(paste(simdir,'/DiskOrbits.pdf',sep=''), height=10,width=10)
+
 plot(0,0, pch=19, col='orange', 
 	xlim=c(-extent,extent),
 	ylim=c(-extent,extent)	)
 for (i in 2:nstars) lines(star[i,timeslice,4:5], col='orange')
 for (i in 1:n)      lines(disk[i,timeslice,4:5], col=grays[i])
-#t=as.numeric(as.vector(stars[[1]]$Time))
+
+plot(0,0, pch=19, col='orange', 
+	xlim=c(-extent,extent),
+	ylim=c(-extent,extent)	)
+for (i in 2:nstars) lines(star[i,time.all ,4:5], col='orange')
+for (i in 1:n)      lines(disk[i,time.all ,4:5], col=grays[i])
 dev.off()
 

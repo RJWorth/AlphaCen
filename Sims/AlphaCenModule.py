@@ -460,7 +460,8 @@ def El2X(el, m):
 	return(x,y,z,u,v,w)
 	
 ###########################################################################
-def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,objs=['AlCenB']):
+def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
+	objs=['AlCenB'], size='small'):
 	'''Make a disk of small objects around A and B
  and write to small.in'''
 
@@ -596,8 +597,11 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,objs=['AlCenB']):
 	SmlS=np.array([[0.,0.,0.] for i in range(len(SmlFirstLines))])
 
 ### Write small file
-	AC.WriteObjInFile(
-	WhichDir,names,'small',SmlHeader,SmlFirstLines,SmlXV,SmlS)
+	if (size=='small'):
+		AC.WriteObjInFile(
+		WhichDir,names,'small',SmlHeader,SmlFirstLines,SmlXV,SmlS)
+	elif (size=='big'):
+		write('halp!')
 
 ###############################################################################
 def InitParams(WhichDir):
