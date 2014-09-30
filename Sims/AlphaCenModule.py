@@ -34,11 +34,11 @@ def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
-		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
+		infile.write("  {0: 24.20}  {1: 24.20}  {2: 24.20}\n".format(
 												xv[i][0],xv[i][1],xv[i][2]))
-		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
+		infile.write("  {0: 24.20}  {1: 24.20}  {2: 24.20}\n".format(
 												xv[i][3],xv[i][4],xv[i][5]))
-		infile.write("  {0: 23.20}  {1: 23.20}  {2: 23.20}\n".format(
+		infile.write("  {0: 24.20}  {1: 24.20}  {2: 24.20}\n".format(
 												 s[i][0], s[i][1], s[i][2]))
 	infile.close()
 
@@ -494,12 +494,11 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 	mstars = np.array(AC.GetStellarMasses(WhichDir))*mSun
 
 	aeiA = [0., 0., 0., 0., 0., 0.]
+	# If using non-central star:
 	if (len(objs) > 0):
 		aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
-
-### Transform aei to xyz
-	if (len(objs) > 0):
-		xvB  = AC.El2X(aeiB, [mstars[0],mstars[1]])
+		### Transform aei to xyz
+		xvB  = AC.Merc_El2X(aeiB, [mstars[0],mstars[1]])
 
 ### Small object parameters
 	# List of small object names
@@ -546,7 +545,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 #		f        = 360*random()		# true anomaly
 
 #		x,y,z, u,v,w = AC.El2X([a,e,i, g,n,f], [sum(mstars),m])
-		x,y,z, u,v,w = AC.Merc_El2X([a,e,i, g,n,M], [sum(mstars),m])
+		x,y,z, u,v,w = AC.Merc_El2X([a,e,i, g,n,M], [mstars[0],m])
 
 		x,y,z, u,v,w = x/AU,y/AU,z/AU, u*day/AU,v*day/AU,w*day/AU
 

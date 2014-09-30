@@ -20,10 +20,10 @@ newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
 mintime=3	# = log(years)
-maxtime=4	# = log(years)
+maxtime=8	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
-user='yes'	# use user-defined forces?
+user='no'	# use user-defined forces?
 
 ### Range for iterations
 if [ $machine = chloe ]; then
@@ -70,6 +70,11 @@ fi
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
 #		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
+
+		if [ $k -ge 5 ]; then
+			R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+		fi	# k >= 5
+
 		# For long simulations, write looptime
 		if [ $k -ge 1 ]; then
 			# Get end time
@@ -104,10 +109,11 @@ fi
 		break
 	fi
 
+R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+
 # Write stop time for this directory:
 t2=$(date +%s)
 
-R CMD BATCH -$1 '../Analysis/ReadDisk.R'
 
 #echo $1"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
