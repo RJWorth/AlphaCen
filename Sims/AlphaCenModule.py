@@ -23,14 +23,19 @@ def where(AList,AnElement):
 	return inds
 
 ############################################################################
-def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s):
+def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s,append='F'):
 	'''Write big.in or small.in file'''
 
-	infile=open(WhichDir+'/In/'+filename+'.in','w')
+	print(append)
+	if (append == 'F'):
+		infile=open(WhichDir+'/In/'+filename+'.in','w')
+	elif(append == 'T'):
+		infile=open(WhichDir+'/In/'+filename+'.in','a')
 
 ### Header
-	for i in range(len(Header)):
-		infile.write(Header[i])
+	if (append == 'F'):
+		for i in range(len(Header)):
+			infile.write(Header[i])
 ### Data
 	for i in range(len(names)):
 		infile.write(FirstLines[i])
@@ -139,7 +144,7 @@ def GetObjParams(filepath,obj):
 	u, v, w = infile[objrow+2].split()
 #	s1, s2, s3 = infile[objrow+3].split()
 
-	return(float(x),float(y),float(z), float(u),float(v),float(w))
+	return([float(x),float(y),float(z), float(u),float(v),float(w)])
 
 ###########################################################################
 ### Get orbital parameters of an object from big.in or small.in
@@ -493,12 +498,15 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 ### Get orbital parameters for central objects (in aei)
 	mstars = np.array(AC.GetStellarMasses(WhichDir))*mSun
 
-	aeiA = [0., 0., 0., 0., 0., 0.]
+	aeiA, xvA = [0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]
 	# If using non-central star:
 	if (len(objs) > 0):
 		aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
+		aeiB[0] = aeiB[0]*AU
 		### Transform aei to xyz
 		xvB  = AC.Merc_El2X(aeiB, [mstars[0],mstars[1]])
+		xvB  = [xvB[0]/AU,     xvB[1]/AU,     xvB[2]/AU, 
+				xvB[3]*day/AU, xvB[4]*day/AU, xvB[5]*day/AU]
 
 ### Small object parameters
 	# List of small object names
@@ -506,7 +514,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 
 	# Determine disk boundaries (in AU)
 	if (len(objs) > 0):
-		peri = aeiB[0]*(1-aeiB[1])	# min distance btwn A and B
+		peri = aeiB[0]*(1-aeiB[1])/AU	# min distance btwn A and B
 	else:
 		peri = 20.
 	amax = peri/2				# could experiment with this...
@@ -519,23 +527,20 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 #	smallaei = np.array([[0. for j in range(6)] for i in n1])
 	# Small object xv's
 	SmlXV  = np.array([[0. for j in range(6)] for i in n2])
-
+	if (size == 'big'):
+		SmlAEI = np.array([[0. for j in range(6)] for i in n2])
 ### Generate rocks
 	for j in range(0,len(names)):
-		### Generate random variation
-#		phi1=2*pi*random()
-#		theta1=-pi/2+pi*random()
-#		r=maxaspread*random()
-#		v=maxvspread*random()
-#		phi2=2*pi*random()
-#		theta2=-pi/2+pi*random()
-
-#		x=r*cos(phi1)*cos(theta1)
-#		y=r*sin(phi1)*cos(theta1)
-#		z=r*sin(theta1)
-#		u=v*cos(phi2)*cos(theta2)
-#		v=v*sin(phi2)*cos(theta2)
-#		w=v*sin(theta2)
+		
+		# Determine parameters for central object
+		if   (j <  nmax):
+			cent = xvA
+			centmass = mstars[0]
+		elif (j >= nmax):
+			cent = xvB
+			centmass = mstars[1]
+		else:
+			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
 
 ### Assign orbital parameters
 		a        = aspacing[(n2[j]-1)%nmax]*AU
@@ -543,23 +548,27 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 		M        = 360*random()		# mean anomaly
 #		E        =                  # eccentric anomaly
 #		f        = 360*random()		# true anomaly
+		aei = [a,e,i,g,n,M]
 
 #		x,y,z, u,v,w = AC.El2X([a,e,i, g,n,f], [sum(mstars),m])
-		x,y,z, u,v,w = AC.Merc_El2X([a,e,i, g,n,M], [mstars[0],m])
+		x,y,z, u,v,w = AC.Merc_El2X(aei, [centmass,m])
 
 		x,y,z, u,v,w = x/AU,y/AU,z/AU, u*day/AU,v*day/AU,w*day/AU
+		xv = [x,y,z,u,v,w]
 
 		### Coords = Jupiter/Saturn coords plus random variation
-		if   (j <  nmax):
-			cent = aeiA
-		elif (j >= nmax):
-			cent = aeiB
-		else:
-			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
-		SmlXV[j]=[float(cent[0])+x, float(cent[1])+y, float(cent[2])+z,
-				  float(cent[3])+u, float(cent[4])+v, float(cent[5])+w]
+		obj = xv
 
-### Why are the velocities so wrong?
+		SmlXV[j]=[cent[i]+obj[i] for i in range(6)]
+
+		if (size == 'big'):
+			if   (j <  nmax):
+				SmlAEI[j] = [aei[0]/AU,aei[1],aei[2],aei[3],aei[4],aei[5]]
+			elif (j >= nmax):
+				SmlAEI[j] = AC.Merc_X2El(SmallXV[j], [centmass,m])
+
+
+### If needed to check velocities:
 	vorb_actual = sqrt(SmlXV[:,3]**2+SmlXV[:,4]**2)
 	vorb_expect = sqrt( G*(mstars[0]+m)/(aspacing*AU))*day/AU
 
@@ -600,7 +609,8 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 		AC.WriteObjInFile(
 		WhichDir,names,'small',SmlHeader,SmlFirstLines,SmlXV,SmlS)
 	elif (size=='big'):
-		write('halp!')
+		AC.WriteObjInFile(
+		WhichDir,names,'big',SmlHeader,SmlFirstLines,SmlAEI,SmlS,append='T')
 
 ###############################################################################
 def InitParams(WhichDir):

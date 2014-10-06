@@ -5,7 +5,6 @@ args <- commandArgs(trailingOnly = F)
 	print(args)
 if (length(args) >2) options(echo = FALSE)
 dir <- sub("-","",args[length(args)])
-	print(dir)
 
 ### If version not given at input, try using version specified here
 if (length(dir) == 0 | 
@@ -14,11 +13,11 @@ if (length(dir) == 0 |
 	dir=="/usr/lib64/R/bin/exec/R" |
 	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		dir='Proxlike/071714/Prx1/Disk2'	#'Prx02/Disk'
+		dir='Proxlike/071714/Prx1/Disk4'	#'Prx02/Disk'
 		}
-### Location
+	print(dir)
 
-
+### Locations
 simdir=paste('../Sims/',dir,sep='')
 aeidir=paste(simdir,'/Out/AeiOutFiles/',sep='')
 
@@ -28,7 +27,10 @@ source('../Analysis/DiskUtils.R')
 ### Generate list of disk particle names (for n particles)
 n=100
 disknames=rep( 'M', n)
-	for (i in 1:n) disknames[i]=paste('M',i, sep='')
+	if (dir == 'Proxlike/071714/Prx1/Disk4')	{
+		for (i in 1:n) disknames[i]=paste('M',i+100, sep='') } else {
+		for (i in 1:n) disknames[i]=paste('M',i, sep='') }
+print(disknames)
 
 starnames=c('AlCenA','AlCenB')
 nstars=length(starnames)
@@ -108,9 +110,9 @@ pdf(paste(simdir,'/DiskEvol.pdf',sep=''), height=15,width=15)
 par(mfrow=c(3,1))
 
 for (column in c('x','y','z'))	{
-plot(time,star[2,time.all,column], type='l', col='orange',log='x',
+plot(time[-1],star[2,time.all[-1],column], type='l', col='orange',log='x',
 	ylim=c(-extent,extent)	)
-for (i in n:1)      lines(time,disk[i,time.all,column], col=grays[i])
+for (i in n:1)      lines(time[-1],disk[i,time.all[-1],column], col=grays[i])
 	}
 
 dev.off()
@@ -120,19 +122,22 @@ pdf(paste(simdir,'/DiskOrbits.pdf',sep=''), height=10,width=10)
 plot(0,0, pch=19, col='orange', main='End of sim',
 	xlim=c(-extent,extent),
 	ylim=c(-extent,extent)	)
-for (i in 2:nstars) lines(star[i,timeslice,4:5], col='orange')
-for (i in n:1)      lines(disk[i,timeslice,4:5], col=grays[i])
+for (i in n:1)      points(disk[i,timeslice,4:5], col=grays[i],pch=20)
+for (i in 2:nstars) points(star[i,timeslice,4:5], col='orange',pch=20)
 
 plot(0,0, pch=19, col='orange', main='Whole sim',
 	xlim=c(-extent,extent),
 	ylim=c(-extent,extent)	)
-for (i in 2:nstars) lines(star[i, time.all,4:5], col='orange')
 for (i in n:1)      lines(disk[i, time.all,4:5], col=grays[i])
+for (i in 2:nstars) lines(star[i, time.all,4:5], col='orange')
 
 plot(0,0, pch=19, col='orange', main='Start of sim',
 	xlim=c(-extent,extent),
 	ylim=c(-extent,extent)	)
-for (i in 2:nstars) lines(star[i,     1:50,4:5], col='orange')
 for (i in n:1)      lines(disk[i,     1:50,4:5], col=grays[i])
+for (i in 2:nstars) lines(star[i,     1:50,4:5], col='orange')
 dev.off()
+
+### If called from shell command line, force exit from R
+if (length(args) > 2) q('no')
 

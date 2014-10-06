@@ -12,11 +12,11 @@ mA=1.105
 mB=0.934
 mC=0.123
 
-newdisk=T	# generate a new disk, T or F
+newdisk=F	# generate a new disk, T or F
 amin=0.1	# minimum extent of disk, in AU
 sz=small   	# add to big.in or small.in?
 
-newmerc=T	# recompile the merc/elem executables?
+newmerc=F	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
 mintime=3	# = log(years)
