@@ -21,8 +21,8 @@ if [ $2 = 4 ]; then
 	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22)
 fi
 if [ $2 = 5 ]; then
-	prefix=''
-	Dirs=(SDir2 SDir6 CDir5 CDir8 CDir9 CDir10)
+	prefix='Err/'
+	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24)
 fi
 
 \rm panpipes1.txt
