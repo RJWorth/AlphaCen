@@ -20,35 +20,35 @@ echo ')---------------------------------------------------------' >> $paramfile
 echo ') Important integration parameters:                       ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ' algorithm (MVS, BS, BS2, RADAU, HYBRID etc) = hyb        ' >> $paramfile
-echo ' start time (days)= 0.0                                   ' >> $paramfile
-echo ' stop time (days) = 365.25e'$2'                           ' >> $paramfile
+echo ' start time (days)      = 0.0                             ' >> $paramfile
+echo ' stop time (days)       = 365.25e'$2'                     ' >> $paramfile
 #echo ' output interval (days) = 365.25e'$3'                     ' >> $paramfile
 echo ' output interval (days) = 365.25e'$output'                ' >> $paramfile
-echo ' timestep (days) = '$4'                                   ' >> $paramfile
-echo ' accuracy parameter=1.d-12                                ' >> $paramfile
+echo ' timestep (days)        = '$4'                            ' >> $paramfile
+echo ' accuracy parameter     = 1.d-12                          ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ') Integration options:                                    ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
-echo ' stop integration after a close encounter = no            ' >> $paramfile
-echo ' allow collisions to occur = yes                          ' >> $paramfile
-echo ' include collisional fragmentation = no                   ' >> $paramfile
-echo ' express time in days or years = years                    ' >> $paramfile
+echo ' stop integration after a close encounter        = no     ' >> $paramfile
+echo ' allow collisions to occur                       = yes    ' >> $paramfile
+echo ' include collisional fragmentation               = no     ' >> $paramfile
+echo ' express time in days or years                   = years  ' >> $paramfile
 echo ' express time relative to integration start time = yes    ' >> $paramfile
-echo ' output precision = med                                   ' >> $paramfile
+echo ' output precision                                = med    ' >> $paramfile
 echo ' < not used at present >                                  ' >> $paramfile
-echo ' include relativity in integration= no                    ' >> $paramfile
-echo ' include user-defined force = '$6'                        ' >> $paramfile
+echo ' include relativity in integration               = no     ' >> $paramfile
+echo ' include user-defined force                      = '$6'   ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ') These parameters do not need to be adjusted often:      ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
-echo ' ejection distance (AU)= 100000                           ' >> $paramfile
+echo ' ejection distance (AU)      = 100000                     ' >> $paramfile
 echo ' radius of central body (AU) = 0.0051                     ' >> $paramfile
-echo ' central mass (solar) = '$7'                              ' >> $paramfile
+echo ' central mass (solar)        = '$7'                       ' >> $paramfile
 echo ' central J2 = 0                                           ' >> $paramfile
 echo ' central J4 = 0                                           ' >> $paramfile
 echo ' central J6 = 0                                           ' >> $paramfile
 echo ' < not used at present >                                  ' >> $paramfile
 echo ' < not used at present >                                  ' >> $paramfile
-echo ' Hybrid integrator changeover (Hill radii) = 3.           ' >> $paramfile
-echo ' number of timesteps between data dumps = '$dumpsteps'    ' >> $paramfile
+echo ' Hybrid integrator changeover (Hill radii)    = 3.        ' >> $paramfile
+echo ' number of timesteps between data dumps       ='$dumpsteps >> $paramfile
 echo ' number of timesteps between periodic effects = 10000     ' >> $paramfile
