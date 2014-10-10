@@ -7,18 +7,22 @@
 pwd=$(pwd)
 echo $pwd
 
-prefix='Proxlike/Prx'
-#Dirs=()			#chloe
-Dirs=(12)		#shapiro
-suffix='/6-3'
+prefix='Err/'	#'Proxlike/Prx'
+#Dirs=()		#chloe
+Dirs=(10)		#shapiro
+suffix='/New6-2S'
 
 for i in ${Dirs[*]}
 do
 	j=$prefix$i$suffix
 	echo $j
 
+#	gfortran -w -O1 -o $j/Out/merc_ext$i Files/mercury_TG.for	#j in
+#	gfortran -w -O1 -o $j/Out/elem Files/elem.for 			#j in
+
 	cd $j/Out
-		./merc_ext
+#		./merc_ext$i
+		./merc_ACSDir5
 		./elem
 		\mv *.aei AeiOutFiles
 	cd $pwd

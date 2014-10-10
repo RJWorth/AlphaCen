@@ -1316,7 +1316,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 
 #################################### Write ################################
 ### Arrange data nicely
-	if ((wantsum==True) & (mode=='triple')):
+	if ((mode=='triple')):
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
 			    str(round(rB[-1]/AU,2)),
 			    ('% 9.3g' % epsB[-1]),
@@ -1350,13 +1350,13 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
-	                     rB/AU, epsB, rC/AU, epsC,
+	                     wantsum, rB/AU, epsB, rC/AU, epsC,
 	                     aB[-1], eB[-1], aC[-1], eC[-1], 
 						 TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
 def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
-                  rB, epsB, rC, epsC, 
+                  wantsum, rB, epsB, rC, epsC, 
                   aBf, eBf, aCf, eCf, 
 				  TimeB, TimeC, DestB, DestC):
 	'''Determine if simulation is ending, and write data if so	'''
@@ -1375,23 +1375,29 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### i.e., whether an object is missing and the run can be ended
 	isBmaxT = (float(TimeB)==Tmax)  # has either survived the max time?
 	isCmaxT = (float(TimeC)==Tmax)	# or
-	Bejectd = (DestB!='-'.rjust(8))	# has either been ejected/accreted?
-	Cejectd = (DestC!='-'.rjust(8))	
+	Bejectd = (DestB.strip()=='ejected')	# has either been ejected/accreted?
+	Cejectd = (DestC.strip()=='ejected')
+	Bcollsn = ((DestB.strip()!='-') & (DestB.strip()!='ejected'))
+	Ccollsn = ((DestC.strip()!='-') & (DestC.strip()!='ejected'))	
+	Bremovd = Bejectd | Bcollsn
+	Cremovd = Cejectd | Ccollsn
 
 ### The stop conditions should be mutually exclusive
-	if (isBmaxT==Bejectd==True) | (isCmaxT==Cejectd==True):
+	if (isBmaxT==Bremovd==True) | (isCmaxT==Cremovd==True):
 		print('Warning: possible stop condition conflict?')
 
 ### 'Little' stop = combination of these checks
-	stop=(isBmaxT | isCmaxT | Bejectd | Cejectd)
+	stop=(isBmaxT | isCmaxT | (Bremovd) | (Cremovd))
+	print('     Fates: {0}, {1}'.format(DestB,DestC))
 	print('	    stop = '+
-	str(isBmaxT)[0]+str(isCmaxT)[0]+str(Bejectd)[0]+str(Cejectd)[0]+
+	str(isBmaxT)[0]+str(isCmaxT)[0]+str(Bremovd)[0]+str(Cremovd)[0]+
 	',               Time = 1e'+str(int(log10(ThisT)))+' yrs')
 
 ### Write stop status to file for bash script to check
-	StopFile=open(WhichDir+'/stopfile.txt','w')
-	StopFile.write(str(stop)+'\n')
-	StopFile.close()
+	if (wantsum == True):
+		StopFile=open(WhichDir+'/stopfile.txt','w')
+		StopFile.write(str(stop)+'\n')
+		StopFile.close()
 
 ### Prox's distance > this number (in AU) counts as 'prox-like'
 	pcut=10000.
@@ -1414,8 +1420,8 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 		else:
 			bigstop = True
 			print('**BIGSTOP FATE/ENERGY CONFLICT (C)**')			
-	if ((isBmaxT & isCmaxT) & (((float(epsB[-1])>0.) & (not Bejectd)) | 
-		 					   ((float(epsC[-1])>0.) & (not Cejectd)) ) ):
+	if ((isBmaxT & isCmaxT) & (((float(epsB[-1])>0.) & (not Bremovd)) | 
+		 					   ((float(epsC[-1])>0.) & (not Cremovd)) ) ):
 		bigstop = True
 		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
 	elif (np.isnan(float(epsB[-1])) | np.isnan(float(epsC[-1])) | 
@@ -1451,14 +1457,16 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 ### debugging ----------
 
 ### Write big stop status to file for bash script to check
-	BigStopFile=open(WhichDir+'/bigstopfile.txt','w')
-	BigStopFile.write(str(bigstop)+'\n')
-	BigStopFile.close()
+	if (wantsum == True):
+		BigStopFile=open(WhichDir+'/bigstopfile.txt','w')
+		BigStopFile.write(str(bigstop)+'\n')
+		BigStopFile.close()
 
 ### Write summary to file
 	done=False
 #	if "Prx" not in WhichDir:
-	done=AC.WriteSummary(WhichDir,summary, summaryheader, stop, bigstop)
+	if (wantsum == True):
+		done=AC.WriteSummary(WhichDir,summary, summaryheader, stop, bigstop)
 
 ############################################################################
 ### Write summary to file
