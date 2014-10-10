@@ -978,7 +978,7 @@ def i(hz, hbar):
 	return(np.array(i))
 
 ###############################################################################
-def GetFinalData(WhichDir,ThisT,mode, m):
+def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	'''Read in data, calculate derived values, and output for 
 	writing/plotting/etc.'''
 
@@ -1032,6 +1032,25 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 		if (name[j] == 'PrxCen'):
 			DestC = dest[j].rjust(8)
 			TimeC = time[j].rjust(13)
+
+### Get flags for various possible fatess
+	isBmaxT, isCmaxT, Bejectd, Cejectd, \
+	Bcollsn, Ccollsn, Bremovd, Cremovd = AC.ParseDestinations(DestB, DestC, \
+														TimeB, TimeC, Tmax)
+
+### If collision, have to add masses
+	if (Bcollsn):
+		if (DestB.strip() == 'Center'):
+			m[0:2] = [m[0]+m[1], 0.]
+		if (DestB.strip() == 'PrxCen'):
+			m[1:3] = [0., m[0]+m[1]]
+	if (Ccollsn):
+		if (DestC.strip() == 'Center'):
+			m[0:3] = [m[0]+m[1], m[2], 0.]
+		if (DestC.strip() == 'AlCenB'):
+			m[1:3] = [m[0]+m[1], 0.]
+	print(m)
+#		mu should be unchanged; mu2 is calculated later
 
 #------------------------------------------------------------------------------
 ############# Read in original x and v values ###########################
@@ -1195,8 +1214,8 @@ def GetFinalData(WhichDir,ThisT,mode, m):
 
 #------------------------------------------------------------------------------
 ### Return all the data
-	return 	  rAB,   vAB, dEpsB, epsB, kB, uB, \
-			rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
+	return 	m, rAB,   vAB, dEpsB, epsB, kB, uB, \
+			 rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
 			aAB, eAB, iAB, aC, eC, iC, \
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
 
@@ -1219,11 +1238,11 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple'):
 	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
-	rB, vB, dEpsB, epsB,\
-	rC, vC, dEpsC, epsC,\
+	m, rB, vB, dEpsB, epsB,\
+	   rC, vC, dEpsC, epsC,\
 	aB, eB, iB, aC, eC, iC,	\
 	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
-													WhichDir, ThisT, mode, m)
+												WhichDir, ThisT, mode, m, Tmax)
 
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
@@ -1287,11 +1306,11 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 #	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	rB, vB, dEpsB, epsB, kB, uB, \
-	rC, vC, dEpsC, epsC, kC, uC, \
+	m, rB, vB, dEpsB, epsB, kB, uB, \
+	   rC, vC, dEpsC, epsC, kC, uC, \
 	aB, eB, iB, aC, eC, iC,	\
-	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
-													WhichDir, ThisT, mode, m)
+	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(WhichDir,
+													 ThisT, mode, m, Tmax)
 
 ##################################### Plot ################################
 ### Make plots of sim
@@ -1355,11 +1374,8 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 						 TimeB, TimeC, DestB, DestC)
 	
 ############################################################################
-def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
-                  wantsum, rB, epsB, rC, epsC, 
-                  aBf, eBf, aCf, eCf, 
-				  TimeB, TimeC, DestB, DestC):
-	'''Determine if simulation is ending, and write data if so	'''
+def ParseDestinations(DestB, DestC, TimeB, TimeC, Tmax):
+	'''Determine what hit what, etc.'''
 
 ### Needed modules
 	import numpy as np
@@ -1381,6 +1397,33 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	Ccollsn = ((DestC.strip()!='-') & (DestC.strip()!='ejected'))	
 	Bremovd = Bejectd | Bcollsn
 	Cremovd = Cejectd | Ccollsn
+
+	return(	isBmaxT, isCmaxT, \
+			Bejectd, Cejectd, \
+			Bcollsn, Ccollsn, \
+			Bremovd, Cremovd)
+
+############################################################################
+def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
+                  wantsum, rB, epsB, rC, epsC, 
+                  aBf, eBf, aCf, eCf, 
+				  TimeB, TimeC, DestB, DestC):
+	'''Determine if simulation is ending, and write data if so	'''
+
+### Needed modules
+	import numpy as np
+	import AlphaCenModule as AC
+	from numpy import log10, sqrt, sin, pi
+#	from operator import add
+#	import subprocess
+#	import rvtest as rv
+	from mks_constants import AU
+
+### Get flags for various possible fatess
+	isBmaxT, isCmaxT, Bejectd, Cejectd, \
+	Bcollsn, Ccollsn, Bremovd, Cremovd = AC.ParseDestinations(DestB, DestC,
+															   TimeB, TimeC,
+																		 Tmax)
 
 ### The stop conditions should be mutually exclusive
 	if (isBmaxT==Bremovd==True) | (isCmaxT==Cremovd==True):
