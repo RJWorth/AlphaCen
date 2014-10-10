@@ -5,8 +5,8 @@
 #Dirs=(Prx12/4-1)
 	prefix='Err/'	#'Prx'
 #	Dirs=(01 02 03 04 05 06 07 08 09 10 11)
-	Dirs=(10)
-	suffix='New6-2'
+	Dirs=(22)
+	suffix=''
 
 for i in ${Dirs[*]}
 do
@@ -14,7 +14,7 @@ do
 #	./initialize.bash $prefix$i $suffix
 
 	### run gif-making script for this directory
-	./im100.bash $prefix$i/$suffix
+	./im100.bash $prefix$i$suffix $suffix
 	
 done
 

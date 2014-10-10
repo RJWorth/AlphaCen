@@ -4,7 +4,7 @@ wd=$(pwd)
 echo $wd
 
 echo 'do100, dir = '$1
-suffix=${1:(-3)}
+suffix=$2
 
 ### Generate images in R
 echo $1', reading AEI'

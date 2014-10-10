@@ -66,9 +66,35 @@ plot(stars3[[2]]$x[DoAEPlot],stars3[[2]]$y[DoAEPlot],type='l',col='red',
 	legend('topleft',c('A','B','C'),col=c('blue','yellow','red'),lty=1)
 dev.off()
 
+pdf(paste('gif/',dir,'/XY_end.pdf',sep=''))
+plot( -CM3[2859,1],       -CM3[2859,2], col='blue',  pch=20,
+	 xlim=xlimits, ylim=ylimits,
+	 xlab='X (AU)', ylab='Y (AU)')
+#	lines(stars3[[1]]$x[2858:2859],stars3[[1]]$y[2858:2859],col='yellow')
+#	lines(       -CM3[2858:2859,1],       -CM3[2858:2859,2],col='blue')
+	legend('topleft',c('A','B','C'),col=c('blue','yellow','red'),lty=1)
+	# Final positions
+	points(       -CM3[2859,1],       -CM3[2859,2],col='blue',  pch=20)
+	points(stars3[[1]]$x[2859],stars3[[1]]$y[2859],col='yellow',pch=20)
+	points(stars3[[2]]$x[2859],stars3[[2]]$y[2859],col='red',   pch=20)
+	# Velocity vector
+	lines(
+	 c(stars3[[1]]$x[2859],stars3[[1]]$x[2859]+stars3[[1]]$vx[2859]*365.25*100),
+	 c(stars3[[1]]$y[2859],stars3[[1]]$y[2859]+stars3[[1]]$vy[2859]*365.25*100),
+		 col='yellow')
+	lines(
+	 c(stars3[[2]]$x[2859],stars3[[2]]$x[2859]+stars3[[2]]$vx[2859]*365.25*100),
+	 c(stars3[[2]]$y[2859],stars3[[2]]$y[2859]+stars3[[2]]$vy[2859]*365.25*100),
+		 col='red')
+	lines(
+	 c(-CM3[2859,1],-CM3[2859,1]+ -CM3[2859,4]*365.25*100),
+	 c(-CM3[2859,2],-CM3[2859,2]+ -CM3[2859,5]*365.25*100),col='blue')
+
+dev.off()
+
 ### Gif images of binary's orbit
-source('binary.R')
+#source('binary.R')
 
 ### Gif images of triple's orbit
-if (mode=='triple') source('triple.R')
+#if (mode=='triple') source('triple.R')
 

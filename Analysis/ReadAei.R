@@ -2,15 +2,21 @@
 print('Read .aei files')
 
 args <- commandArgs(trailingOnly = F)
-myarg <- sub("-","",args[length(args)])
+dir  <- sub("-","",args[length(args)])
 
-### Variables
-dir=myarg			# which directory to use, as string
-dir='Err/10/New6-2'	# or uncomment this to specify a directory
+### If version not given at input, try using version specified here
+if (length(dir) == 0 | 
+	dir=="-no-readline" | 
+	dir=="/usr/lib/R/bin/exec/R" | 
+	dir=="/usr/lib64/R/bin/exec/R" |
+	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
+		print('no args')
+		dir='Err/22'
+		}
+print(dir)
 
 #aeidir=paste('../Sims/Proxlike/',dir,'/Out/AeiOutFiles/',sep='')
 aeidir=paste('../Sims/',dir,'/Out/AeiOutFiles/',sep='')	#location of directory
-print(dir)
 
 mode = 'triple'	# binary or triple
 ### Read aei for stars
@@ -74,8 +80,8 @@ redux=10
 #DoAEPlot=(1:length(t))[ ((1:length(t))%%redux)==0]
 # extension indices
 #DoAEPlot=(6401:7401)[(1:1000%%1)==0]
-start=5-4		#start=6505-4
-stop =10005-4	#stop=7405-4
+start=5-4		#start=6405-4
+stop =6405-4	#stop=7405-4
 range=start:stop
 DoAEPlot=range[(1:length(range)%%redux)==0]
 
@@ -88,4 +94,8 @@ sink()
 
 ### x-y plots
 if ( length(DoAEPlot)>1 | DoAEPlot[1]>0 ) source('AEPlot.R')
+
+### If called from shell command line, force exit from R
+if (length(args) > 2) q('no')
+
 
