@@ -955,7 +955,7 @@ def a(eps, mu):
 	return(np.array(a))
 
 ###############################################################################
-def e(a, eps, hbar, mu):
+def e(eps, hbar, mu):
 	'''Calculate eccentricity of an object's orbit'''
 
 ### Needed modules
@@ -1049,7 +1049,6 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 			m[0:3] = [m[0]+m[1], m[2], 0.]
 		if (DestC.strip() == 'AlCenB'):
 			m[1:3] = [m[0]+m[1], 0.]
-	print(m)
 #		mu should be unchanged; mu2 is calculated later
 
 #------------------------------------------------------------------------------
@@ -1087,102 +1086,42 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	xvA = AC.AUtoMKS(xvA_AU)
 ### Get distances between stars (== rAij_AU*AU), and rel. velocity
 	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
+	rBC = AC.Distance(xvA[1,:,:], xvA[2,:,:])
+	rAC = AC.Distance(xvA[0,:,:], xvA[2,:,:])
 	vAB = AC.XVtoV(xvA[1,:,:])
 
-#------------------------------------------------------------------------------
-######################## Binary system: #################################
-#------------------------------------------------------------------------------
-# CMAB = Center of momentum frame of A+B
-### Find the coordinates of the center of momentum
-	xvCM_AB = AC.FindCM( m[0:2], xvA[0:2,0:ntB,:]) 
-### Convert to center-of-momentum units
-	xvAB  = AC.wrtCM(xvA[:,0:ntB,:], xvCM_AB)
-### Get r, v in CM units
-	rCMAB = np.array([ AC.XVtoR(xvAB[i,:,:]) for i in range(nobjs) ])
-	vCMAB = np.array([ AC.XVtoV(xvAB[i,:,:]) for i in range(nobjs) ])
-#---------------------------- Energies ----------------------------------------
-### Get orbital parameters
-	# grav. paramater for binary
-	mu2 = G*(m[0]+m[1])
-	# specific orbital energy
-	epsB = AC.Eps(rAB[0:ntB], vAB[0:ntB], mu2)
-	kB   = AC.kEps(vAB[0:ntB])
-	uB   = AC.uEps(rAB[0:ntB], mu2)
-	# semimajor axis
-	aAB = AC.a(epsB, mu2)
+### Determine system classification
+	distances = np.array([rAB[-1], rBC[-1], rAC[-1]])
+	if (min(distances) == rAB[-1]):
+		sysclass = 'AB'
+		abc = [0,1,2]
+	elif (min(distances) == rBC[-1]):
+		sysclass = 'BC'
+		abc = [1,2,0]
+	elif (min(distances) == rAC[-1]):
+		sysclass = 'AC'
+		abc = [0,2,1]
 
-	# specific angular momentum (r x v) of B wrt A
-	hA     = AC.h( xvA[1,0:ntB,0:3],  xvA[1,0:ntB,3:6])
-	hbarA  = AC.XVtoR( hA[:,:])
-	# eccentricity
-	eAB = AC.e(aAB, epsB, hbarA, mu2)
-	# inclination
-	iAB = AC.i(hA[:,2], hbarA)
+	print('            {4}, {0} ({2:6.4g} y), {1} ({3:6.4g} y)'.format(
+			       DestB,       DestC, 
+			float(TimeB),float(TimeC), sysclass))
 
-#------------------------------------------------------------------------------
-####################### Triple system: ########################################
-#------------------------------------------------------------------------------
-### Only relevant if B and C both survived
+# Get binary data
+	aB, eB, iB, epsB, xvCM_AB, xvAB, kB, uB = AC.Binary(
+			[m[abc[0]],m[abc[1]]], 
+			xvA[abc[0],:,:],xvA[abc[1],:,:],xvA[abc[2],:,:], 
+			nobjs, ntB)
+# Get triple system data
 	if (mode=='triple'):
-#		nobjs = 3
-		ind=min(ntB,ntC)
-### If B is ejected before C, exend the AB CM, and set equal to A during that
-		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
-			xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xvA[0,ntB:ntC,:]) )
-		# Get xv wrt CM_AB through ntC
-			xvAB  = AC.wrtCM(xvA[:,0:ntC,:], xvCM_AB)
+		aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB, ind = AC.Triple(
+			[m[abc[0]],m[abc[1]],m[abc[2]]], 
+			xvA[abc[0],:,:],xvA[abc[1],:,:],xvA[abc[2],:,:], 
+			nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB)
 
-### Combine three stars into a 3D array
-		xvA_Triple_AU = xvA_AU[:, 0:ntC, :]
-		# Convert to mks units
-		xvA_Triple = AC.AUtoMKS(xvA_Triple_AU)
-		# suffix '2' => treating AB as one star at their CM, AB-C as binary
-#		print(xvCM_AB.shape, xvA.shape)
-#		print(ntB,ntC)
-		xvA_Triple2 = np.array([ xvCM_AB[0:ntC,:], xvA[2,0:ntC,:] ])
-### Find the coordinates of the center of momentum
-		xvCM_ABC = AC.FindCM( m, xvA_Triple) 
-		if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
-			xvCM_ABC[0:ntB, :] = AC.FindCM( [m[0], 0., m[2]], xvA_Triple[:, 0:ntB, :]) 
-### Convert to center-of-momentum units
-		xvABC  = AC.wrtCM(xvA_Triple,  xvCM_ABC)
-		xvABC2 = AC.wrtCM(xvA_Triple2, xvCM_ABC)
-### Get r, v in CM units
-		rCMABC = np.array([ AC.XVtoR( xvABC[i,:,:]) for i in range(nobjs) ])
-		vCMABC = np.array([ AC.XVtoV( xvABC[i,:,:]) for i in range(nobjs) ])
-		vCMABC2= np.array([ AC.XVtoV(xvABC2[i,:,:]) for i in range(2) ])
-### Get distances between stars
-		rAB_ABC = AC.Distance( xvABC[0,:,:],  xvABC[1,:,:])
-		rBC_ABC = AC.Distance( xvABC[1,:,:],  xvABC[2,:,:])
-		rAC_ABC = AC.Distance( xvABC[0,:,:],  xvABC[2,:,:])
-		rAB_C2  = AC.Distance(xvABC2[0,:,:], xvABC2[1,:,:])
-#----------------------------------- Energies ---------------------------------
-### Get orbital parameters
-		# dist. from C to CM(AB)
-		rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
-		# vel. of C wrt CM(AB)
-		vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
-### Specific orbital energy
-		epsC  = AC.Eps(rC_AB, vC_AB, mu)
-		kC    = AC.kEps(vC_AB)
-		uC    = AC.uEps(rC_AB, mu)
-### Orbital parameters
-		# semimajor axis
-		aC = AC.a(epsC, mu)
-		# specific angular momentum (r x v) of B wrt A
-		hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
-		# magnitude of h
-		hbarC = AC.XVtoR(hC[:,:])
-		# eccentricity
-		eC    = AC.e(aC, epsC, hbarC, mu)
-		# inclination
-		iC    = AC.i(hC[:,2], hbarC)
-
-#------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 ### Print results
 	print('	  aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
-				  aAB[-1]/AU,       eAB[-1],       iAB[-1]         ) )
+				  aB[-1]/AU,       eB[-1],       iB[-1]         ) )
 	print('	  aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
 				   aC[-1]/AU,        eC[-1],        iC[-1]         ) )
 
@@ -1216,8 +1155,104 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 ### Return all the data
 	return 	m, rAB,   vAB, dEpsB, epsB, kB, uB, \
 			 rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
-			aAB, eAB, iAB, aC, eC, iC, \
+			aB, eB, iB, aC, eC, iC, \
 			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
+
+#------------------------------------------------------------------------------
+######################## Binary system: #################################
+#------------------------------------------------------------------------------
+def Binary(m, xv1, xv2, xv3, nobjs, ntB):
+	'''Calculate orbital parameters for the binary of the system, stars 1 & 2.
+ Usually the binary will be stars A and B, but substitute the values of A & C 
+or B & C if they are actually closer. They'll still be referred to as A & B
+ here.'''
+
+### Import modules
+	import AlphaCenModule as AC
+	import numpy as np
+	from mks_constants import G, mSun, AU, day
+	from numpy import log10
+
+### Combine xv data into 3D array in binary-triple order (usually ABC):
+	xv = np.array([xv1,xv2,xv3])
+	r2 = AC.Distance(xv[0,:,:], xv[1,:,:])
+	v2 = AC.XVtoV(xv[1,:,:]-xv[0,:,:])
+
+
+# CMAB = Center of momentum frame of A+B
+### Find the coordinates of the center of momentum
+	xvCM_2 = AC.FindCM( m[0:2], xv[0:2,0:ntB,:]) 
+### Convert to center-of-momentum units
+	xv2  = AC.wrtCM(xv[:,0:ntB,:], xvCM_2)
+### Get r, v in CM units
+	rCM2 = np.array([ AC.XVtoR(xv2[i,:,:]) for i in range(nobjs) ])
+	vCM2 = np.array([ AC.XVtoV(xv2[i,:,:]) for i in range(nobjs) ])
+#---------------------------- Energies ----------------------------------------
+### Get orbital parameters
+	# grav. paramater for binary
+	mu2  = G*sum(m)
+	# specific orbital energy
+	eps2 = AC.Eps(r2[0:ntB], v2[0:ntB], mu2)
+	k2   = AC.kEps(v2[0:ntB])
+	u2   = AC.uEps(r2[0:ntB], mu2)
+	# semimajor axis
+	a2 = AC.a(eps2, mu2)
+
+	# specific angular momentum (r x v) of B wrt A
+	h2     = AC.h( xv[1,0:ntB,0:3]-xv[0,0:ntB,0:3],  
+				   xv[1,0:ntB,3:6]-xv[0,0:ntB,3:6])
+	hbar2  = AC.XVtoR( h2[:,:])
+	# eccentricity
+	e2 = AC.e(eps2, hbar2, mu2)
+	# inclination
+	i2 = AC.i(h2[:,2], hbar2)
+
+	return(a2, e2, i2, eps2, xvCM_2, xv2, k2, u2)
+
+#------------------------------------------------------------------------------
+####################### Triple system: ########################################
+#------------------------------------------------------------------------------
+def Triple(m, xv1, xv2, xv3, nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB):
+	import AlphaCenModule as AC
+	import numpy as np
+	from mks_constants import G, mSun, AU, day
+	from numpy import log10
+### Only relevant if B and C both survived
+#		nobjs = 3
+	mu = G*sum(m)
+### How long is it still a triple?
+	ind=min(ntB,ntC)
+### Combine xv data into 3D array in binary-triple order (usually ABC):
+	xv = np.array([xv1,xv2,xv3])
+
+### If B is ejected before C, exend the AB CM, and set equal to A during that
+	if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
+		xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xv[0,ntB:ntC,:]) )
+	# Get xv wrt CM_AB through ntC
+		xvAB  = AC.wrtCM(xv[:,0:ntC,:], xvCM_AB)
+
+#----------------------------------- Energies ---------------------------------
+### Get orbital parameters
+	# dist. from C to CM(AB)
+	rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
+	# vel. of C wrt CM(AB)
+	vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
+### Specific orbital energy
+	epsC  = AC.Eps(rC_AB, vC_AB, mu)
+	kC    = AC.kEps(vC_AB)
+	uC    = AC.uEps(rC_AB, mu)
+### Orbital parameters
+	# semimajor axis
+	aC = AC.a(epsC, mu)
+	# specific angular momentum (r x v) of B wrt A
+	hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
+	# magnitude of h
+	hbarC = AC.XVtoR(hC[:,:])
+	# eccentricity
+	eC    = AC.e(epsC, hbarC, mu)
+	# inclination
+	iC    = AC.i(hC[:,2], hbarC)
+	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB, ind)
 
 ###############################################################################
 def WriteAEI(WhichDir,ThisT,m,mode='triple'):
@@ -1431,7 +1466,6 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 
 ### 'Little' stop = combination of these checks
 	stop=(isBmaxT | isCmaxT | (Bremovd) | (Cremovd))
-	print('     Fates: {0}, {1}'.format(DestB,DestC))
 	print('	    stop = '+
 	str(isBmaxT)[0]+str(isCmaxT)[0]+str(Bremovd)[0]+str(Cremovd)[0]+
 	',               Time = 1e'+str(int(log10(ThisT)))+' yrs')
