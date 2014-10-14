@@ -22,15 +22,24 @@ if [ $2 = 4 ]; then
 fi
 if [ $2 = 5 ]; then
 	prefix='Err/'
-	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24)
+	Dirs=(05 07 08 15 19 24 27)
 fi
 
 \rm panpipes1.txt
 
 for i in ${Dirs[*]}
 do
+
+
+
 	echo '******************* '$prefix$i' *******************' >> panpipes1.txt
-	tail -$1 $prefix$i/run.pipe >> panpipes1.txt
+
+	if [ $2 = 5 ]; then
+		python -c 'import AlphaCenModule as AC; AC.Summary("'$prefix$i'",1e9,wantsum=False,mA=.123,mB=.123)' >> panpipes1.txt
+	else
+		tail -$1 $prefix$i/run.pipe >> panpipes1.txt
+	fi
+
 done
 
 #diff panpipes1.txt panpipes0.txt
