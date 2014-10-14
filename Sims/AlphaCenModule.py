@@ -1020,6 +1020,13 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	Bind = [4,ntB+4]
 	Cind = [4,ntC+4]
 
+### Fewest and most number of timesteps
+	imin = min(ntB, ntC)
+	imax = max(ntB,ntC)
+### Default binary and triple system lengths
+	iBin = imax
+	iTri = imin
+
 #------------------------------------------------------------------------------
 ########## Get object's fate and collision/ejection time from info.out #######
 	name,dest,time = AC.ReadInfo(WhichDir)
@@ -1068,9 +1075,10 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 # get output times
 	xvB_A_AU		= AC.ReadAei(WhichDir, filenames[0], Bind[0], Bind[1])
 	xvA_A_AU		= np.zeros_like(xvB_A_AU)
-	nanCB, nanBC = np.empty((max(ntC-ntB,0.),6)), np.empty((max(ntB-ntC,0.),6))
-	nanCB[:], nanBC[:] = np.NAN, np.NAN
 	if (mode == 'triple'):
+		nanCB, nanBC =  np.empty((max(ntC-ntB,0.),6)), \
+						np.empty((max(ntB-ntC,0.),6))
+		nanCB[:], nanBC[:] = np.NAN, np.NAN
 		xvC_A_AU	= AC.ReadAei(WhichDir, filenames[1], Cind[0], Cind[1])
 ### Combine three stars into a 3D array
 		xvA_AU=np.array([
@@ -1080,69 +1088,91 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	else:
 ### Or two stars, if just a binary system
 		xvA_AU=np.array([xvA_A_AU, xvB_A_AU])
+	if ((any(np.isnan(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:]))))) |
+	    (any(np.isinf(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:])))))):
+		MercNanError = True
+	else:
+		MercNanError = False
+
 ### 1st dimension of array should be the number of stars
 	assert(np.shape(xvA_AU)[0]) == nobjs
 ### Convert to mks units
 	xvA = AC.AUtoMKS(xvA_AU)
+
 ### Get distances between stars (== rAij_AU*AU), and rel. velocity
 	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
 	rBC = AC.Distance(xvA[1,:,:], xvA[2,:,:])
 	rAC = AC.Distance(xvA[0,:,:], xvA[2,:,:])
-	vAB = AC.XVtoV(xvA[1,:,:])
 
-### Determine system classification
-	distances = np.array([rAB[-1], rBC[-1], rAC[-1]])
-	if (min(distances) == rAB[-1]):
+
+### Determine system classification based on last triple timestep
+	distances = np.array([rAB[iTri-1], rBC[iTri-1], rAC[iTri-1]])
+	if (((DestB.strip() != 'Center') & (DestB.strip() != 'PrxCen')) & 
+		((DestC.strip() != 'Center') & (DestC.strip() != 'AlCenB'))):
+		if   (min(distances) == rAB[iTri-1]):
+			sysclass = 'AB'
+			abc = [0,1,2]
+			if (ntB  < ntC):
+				iBin = imin
+		elif (min(distances) == rBC[iTri-1]):
+			sysclass = 'BC'
+			abc = [1,2,0]
+			if (ntB != ntC):
+				iBin = imin
+		elif (min(distances) == rAC[iTri-1]):
+			sysclass = 'AC'
+			abc = [0,2,1]
+			if (ntB  > ntC):
+				iBin = imin
+		else:
+			print('no class assigned...???')
+	else:
+		# If any objects collide, assume AB binary?
 		sysclass = 'AB'
 		abc = [0,1,2]
-	elif (min(distances) == rBC[-1]):
-		sysclass = 'BC'
-		abc = [1,2,0]
-	elif (min(distances) == rAC[-1]):
-		sysclass = 'AC'
-		abc = [0,2,1]
+		
 
-	print('            {4}, {0} ({2:6.4g} y), {1} ({3:6.4g} y)'.format(
+### Print basic info about simulation
+	print('       {4}, {0} ({2:6.4g} y), {1} ({3:6.4g} y)'.format(
 			       DestB,       DestC, 
 			float(TimeB),float(TimeC), sysclass))
 
 # Get binary data
-	aB, eB, iB, epsB, xvCM_AB, xvAB, kB, uB = AC.Binary(
-			[m[abc[0]],m[abc[1]]], 
-			xvA[abc[0],:,:],xvA[abc[1],:,:],xvA[abc[2],:,:], 
-			nobjs, ntB)
+	aB, eB, iB, epsB, xvCM_AB, xvAB, kB, uB, rB, vB = AC.Binary(
+			[ m[abc[0]],m[abc[1]] ], 
+			xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:], 
+			nobjs, iBin)
 # Get triple system data
 	if (mode=='triple'):
-		aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB, ind = AC.Triple(
-			[m[abc[0]],m[abc[1]],m[abc[2]]], 
-			xvA[abc[0],:,:],xvA[abc[1],:,:],xvA[abc[2],:,:], 
-			nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB)
-
+		aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB = AC.Triple(
+			[ m[abc[0]],m[abc[1]],m[abc[2]] ], 
+			xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:], 
+			nobjs, iTri, DestB, xvA_AU, xvCM_AB, xvAB)
 #------------------------------------------------------------------------------
 ### Print results
-	print('	  aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
-				  aB[-1]/AU,       eB[-1],       iB[-1]         ) )
-	print('	  aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
-				   aC[-1]/AU,        eC[-1],        iC[-1]         ) )
+	print('	   aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
+			   aB[-1]/AU,  eB[-1],    iB[-1]         ) )
+	print('	   aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
+			   aC[-1]/AU,  eC[-1],    iC[-1]         ) )
 
 	### Check for consistency
 		# Change in energy
 	dEpsB = epsB[-1]-epsB[0]
 	dEpsC = epsC[-1]-epsC[0]
 
-	if abs(dEpsB/epsB[0])<0.05:
-		print('	  dEpsB = {0:10.4g} J, {1:7.4g}%'.format(
-													dEpsB,100.*dEpsB/epsB[0]) )
-	else:
-		print('	  dEpsB = {0:10.4g} J, {1:7.4g}% - large energy variation (AB)'.format(
-													dEpsB,100.*dEpsB/epsB[0]) )
+#	if abs(dEpsB/epsB[0])<0.05:
+#		print('	  dEpsB = {0:10.4g} J, {1:7.4g}%'.format(
+#						   dEpsB,       100.*dEpsB/epsB[0]) )
+#	else:
+#		print('	  dEpsB = {0:10.4g} J, {1:7.4g}% - large energy variation (AB)'.format(
+#						   dEpsB,       100.*dEpsB/epsB[0]) )
 
-	if abs(dEpsC/epsC[0])>0.02:
-		print('	  dEpsC = {0:10.4g} J, {1:7.4g}% - large energy variation (ABC)'.format(
-													dEpsC,100.*dEpsC/epsC[0]) )
-	else:
-		print('	  dEpsC = {0:10.4g} J, {1:7.4g}%'.format(
-													dEpsC,100.*dEpsC/epsC[0]) )
+#	if abs(dEpsC/epsC[0])>0.02:
+#		print('	  dEpsC = {0:10.4g} J, {1:7.4g}% - large energy variation (ABC)'.format(
+#						   dEpsC,       100.*dEpsC/epsC[0]) )
+#	else:
+#		print('	  dEpsC = {0:10.4g} J, {1:7.4g}%'.format(
+#						   dEpsC,       100.*dEpsC/epsC[0]) )
 
 
 ### Ejected objects should have pos. energy, stable ones should be neg.
@@ -1153,15 +1183,16 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 #------------------------------------------------------------------------------
 ### Return all the data
-	return 	m, rAB,   vAB, dEpsB, epsB, kB, uB, \
-			 rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
-			aB, eB, iB, aC, eC, iC, \
-			t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC
+	return	m, iBin, iTri, imin, imax, MercNanError,\
+	   rB,    vB, dEpsB, epsB, kB, uB, \
+	rC_AB, vC_AB, dEpsC, epsC, kC, uC, \
+	aB, eB, iB, aC, eC, iC,	\
+	t, TimeB, DestB, TimeC, DestC
 
 #------------------------------------------------------------------------------
 ######################## Binary system: #################################
 #------------------------------------------------------------------------------
-def Binary(m, xv1, xv2, xv3, nobjs, ntB):
+def Binary(m, xv1, xv2, xv3, nobjs, ind):
 	'''Calculate orbital parameters for the binary of the system, stars 1 & 2.
  Usually the binary will be stars A and B, but substitute the values of A & C 
 or B & C if they are actually closer. They'll still be referred to as A & B
@@ -1175,15 +1206,17 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 
 ### Combine xv data into 3D array in binary-triple order (usually ABC):
 	xv = np.array([xv1,xv2,xv3])
-	r2 = AC.Distance(xv[0,:,:], xv[1,:,:])
-	v2 = AC.XVtoV(xv[1,:,:]-xv[0,:,:])
+
+### Relative distance/velocity of binary stars
+	r2 = AC.Distance(xv[0,0:ind,:], xv[1,0:ind,:])
+	v2 =    AC.XVtoV(xv[1,0:ind,:]- xv[0,0:ind,:])
 
 
 # CMAB = Center of momentum frame of A+B
 ### Find the coordinates of the center of momentum
-	xvCM_2 = AC.FindCM( m[0:2], xv[0:2,0:ntB,:]) 
+	xvCM_2 = AC.FindCM( m[0:2], xv[0:2,0:ind,:]) 
 ### Convert to center-of-momentum units
-	xv2  = AC.wrtCM(xv[:,0:ntB,:], xvCM_2)
+	xv2  = AC.wrtCM(xv[:,0:ind,:], xvCM_2)
 ### Get r, v in CM units
 	rCM2 = np.array([ AC.XVtoR(xv2[i,:,:]) for i in range(nobjs) ])
 	vCM2 = np.array([ AC.XVtoV(xv2[i,:,:]) for i in range(nobjs) ])
@@ -1192,27 +1225,27 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 	# grav. paramater for binary
 	mu2  = G*sum(m)
 	# specific orbital energy
-	eps2 = AC.Eps(r2[0:ntB], v2[0:ntB], mu2)
-	k2   = AC.kEps(v2[0:ntB])
-	u2   = AC.uEps(r2[0:ntB], mu2)
+	eps2 = AC.Eps(r2[0:ind], v2[0:ind], mu2)
+	k2   = AC.kEps(v2[0:ind])
+	u2   = AC.uEps(r2[0:ind], mu2)
 	# semimajor axis
 	a2 = AC.a(eps2, mu2)
 
 	# specific angular momentum (r x v) of B wrt A
-	h2     = AC.h( xv[1,0:ntB,0:3]-xv[0,0:ntB,0:3],  
-				   xv[1,0:ntB,3:6]-xv[0,0:ntB,3:6])
+	h2     = AC.h( xv[1,0:ind,0:3]-xv[0,0:ind,0:3],  
+				   xv[1,0:ind,3:6]-xv[0,0:ind,3:6])
 	hbar2  = AC.XVtoR( h2[:,:])
 	# eccentricity
 	e2 = AC.e(eps2, hbar2, mu2)
 	# inclination
 	i2 = AC.i(h2[:,2], hbar2)
 
-	return(a2, e2, i2, eps2, xvCM_2, xv2, k2, u2)
+	return(a2, e2, i2, eps2, xvCM_2, xv2, k2, u2, r2, v2)
 
 #------------------------------------------------------------------------------
 ####################### Triple system: ########################################
 #------------------------------------------------------------------------------
-def Triple(m, xv1, xv2, xv3, nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB):
+def Triple(m, xv1, xv2, xv3, nobjs, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	import AlphaCenModule as AC
 	import numpy as np
 	from mks_constants import G, mSun, AU, day
@@ -1220,23 +1253,21 @@ def Triple(m, xv1, xv2, xv3, nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB):
 ### Only relevant if B and C both survived
 #		nobjs = 3
 	mu = G*sum(m)
-### How long is it still a triple?
-	ind=min(ntB,ntC)
 ### Combine xv data into 3D array in binary-triple order (usually ABC):
 	xv = np.array([xv1,xv2,xv3])
 
-### If B is ejected before C, exend the AB CM, and set equal to A during that
-	if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
-		xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xv[0,ntB:ntC,:]) )
+### If B is ejected before C, extend the AB CM, and set equal to A during that
+#	if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
+#		xvCM_AB = np.concatenate( (xvCM_AB[0:ntB,:], xv[0,ntB:ntC,:]) )
 	# Get xv wrt CM_AB through ntC
-		xvAB  = AC.wrtCM(xv[:,0:ntC,:], xvCM_AB)
+#		xvAB  = AC.wrtCM(xv[:,0:ntC,:], xvCM_AB)
 
 #----------------------------------- Energies ---------------------------------
 ### Get orbital parameters
 	# dist. from C to CM(AB)
-	rC_AB = AC.XVtoR(xvAB[2,0:ntC,:])
+	rC_AB = AC.XVtoR(xvAB[2,0:ind,:])
 	# vel. of C wrt CM(AB)
-	vC_AB = AC.XVtoV(xvAB[2,0:ntC,:])
+	vC_AB = AC.XVtoV(xvAB[2,0:ind,:])
 ### Specific orbital energy
 	epsC  = AC.Eps(rC_AB, vC_AB, mu)
 	kC    = AC.kEps(vC_AB)
@@ -1245,14 +1276,14 @@ def Triple(m, xv1, xv2, xv3, nobjs, ntB, ntC, DestB, xvA_AU, xvCM_AB, xvAB):
 	# semimajor axis
 	aC = AC.a(epsC, mu)
 	# specific angular momentum (r x v) of B wrt A
-	hC    = AC.h(xvAB[2,0:(ntC),0:3], xvAB[2,0:(ntC),3:6])
+	hC    = AC.h(xvAB[2,0:ind,0:3], xvAB[2,0:ind,3:6])
 	# magnitude of h
 	hbarC = AC.XVtoR(hC[:,:])
 	# eccentricity
 	eC    = AC.e(epsC, hbarC, mu)
 	# inclination
 	iC    = AC.i(hC[:,2], hbarC)
-	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB, ind)
+	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
 def WriteAEI(WhichDir,ThisT,m,mode='triple'):
@@ -1273,11 +1304,12 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple'):
 	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
-	m, rB, vB, dEpsB, epsB,\
-	   rC, vC, dEpsC, epsC,\
+	m, iBin, iTri, imin, imax, MercNanError,\
+	rB, vB, dEpsB, epsB, kB, uB, \
+	rC, vC, dEpsC, epsC, kC, uC, \
 	aB, eB, iB, aC, eC, iC,	\
-	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
-												WhichDir, ThisT, mode, m, Tmax)
+	t, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
+											WhichDir, ThisT, mode, m, Tmax)
 
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
@@ -1341,11 +1373,12 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 #	B, C = AC.Elem(WhichDir)
 
 ### Get other final orbit data from .aei files and analysis
-	m, rB, vB, dEpsB, epsB, kB, uB, \
-	   rC, vC, dEpsC, epsC, kC, uC, \
+	m, iBin, iTri, imin, imax, MercNanError,\
+	rB, vB, dEpsB, epsB, kB, uB, \
+	rC, vC, dEpsC, epsC, kC, uC, \
 	aB, eB, iB, aC, eC, iC,	\
-	t, ntB, ntC, ind, TimeB, DestB, TimeC, DestC = AC.GetFinalData(WhichDir,
-													 ThisT, mode, m, Tmax)
+	t, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
+											WhichDir, ThisT, mode, m, Tmax)
 
 ##################################### Plot ################################
 ### Make plots of sim
@@ -1354,13 +1387,13 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 			AC.MakePlots(	 'binary',WhichDir, t, epsB, kB, uB,
 						 		rB, m, suffix='_AB')
 			if (mode=='triple'):
-				AC.MakePlots('triple',WhichDir, t[0:ind], epsC, kC, uC,
+				AC.MakePlots('triple',WhichDir, t[0:imin], epsC, kC, uC,
 								rC, m, suffix='_ABC')
 # Plot energies over time
 			import matplotlib.pyplot as plt
 
 			plt.plot(t,        epsB*(m[0]+m[1]),      'r-')
-			plt.plot(t[0:ind], epsC*(m[0]+m[1]+m[2]), 'b-')
+			plt.plot(t[0:imin], epsC*(m[0]+m[1]+m[2]), 'b-')
 			plt.xlabel('time (years)')
 			plt.ylabel('Epsilon')
 			plt.title('Energy')
@@ -1377,7 +1410,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 			    str(round(aB[-1]/AU,2)),
 			    str(round(eB[-1]   ,2)),
 			    str(round(iB[-1]   ,1)),
-			    str(round(rC[ntC-1]/AU,1)),
+			    str(round(rC[imin-1]/AU,1)),
 			    ('% 9.3g' % epsC[-1]),
 			    str(round( aC[-1]/AU,2)),
 			    str(round( eC[-1]   ,2)),
@@ -1404,9 +1437,9 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 
 ### Determine if simulation is ending, and write data if so	
 		AC.SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, header,
-	                     wantsum, rB/AU, epsB, rC/AU, epsC,
+	                     wantsum, MercNanError, rB/AU, epsB, rC/AU, epsC,
 	                     aB[-1], eB[-1], aC[-1], eC[-1], 
-						 TimeB, TimeC, DestB, DestC)
+						 TimeB, TimeC, DestB, DestC, iBin, imax)
 	
 ############################################################################
 def ParseDestinations(DestB, DestC, TimeB, TimeC, Tmax):
@@ -1440,9 +1473,9 @@ def ParseDestinations(DestB, DestC, TimeB, TimeC, Tmax):
 
 ############################################################################
 def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader, 
-                  wantsum, rB, epsB, rC, epsC, 
+                  wantsum, MercNanError, rB, epsB, rC, epsC, 
                   aBf, eBf, aCf, eCf, 
-				  TimeB, TimeC, DestB, DestC):
+				  TimeB, TimeC, DestB, DestC, iBin, imax):
 	'''Determine if simulation is ending, and write data if so	'''
 
 ### Needed modules
@@ -1480,6 +1513,7 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 	pcut=10000.
 ### If a Proxima-like C was created, stop the whole series of runs
 	bigstop=False
+	err=False
 	if (isBmaxT & isCmaxT):
 		bigstop = ((aCf/AU)*(1+eCf) >= pcut) & (epsC[-1] <= 0.)
 ### Weird circumstances that I want to stop and investigate:
@@ -1490,32 +1524,46 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 			print('B ejected due to extremely large orbit')
 		else:
 			bigstop = True
-			print('**BIGSTOP FATE/ENERGY CONFLICT (B)**')			
+			err=True
+			print('**B EJECTED WHEN "STABLE"!**')			
 	if ( (float(epsC[-1])<0.) & Cejectd ):
 		if ( aCf*(1+eCf)/AU >= 1e5 ):
+			err=True
 			print('C ejected due to extremely large orbit')
 		else:
 			bigstop = True
-			print('**BIGSTOP FATE/ENERGY CONFLICT (C)**')			
+			err=True
+			print('**C EJECTED WHEN "STABLE"!**')			
 	if ((isBmaxT & isCmaxT) & (((float(epsB[-1])>0.) & (not Bremovd)) | 
 		 					   ((float(epsC[-1])>0.) & (not Cremovd)) ) ):
 		bigstop = True
-		print('**BIGSTOP FATE/ENERGY CONFLICT**')			
+		err=True
+		print('**STAR REMAINED WHEN "UNSTABLE"!**')			
 	elif (np.isnan(float(epsB[-1])) | np.isnan(float(epsC[-1])) | 
 	      np.isinf(float(epsB[-1])) | np.isinf(float(epsC[-1])) ):
-#		bigstop = True
-		print('**BIGSTOP ENERGY ERROR** -- continuing')
+		if MercNanError:
+			err=True
+			print('	 Mercury write error -- continuing')
+		else:
+			bigstop = True
+			err=True
+			print('**BIGSTOP ENERGY ERROR**')
 	elif ( any(np.isnan(tests))   | 
 		   any(np.isinf(tests))   ):
 		bigstop = True
+		err=True
 		print('**BIGSTOP NONSENSICAL OUTPUTS**')
 		print(tests)
-	elif (AC.FileLength(WhichDir+'/Out/AeiOutFiles/AlCenB.aei') < 
-		  AC.FileLength(WhichDir+'/Out/AeiOutFiles/PrxCen.aei')):
-		bigstop = True
-		print('**Fewer timesteps for B than C -- TEST FOR CONSISTENCY**')
+	elif (iBin < imax):
+		if (aBf < 0.):
+			print('	 Binary system breakup -- continuing')
+		else:
+			bigstop = True
+			print('**BINARY BREAKUP WHEN "STABLE"**')
 	else:
 		print('	  Error check passed')
+		if ((bigstop == True) & (err == False)):
+			print('   => *Proxlike!*')
 
 	print('	 bigstop = '+str(bigstop).rjust(5)+',                       '+
 		  '           WhichTime = '+str(WhichTime))
