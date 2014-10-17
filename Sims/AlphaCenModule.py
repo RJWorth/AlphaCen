@@ -1392,16 +1392,51 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 # Plot energies over time
 			import matplotlib.pyplot as plt
 
-			plt.plot(t,        epsB*(m[0]+m[1]),      'r-')
-			plt.plot(t[0:imin], epsC*(m[0]+m[1]+m[2]), 'b-')
+			plt.plot(t[0:iBin], epsB*(m[0]+m[1]),      'r-')
+			plt.plot(t[0:iTri], epsC*(m[0]+m[1]+m[2]), 'b-')
 			plt.xlabel('time (years)')
 			plt.ylabel('Epsilon')
 			plt.title('Energy')
 			plt.xscale('log')
+			plt.legend(('Binary epsilon','Triple epsilon'),
+	           'lower right')
 			plt.savefig(WhichDir+'/EpsvsT.png')
 			plt.clf()
 
-#################################### Write ################################
+			plt.plot(t[0:iBin], aB/AU, 'r-')
+			plt.plot(t[0:iTri], aC/AU, 'b-')
+			plt.xlabel('time (years)')
+			plt.ylabel('a')
+			plt.title('Semimajor Axis')
+			plt.xscale('log')
+			plt.yscale('log')
+			plt.legend(('Binary','Triple'),
+	           'upper left')
+			plt.savefig(WhichDir+'/AvsT.png')
+			plt.clf()
+
+			plt.plot(t[0:iBin], eB, 'r-')
+			plt.plot(t[0:iTri], eC, 'b-')
+			plt.xlabel('time (years)')
+			plt.ylabel('e')
+			plt.title('Eccentricity')
+			plt.xscale('log')
+			plt.legend(('Binary','Triple'),
+	           'upper left')
+			plt.savefig(WhichDir+'/EvsT.png')
+			plt.clf()
+
+			plt.plot(aB/AU,eB, 'r-')
+			plt.plot(aC/AU,eC, 'b-')
+			plt.xlabel('a')
+			plt.ylabel('e')
+			plt.title('A vx E')
+			plt.xscale('log')
+			plt.legend(('Binary','Triple'),
+	           'lower right')
+			plt.savefig(WhichDir+'/AvsE.png')
+			plt.clf()
+##################################### Write ################################
 ### Arrange data nicely
 	if ((mode=='triple')):
 		summaryfields=[aeiIn[0],aeiIn[1],aeiIn[2],aeiIn[3],aeiIn[4],aeiIn[5],
@@ -1649,7 +1684,7 @@ def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	plt.xlabel('Separation (AU)')
 	plt.ylabel('Specific energy (J/kg)')
 	plt.title('Energies')
-	plt.savefig(WhichDir+'/EvsR'+suffix+'.png')
+	plt.savefig(WhichDir+'/EpsvsR'+suffix+'.png')
 	plt.clf()
 	
 # Plot energies over time
@@ -1663,7 +1698,7 @@ def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	plt.ylabel('Energy (J)')
 	plt.title('Energies')
 	plt.xscale('log')
-	plt.savefig(WhichDir+'/EvsT'+suffix+'.png')
+	plt.savefig(WhichDir+'/EpsvsT'+suffix+'.png')
 	plt.clf()
 		
 # Plot separation over time
