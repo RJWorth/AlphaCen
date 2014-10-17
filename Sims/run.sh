@@ -1,9 +1,11 @@
 #!/bin/sh
 ###############################################################################
 # Run the simulation in directory $1, with parameters set below
+# > ./run.sh Dir (but better to use master.bash to start)
 # Start time
 t1=$(date +%s)
 machine=$(hostname -s)
+pwd=$(pwd)
 
 ### Simulation parameters
 
@@ -27,9 +29,10 @@ eCmax=0.75
 iCmin=0.0
 iCmax=180.0
 
+end=err2	#'_AC'$1
 vers='ury_TG.for'	# merc+vers=filename for mercury
 mintime=3	# = log(years)
-maxtime=9	# = log(years)
+maxtime=8	# = log(years)
 output=3	# = log(years)
 step=10.0	# = days
 niter=10   	# = number of iterations to run
@@ -50,7 +53,7 @@ echo '	itrange '$itrange
 echo '	timerange '$timerange
 
 # Compile mercury and element
-gfortran -w -O1 -o $1/Out/merc_AC$1 Files/merc$vers
+gfortran -w -O1 -o $1/Out/merc_$end Files/merc$vers
 if [ $machine = chloe ]; then	
 	gfortran-4.2 -w -O1 -o $1/Out/elem Files/elem.for 	
 		#j in, to fix colors
@@ -69,7 +72,7 @@ fi
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
 	#### Randomize B and C parameters (a, e, i)
-	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax', mB='$mB',mC='$mC')'
+#	python -c 'import AlphaCenModule; AlphaCenModule.MakeBigRand( "'$1'",'$j', "'$cent'", 	'$aBmin','$aBmax','$eBmin','$eBmax','$iBmin','$iBmax', '$aCmin','$aCmax','$eCmin','$eCmax','$iCmin','$iCmax', mB='$mB',mC='$mC')'
 
 	# Write param.in file
 	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
@@ -77,10 +80,10 @@ fi
 	for k in $timerange; do
 
 		#### Run mercury
-		cd $1/Out;	./merc_AC$1;	cd ../..
+		cd $1/Out;	./merc_$end;	cd $pwd
 
 		### Run Element to get orbit details
-		cd $1/Out;	./elem;	cd ../..
+		cd $1/Out;	./elem;	cd $pwd
 		\mv $1/Out/*.aei $1/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
 		python -c 'import AlphaCenModule as AC; AC.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="'$j'", cent="'$cent'", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
