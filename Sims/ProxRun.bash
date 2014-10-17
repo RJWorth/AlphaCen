@@ -9,20 +9,23 @@ echo $pwd
 
 prefix='Err/'	#'Proxlike/Prx'
 #Dirs=()		#chloe
-Dirs=(10)		#shapiro
-suffix='/New6-2S'
+Dirs=(05)		#shapiro
+suffix='-copy'
 
 for i in ${Dirs[*]}
 do
 	j=$prefix$i$suffix
 	echo $j
 
-#	gfortran -w -O1 -o $j/Out/merc_ext$i Files/mercury_TG.for	#j in
-#	gfortran -w -O1 -o $j/Out/elem Files/elem.for 			#j in
+	\rm $j/Out/*.out
+	\rm $j/Out/*.tmp
+	\rm $j/Out/*.dmp
+
+	gfortran -w -O1 -o $j/Out/merc_$i Files/mercury_TG.for	#j in
+	gfortran -w -O1 -o $j/Out/elem Files/elem.for 			#j in
 
 	cd $j/Out
-#		./merc_ext$i
-		./merc_ACSDir5
+		./merc_$i
 		./elem
 		\mv *.aei AeiOutFiles
 	cd $pwd
