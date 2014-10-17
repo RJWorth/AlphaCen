@@ -12,7 +12,7 @@ ext='6-3'
 ### Copy to Proxlike directory
 mkdir Proxlike/$2
 \cp -rp $1 Proxlike/$2/Original
-mv Proxlike/$2/Original/Out/merc_AC$1 Proxlike/$2/Original/Out/merc_ext
+mv Proxlike/$2/Original/Out/merc_AC* Proxlike/$2/Original/Out/merc_ext
 
 ### Make extension directory
 #\cp -rp Proxlike/$2/Original Proxlike/$2/$ext
