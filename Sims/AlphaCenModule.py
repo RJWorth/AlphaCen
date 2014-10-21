@@ -26,7 +26,6 @@ def where(AList,AnElement):
 def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s,append='F'):
 	'''Write big.in or small.in file'''
 
-	print(append)
 	if (append == 'F'):
 		infile=open(WhichDir+'/In/'+filename+'.in','w')
 	elif(append == 'T'):
@@ -1014,15 +1013,18 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 		ntC=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[1]+'.aei')-4
 	else:
 		ntC=0.
-	
-	t = AC.GetT(WhichDir, filenames[0], 4, ntB+4)
+	if (ntB >= ntC):
+		t = AC.GetT(WhichDir, filenames[0], 4, ntB+4)
+	else:
+		t = AC.GetT(WhichDir, filenames[1], 4, ntC+4)
+
 
 	Bind = [4,ntB+4]
 	Cind = [4,ntC+4]
 
 ### Fewest and most number of timesteps
 	imin = min(ntB, ntC)
-	imax = max(ntB,ntC)
+	imax = max(ntB, ntC)
 ### Default binary and triple system lengths
 	iBin = imax
 	iTri = imin
@@ -1091,6 +1093,10 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	if ((any(np.isnan(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:]))))) |
 	    (any(np.isinf(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:])))))):
 		MercNanError = True
+#		if ((not any(np.isnan(np.concatenate((xvB_A_AU[-2,:],xvC_A_AU[-2,:]))))) |
+#		    (not any(np.isinf(np.concatenate((xvB_A_AU[-2,:],xvC_A_AU[-2,:])))))):
+#			print('NaNs in last timestep only; backing up by one')
+#			iBin, iTri = iBin-1, iTri-1
 	else:
 		MercNanError = False
 
@@ -1384,10 +1390,10 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 ### Make plots of sim
 	if (wantplot==True):
 		if (machine != 'chloe'):
-			AC.MakePlots(	 'binary',WhichDir, t, epsB, kB, uB,
+			AC.MakePlots(	 'binary',WhichDir, t[0:iBin], epsB, kB, uB,
 						 		rB, m, suffix='_AB')
 			if (mode=='triple'):
-				AC.MakePlots('triple',WhichDir, t[0:imin], epsC, kC, uC,
+				AC.MakePlots('triple',WhichDir, t[0:iTri], epsC, kC, uC,
 								rC, m, suffix='_ABC')
 # Plot energies over time
 			import matplotlib.pyplot as plt
@@ -1445,7 +1451,7 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 			    str(round(aB[-1]/AU,2)),
 			    str(round(eB[-1]   ,2)),
 			    str(round(iB[-1]   ,1)),
-			    str(round(rC[imin-1]/AU,1)),
+			    str(round(rC[iTri-1]/AU,1)),
 			    ('% 9.3g' % epsC[-1]),
 			    str(round( aC[-1]/AU,2)),
 			    str(round( eC[-1]   ,2)),
