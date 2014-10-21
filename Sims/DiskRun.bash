@@ -1,6 +1,7 @@
 #!/bin/sh
 ###############################################################################
 # Run the simulation in directory $1, with parameters set below
+# > ./DiskRun.bash Proxlike/Prx#/Disk# > Dir/run.pipe &
 # Start time
 t1=$(date +%s)
 machine=$(hostname -s)
@@ -8,19 +9,11 @@ home=$(pwd)
 echo $home
 
 ### Simulation parameters
-mA=1.105
-mB=0.934
-mC=0.123
-
-newdisk=F	# generate a new disk, T or F
-amin=0.1	# minimum extent of disk, in AU
-sz=small   	# add to big.in or small.in?
-
-newmerc=F	# recompile the merc/elem executables?
+newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
 mintime=3	# = log(years)
-maxtime=8	# = log(years)
+maxtime=4	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
 user='no'	# use user-defined forces?
@@ -52,10 +45,6 @@ fi
 	# Clean out old sim
 	\rm $1/Out/*.dmp
 	\rm $1/Out/*.out
-	# Generate disk
-	if [ $newdisk = T ]; then
-		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$1'",amin='$amin',objs=[],size="'$sz'")'
-	fi
 
 	# Write param.in file
 #	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
