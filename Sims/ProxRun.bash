@@ -9,7 +9,7 @@ echo $pwd
 
 prefix='Err/'	#'Proxlike/Prx'
 #Dirs=()		#chloe
-Dirs=(05)		#shapiro
+Dirs=()		#shapiro
 suffix='-copy'
 
 for i in ${Dirs[*]}
@@ -17,15 +17,11 @@ do
 	j=$prefix$i$suffix
 	echo $j
 
-	\rm $j/Out/*.out
-	\rm $j/Out/*.tmp
-	\rm $j/Out/*.dmp
-
-	gfortran -w -O1 -o $j/Out/merc_$i Files/mercury_TG.for	#j in
-	gfortran -w -O1 -o $j/Out/elem Files/elem.for 			#j in
+#	gfortran -w -O1 -o $j/Out/merc_$i Files/mercury_TG.for	#j in
+#	gfortran -w -O1 -o $j/Out/elem Files/elem.for 			#j in
 
 	cd $j/Out
-		./merc_$i
+		./merc_err2
 		./elem
 		\mv *.aei AeiOutFiles
 	cd $pwd
