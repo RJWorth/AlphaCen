@@ -4,10 +4,20 @@ def GetSubdirs(indir):
 	return [name for name in os.listdir(indir)
 			if os.path.isdir(os.path.join(indir, name))]
 
-
-def NextSubDir(searchdir,prefix):
+###############################################################################
+def NextSubDir(searchdir,prefix='default',PrintInfo=False):
 	import numpy as np
 	from math import ceil
+
+### Setup prefix
+	if prefix=='default':
+		if searchdir=='Proxlike':
+			prefix='Prx'
+		elif searchdir=='Err':
+			prefix=''
+		else:
+			print('Prefix unspecified with no relevant default')
+			assert 1==0
 
 	dirs = np.array(GetSubdirs(searchdir))
 
@@ -34,17 +44,17 @@ def NextSubDir(searchdir,prefix):
 			OpenDir = i
 			break
 
-### Report outcome
-	print('Dirs:   {}'.format(dirs))
-	print('Use:    {}'.format(ValidInd))
-	print('Ignore: {}'.format(InvalidInd))
-
-	print('Max directory number found:  {}'.format(MaxUsed))
-	print("Numerals' median digits:     {}".format(ndigits))
-
-	print('First open directory number: {}'.format(OpenDir))
-
 	Name = prefix + str(OpenDir).zfill(ndigits)
-	print('Resulting name: {}'.format(Name))
+
+### Report outcome
+	if PrintInfo == True:
+		print('Dirs:   {0}'.format(dirs))
+		print('Use:    {0}'.format(ValidInd))
+		print('Ignore: {0}'.format(InvalidInd))
+		print('Max directory number found:  {0}'.format(MaxUsed))
+		print("Numerals' median digits:     {0}".format(ndigits))
+		print('First open directory number: {0}'.format(OpenDir))
+		print('Resulting name: {0}'.format(Name))
+
 	return(Name)
 
