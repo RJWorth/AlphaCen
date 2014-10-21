@@ -13,7 +13,7 @@ if (length(dir) == 0 |
 	dir=="/usr/lib64/R/bin/exec/R" |
 	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		dir='Proxlike/071714/Prx1/Disk4'	#'Prx02/Disk'
+		dir='Proxlike/Prx01/Disk1-B'	#'Prx02/Disk'
 		}
 	print(dir)
 
@@ -25,7 +25,7 @@ aeidir=paste(simdir,'/Out/AeiOutFiles/',sep='')
 source('../Analysis/DiskUtils.R')
 
 ### Generate list of disk particle names (for n particles)
-n=100
+n=(length(readLines(paste(dir,'/In/small.in',sep='')))-5)/4
 disknames=rep( 'M', n)
 	if (dir == 'Proxlike/071714/Prx1/Disk4')	{
 		for (i in 1:n) disknames[i]=paste('M',i+100, sep='') } else {
@@ -88,9 +88,24 @@ for (i in 1:length(disknames)) {
 
 print(sum3d(disk))
 
+### Calculate % of disk surviving, as a f'n of time
+surviving = matrix(, nrow = length(time), ncol = dim(disk)[1])
+stable = matrix(, nrow = length(time), ncol = dim(disk)[1])
+surv.per = rep(0., length(time))
+stab.per = rep(0., length(time))
+for (j in 1:length(time))	{
+	surviving[j,] =  !is.na(disk[,j,'a'])
+	stable[j,]    = (!is.na(disk[,j,'a'])
+					 & (disk[,j,'a'] >= 0.)
+					 & (disk[,j,'a'] <= 2*max(disk[,1,'a'],na.rm=T)))
+	surv.per[j] = sum(surviving[j,])/n
+	stab.per[j] = sum(   stable[j,])/n
+	}
+
 #extent=max(abs(c(disk[,,4:5],star[,,4:5])),na.rm=T)
 extent=max(abs(c(disk[,1,4:5],star[,,4:5])),na.rm=T)
 grays = gray.colors(n, start = 0., end = 0.8)
+heat  = heat.colors(n)
 
 ### Measure the difference between actual and expected velocity, 
 ### as a fraction of expected
@@ -104,6 +119,20 @@ timeslice = (maxTlength-99):maxTlength
 ### Make plots
 pdf(paste(simdir,'/DiskPairs.pdf',sep=''), height=10,width=10)
 pairs(pairframe,pch=20,col=grays)
+dev.off()
+###
+pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=4,width=8)
+
+plot(0,0, type='p',pch=20, col='white',xlim=c(0,max(time)),ylim=c(0,1))
+for (j in n:1) {
+	colorlist = rep(NA,length(time))
+	colorlist[surviving[,j]]=grays[j]
+	colorlist[   stable[,j]]= heat[j]
+	points(time,rep(j/n,length(time)), pch=20, col=colorlist )
+	}
+lines(time,surv.per, lwd=2)
+lines(time,stab.per, lwd=2, lty=3)
+
 dev.off()
 ###
 pdf(paste(simdir,'/DiskEvol.pdf',sep=''), height=15,width=15)
