@@ -101,11 +101,22 @@ for (j in 1:length(time))	{
 	surv.per[j] = sum(surviving[j,])/n
 	stab.per[j] = sum(   stable[j,])/n
 	}
-
 #extent=max(abs(c(disk[,,4:5],star[,,4:5])),na.rm=T)
 extent=max(abs(c(disk[,1,4:5],star[,,4:5])),na.rm=T)
 grays = gray.colors(n, start = 0., end = 0.8)
 heat  = heat.colors(n)
+
+diskimg = matrix(, nrow = length(time), ncol = dim(disk)[1])
+	for (j in 1:n)	{
+		for (i in 1:length(time))	{
+			if ((surviving[i,j]==TRUE) & (stable[i,j] == TRUE)) {
+				diskimg[i,j]=j
+			} else if ((surviving[i,j]==TRUE) & (stable[i,j] == FALSE)) {
+				diskimg[i,j]=1+n
+			} else if ((surviving[i,j]==FALSE)) {
+				diskimg[i,j]=2+n
+			} else {print(paste(i,j))}
+	}}
 
 ### Measure the difference between actual and expected velocity, 
 ### as a fraction of expected
@@ -123,15 +134,20 @@ dev.off()
 ###
 pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=4,width=8)
 
-plot(0,0, type='p',pch=20, col='white',xlim=c(0,max(time)),ylim=c(0,1))
-for (j in n:1) {
-	colorlist = rep(NA,length(time))
-	colorlist[surviving[,j]]=grays[j]
-	colorlist[   stable[,j]]= heat[j]
-	points(time,rep(j/n,length(time)), pch=20, col=colorlist )
-	}
-lines(time,surv.per, lwd=2)
-lines(time,stab.per, lwd=2, lty=3)
+image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
+axis(4, col="red", lwd=2,
+	labels=c( min(disk[,1,'a']), 5, 10 ),
+	at=c(0,.5,1) )
+
+par(new=T)
+plot(time,surv.per, type='l',lwd=2,xlim=c(0,max(time)),ylim=c(0,1),col='blue',
+	ylab='Surviving percentage',xlab='Time (yrs)',
+	main=paste(stab.per[length(time)]*100,'% of disk remains stable'))
+#lines(time,surv.per, lwd=2)
+lines(time,stab.per, lwd=3, lty=3,col='blue')
+legend('bottomright',
+	legend=c('Fraction surviving','Fraction remaining stable'),
+	lty=c(1,3),col='blue',lwd=3)
 
 dev.off()
 ###
