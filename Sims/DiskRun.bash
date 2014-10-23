@@ -13,10 +13,12 @@ newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
 mintime=3	# = log(years)
-maxtime=4	# = log(years)
+maxtime=8	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
 user='no'	# use user-defined forces?
+
+mA=.123
 
 ### Range for iterations
 if [ $machine = chloe ]; then
@@ -106,5 +108,5 @@ t2=$(date +%s)
 
 #echo $1"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
-#./email.sh $1 $j'/'$niter 'Prx disk run finished'
+./email.sh $1 $j'/'$niter 'Prx disk run finished'
 

@@ -20,7 +20,7 @@ mC=0.123
 
 newdisk=T	# generate a new disk, T or F
 amin=0.1	# minimum extent of disk, in AU
-sz=small   	# add to big.in or small.in?
+sz=small   	# add to big.in or small.in? (not used yet)
 
 ############### Set up simulations
 for i in ${Which[*]}
