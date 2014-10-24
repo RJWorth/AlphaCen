@@ -8,19 +8,19 @@ if [ $2 = 1 ]; then
 	prefix=''
 	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10 SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 fi
-if [ $2 = 2 ]; then
+if [ $2 = 'c' ]; then
 	prefix=''
 	Dirs=(CDir1 CDir2 CDir3 CDir4 CDir5 CDir6 CDir7 CDir8 CDir9 CDir10)
 fi
-if [ $2 = 3 ]; then
+if [ $2 = 's' ]; then
 	prefix=''
 	Dirs=(SDir1 SDir2 SDir3 SDir4 SDir5 SDir6 SDir7)
 fi
-if [ $2 = 4 ]; then
+if [ $2 = 'p' ]; then
 	prefix='Proxlike/Prx'
-	Dirs=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22)
+	Dirs=(01/Disk1-B 02/Disk1-B 03/Disk1-B 04/Disk1-B 05/Disk1-B 01/Disk1-C 02/Disk1-C 03/Disk1-C 04/Disk1-C 05/Disk1-C)
 fi
-if [ $2 = 5 ]; then
+if [ $2 = 'e' ]; then
 	prefix='Err/'
 	Dirs=(05 07 08 15 19 24 27)
 fi
