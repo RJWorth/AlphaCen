@@ -18,7 +18,7 @@ output=1	# = log(years)
 step=10.0	# = days
 user='no'	# use user-defined forces?
 
-mA=.123
+mA=$2
 
 ### Range for iterations
 if [ $machine = chloe ]; then
@@ -54,9 +54,12 @@ fi
 	for k in $timerange; do
 
 		### Copy most recent completed run to backup
-		\cp -p $1/Out/*.out $1/Out/Backup
-		\cp -p $1/Out/*.dmp $1/Out/Backup
-		\cp -p $1/Out/*.tmp $1/Out/Backup
+		if [ $k -gt $mintime ]; then
+			\cp -p $1/Out/*.out $1/Out/Backup
+			\cp -p $1/Out/*.dmp $1/Out/Backup
+			\cp -p $1/Out/*.tmp $1/Out/Backup
+			echo 'Attempted backup of 1e'$(echo "$k-1"|bc )' timestep'
+		fi
 
 		#### Run mercury
 		cd $1/Out;	./merc_disk;	cd $home
