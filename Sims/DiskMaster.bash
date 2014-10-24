@@ -34,6 +34,8 @@ do
 	else
 		echo $j-C exists
 	fi
+	# If no backup dir yet, make one
+	mkdir -p $j-C/Out/Backup
 
 	# Generate disk
 	if [ $newdisk = T ]; then

@@ -53,6 +53,11 @@ fi
 	### Loop over time lengths
 	for k in $timerange; do
 
+		### Copy most recent completed run to backup
+		\cp -p $1/Out/*.out $1/Out/Backup
+		\cp -p $1/Out/*.dmp $1/Out/Backup
+		\cp -p $1/Out/*.tmp $1/Out/Backup
+
 		#### Run mercury
 		cd $1/Out;	./merc_disk;	cd $home
 
