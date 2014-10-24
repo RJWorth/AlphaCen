@@ -106,16 +106,29 @@ extent=max(abs(c(disk[,1,4:5],star[,,4:5])),na.rm=T)
 grays = gray.colors(n, start = 0., end = 0.8)
 heat  = heat.colors(n)
 
-diskimg = matrix(, nrow = length(time), ncol = dim(disk)[1])
+### Resample log scale for time
+samprate=100
+logt = min(log10(time[-1])) + 
+		(max(log10(time))-min(log10(time[-1])))*(0:(samprate-1))/(samprate-1)
+resampt = 10^logt
+### OR linear scale
+#resampt = min(time) + 
+#			(max(time)-min(time))*(0:(samprate-1))/(samprate-1)
+
+
+### Make image matrix of disk survival
+diskimg = matrix(, nrow = samprate, ncol = dim(disk)[1])
 	for (j in 1:n)	{
-		for (i in 1:length(time))	{
+		for (k in 1:samprate)	{
+			i = which( abs(time-resampt[k]) == min(abs(time-resampt[k])) )
+			if (length(i) > 1) i=min(i)
 			if ((surviving[i,j]==TRUE) & (stable[i,j] == TRUE)) {
-				diskimg[i,j]=j
+				diskimg[k,j]=j
 			} else if ((surviving[i,j]==TRUE) & (stable[i,j] == FALSE)) {
-				diskimg[i,j]=1+n
+				diskimg[k,j]=1+n
 			} else if ((surviving[i,j]==FALSE)) {
-				diskimg[i,j]=2+n
-			} else {print(paste(i,j))}
+				diskimg[k,j]=2+n
+			} else {print(paste(k,j))}
 	}}
 
 ### Measure the difference between actual and expected velocity, 
@@ -140,9 +153,11 @@ axis(4, col="red", lwd=2,
 	at=c(0,.5,1) )
 
 par(new=T)
-plot(time,surv.per, type='l',lwd=2,xlim=c(0,max(time)),ylim=c(0,1),col='blue',
+plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
+	xaxs='i',yaxs='i',
+	xlim=c(min(time[-1]),max(time)),ylim=c(0,1),
 	ylab='Surviving percentage',xlab='Time (yrs)',
-	main=paste(stab.per[length(time)]*100,'% of disk remains stable'))
+	main=paste(stab.per[length(time)]*100,'% of disk remains stable',sep=''))
 #lines(time,surv.per, lwd=2)
 lines(time,stab.per, lwd=3, lty=3,col='blue')
 legend('bottomright',
