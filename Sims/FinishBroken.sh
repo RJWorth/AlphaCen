@@ -2,6 +2,7 @@
 ############################################################################### 
 ### Finish the last piece of a simulation interrupted during the 1e9 stage
 ### e.g: ./FinishBroken.sh Dir flag >> Dir/run.pipe &
+### flag = equal or unequal (stellar masses)
 
 echo '\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/'
 echo 'Finishing broken simulation: '$1' '$2
