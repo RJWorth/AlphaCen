@@ -19,6 +19,7 @@ elif [ $2 = 'equal' ]; then
 	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e9, WhichTime="LAST", mA=.123, mB=.123, mC=.123)'
 else
 	echo 'invalid mass flag -- summary not run'
+fi
 
 bigstop=$(cat $1/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
