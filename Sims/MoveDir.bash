@@ -1,8 +1,8 @@
 #!/bin/bash
 ############################################################################### 
-### Rename and move Prox or Err directories as appropriate
-### > ./MoveDir.bash StartDir NewDir
-### NewDir = 'Err' or 'Proxlike' (where sim should be moved to)
+### Get name of next available directory
+### > ./MoveDir.bash StartDir NewCategory
+### NewCategory = 'Err' or 'Proxlike' (where sim should be moved to)
 
 ### Determine next available dirname depending on type
 name=$(python -c 'import FindNextName; print(FindNextName.NextSubDir("'$2'"))')
