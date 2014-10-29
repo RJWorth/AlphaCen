@@ -22,7 +22,19 @@ def where(AList,AnElement):
 	
 	return inds
 
-############################################################################
+###############################################################################
+def GetLastTime(WhichDir):
+	'''Returns end time of the last completed simulation step.'''
+	
+### Modules
+	import AlphaCenModule as AC
+	import numpy as np
+
+	name,dest,time,LastTime = AC.ReadInfo(WhichDir)
+
+	return LastTime
+
+###########################################################################
 def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s,append='F'):
 	'''Write big.in or small.in file'''
 
@@ -1031,7 +1043,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 #------------------------------------------------------------------------------
 ########## Get object's fate and collision/ejection time from info.out #######
-	name,dest,time = AC.ReadInfo(WhichDir)
+	name,dest,time,LastTime = AC.ReadInfo(WhichDir)
 	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
 	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
 	for j in range(len(name)):
@@ -1292,7 +1304,7 @@ def Triple(m, xv1, xv2, xv3, nobjs, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT,m,mode='triple'):
+def WriteAEI(WhichDir,ThisT,m,mode='triple',Tmax=1e9):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
@@ -1302,7 +1314,7 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple'):
 	import AlphaCenModule as AC
 	from mks_constants import G, mSun, AU, day
 
-	m  = [i*mSun for i in m]
+	m  = np.array([i*mSun for i in m])
 	mu = G*sum(m)
 
 ### Column width in output
@@ -1790,6 +1802,8 @@ def ReadInfo(WhichDir):
 	ends=where(AllInfo,"   Integration complete.\n")
 	nloops=len(ends)
 
+	InfoBody = np.array(AllInfo[ (start[0]+2): ])
+
 	# Read the last loop only
 #	if (nloops == 1):	
 #		want=[AllInfo[j] for j in range(start[0]+2,ends[0]-1)]
@@ -1802,13 +1816,28 @@ def ReadInfo(WhichDir):
 
 	# Get any line that isn't blank or boilerplate
 	want = []
-	for row in AllInfo[ (start[0]+2):(ends[nloops-1]-1) ]:
+	FindTimeInd = []
+	CompleteInd = []
+	for i,row in enumerate(InfoBody):
 		if (row != '\n'):
 			if not ( (row.split()[0] == 'Fractional' ) | 
 					 (row.split()[0] == 'Integration') | 
 					 (row.split()[0] == 'Continuing' ) ):
 				want.append(row)
-	
+			if (row.split()[0] == 'Continuing' ):
+				FindTimeInd.append(i)
+			if (row.split()[0] == 'Integration' ):
+				CompleteInd.append(i)
+
+	# Find the last completed timestep iteration
+	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
+	if (max(CompleteInd) > max(FindTimeInd)):
+		LastTime = (max(np.log10(FindTime))+1)
+		print('Last iteration complete, final time = {0}'.format(LastTime))
+	else:
+		LastTime = (max(np.log10(FindTime)))
+		print('Last iteration incomplete, final time = {0}'.format(LastTime))
+
 	# Extract name, dest, and time from 'want' section
 	name,dest,time = [], [], []
 	if (len(want)>0):
@@ -1823,7 +1852,7 @@ def ReadInfo(WhichDir):
 			elif len(splitline)==5 and splitline[0]!='Fractional':
 				name[j],dest[j],time[j]=splitline[0],'ejected',splitline[3]
 
-	return name,dest,time
+	return name,dest,time,10.**LastTime
 
 ###############################################################################
 def SumAll(WhichDirs,cent,suffix=''):
