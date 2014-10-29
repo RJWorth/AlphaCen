@@ -160,7 +160,7 @@ plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
 	main=paste(stab.per[length(time)]*100,'% of disk remains stable',sep=''))
 #lines(time,surv.per, lwd=2)
 lines(time,stab.per, lwd=3, lty=3,col='blue')
-legend('bottomright',
+legend('bottomleft',
 	legend=c('Fraction surviving','Fraction remaining stable'),
 	lty=c(1,3),col='blue',lwd=3)
 

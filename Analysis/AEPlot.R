@@ -23,6 +23,20 @@ plot(     t[DoAEPlot],stars[[2]]$z[DoAEPlot],type='l',col='red',
 															ylim=c(zmin,zmax))
 	lines(t[DoAEPlot],stars[[1]]$z[DoAEPlot],type='l',col='yellow')
 #	lines(t[DoAEPlot],-CM3[DoAEPlot,3],       type='l',col='blue')
+# log
+plot(     t[DoAEPlot],stars[[2]]$x[DoAEPlot],type='l',col='red',log='x',
+															 ylim=c(xmin,xmax))
+	lines(t[DoAEPlot],stars[[1]]$x[DoAEPlot],type='l',col='yellow')
+#	lines(t[DoAEPlot],-CM3[DoAEPlot,1],       type='l',col='blue')
+plot(     t[DoAEPlot],stars[[2]]$y[DoAEPlot],type='l',col='red',log='x',
+															ylim=c(ymin,ymax))
+	lines(t[DoAEPlot],stars[[1]]$y[DoAEPlot],type='l',col='yellow')
+#	lines(t[DoAEPlot],-CM3[DoAEPlot,2],       type='l',col='blue')
+plot(     t[DoAEPlot],stars[[2]]$z[DoAEPlot],type='l',col='red',log='x',
+															ylim=c(zmin,zmax))
+	lines(t[DoAEPlot],stars[[1]]$z[DoAEPlot],type='l',col='yellow')
+#	lines(t[DoAEPlot],-CM3[DoAEPlot,3],       type='l',col='blue')
+
 dev.off()
 
 ### Get outermost extent of x and y for all stars
@@ -45,6 +59,19 @@ plot(     t[DoAEPlot],stars3[[2]]$y[DoAEPlot],type='l',col='red',
 	lines(t[DoAEPlot],stars3[[1]]$y[DoAEPlot],type='l',col='yellow')
 	lines(t[DoAEPlot],-CM3[DoAEPlot,2],       type='l',col='blue')
 plot(     t[DoAEPlot],stars3[[2]]$z[DoAEPlot],type='l',col='red',
+															ylim=c(zmin,zmax))
+	lines(t[DoAEPlot],stars3[[1]]$z[DoAEPlot],type='l',col='yellow')
+	lines(t[DoAEPlot],-CM3[DoAEPlot,3],       type='l',col='blue')
+# log
+plot(     t[DoAEPlot],stars3[[2]]$x[DoAEPlot],type='l',col='red',log='x',
+															 ylim=c(xmin,xmax))
+	lines(t[DoAEPlot],stars3[[1]]$x[DoAEPlot],type='l',col='yellow')
+	lines(t[DoAEPlot],-CM3[DoAEPlot,1],       type='l',col='blue')
+plot(     t[DoAEPlot],stars3[[2]]$y[DoAEPlot],type='l',col='red',log='x',
+															ylim=c(ymin,ymax))
+	lines(t[DoAEPlot],stars3[[1]]$y[DoAEPlot],type='l',col='yellow')
+	lines(t[DoAEPlot],-CM3[DoAEPlot,2],       type='l',col='blue')
+plot(     t[DoAEPlot],stars3[[2]]$z[DoAEPlot],type='l',col='red',log='x',
 															ylim=c(zmin,zmax))
 	lines(t[DoAEPlot],stars3[[1]]$z[DoAEPlot],type='l',col='yellow')
 	lines(t[DoAEPlot],-CM3[DoAEPlot,3],       type='l',col='blue')
@@ -93,8 +120,8 @@ plot( -CM3[2859,1],       -CM3[2859,2], col='blue',  pch=20,
 dev.off()
 
 ### Gif images of binary's orbit
-#source('binary.R')
+source('binary.R')
 
 ### Gif images of triple's orbit
-#if (mode=='triple') source('triple.R')
+if (mode=='triple') source('triple.R')
 

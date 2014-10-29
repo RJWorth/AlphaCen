@@ -8,7 +8,7 @@ suffix=$2
 
 ### Generate images in R
 echo $1', reading AEI'
-R CMD BATCH -$1 ReadAei.R
+#R CMD BATCH -$1 ReadAei.R
 #	mv gif/$1/CoordvsT.pdf gif/$1/CoordvsT$suffix.pdf 
 #	mv gif/$1/XY.pdf gif/$1/XY$suffix.pdf 
 

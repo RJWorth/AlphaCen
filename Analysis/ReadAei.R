@@ -11,7 +11,7 @@ if (length(dir) == 0 |
 	dir=="/usr/lib64/R/bin/exec/R" |
 	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		dir='Err/22'
+		dir='Proxlike/Prx04/Original'
 		}
 print(dir)
 
@@ -81,7 +81,7 @@ redux=10
 # extension indices
 #DoAEPlot=(6401:7401)[(1:1000%%1)==0]
 start=5-4		#start=6405-4
-stop =6405-4	#stop=7405-4
+stop =5505-4	#stop=7405-4
 range=start:stop
 DoAEPlot=range[(1:length(range)%%redux)==0]
 

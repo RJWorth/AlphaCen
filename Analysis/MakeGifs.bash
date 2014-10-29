@@ -3,10 +3,10 @@
 # make a gif of each directory (in series, not parallel)
 
 #Dirs=(Prx12/4-1)
-	prefix='Err/'	#'Prx'
+	prefix='Proxlike/Prx'	# e.g. 'Err/' or 'Prx'
 #	Dirs=(01 02 03 04 05 06 07 08 09 10 11)
-	Dirs=(22)
-	suffix=''
+	Dirs=('04/')
+	suffix='Disk1-C'
 
 for i in ${Dirs[*]}
 do
