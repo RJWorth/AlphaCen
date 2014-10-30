@@ -9,6 +9,10 @@ home=$(pwd)
 echo $home
 
 ### Simulation parameters
+dir=$1
+mA=$2
+newrun=$3
+
 newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
@@ -17,8 +21,6 @@ maxtime=8	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
 user='no'	# use user-defined forces?
-
-mA=$2
 
 ### Range for iterations
 if [ $machine = chloe ]; then
@@ -29,92 +31,101 @@ fi
 echo '	timerange '$timerange
 
 # Compile mercury and element
-if [ $newmerc = T ]; then
-	gfortran -w -O1 -o $1/Out/merc_disk Files/merc$vers
-	if [ $machine = chloe ]; then	
-		gfortran-4.2 -w -O1 -o $1/Out/elem Files/elem.for 	
-			#j in, to fix colors
-	else
-		gfortran -w -O1 -o $1/Out/elem Files/elem.for 		
-			#j in, to fix colors
+if [ $newrun = T ]; then
+	if [ $newmerc = T ]; then
+		gfortran -w -O1 -o $dir/Out/merc_disk Files/merc$vers
+		if [ $machine = chloe ]; then	
+			gfortran-4.2 -w -O1 -o $dir/Out/elem Files/elem.for 	
+				#j in, to fix colors
+		else
+			gfortran -w -O1 -o $dir/Out/elem Files/elem.for 		
+				#j in, to fix colors
+		fi
 	fi
 fi
 ### Do iterations
-	echo 'DiskRun: '$1', '$j
+	echo 'DiskRun: '$dir', '$j
 	# Start clock for iteration
 	t3=$(date +%s)
 	echo '================================================================'
 	# Clean out old sim
-	\rm $1/Out/*.dmp
-	\rm $1/Out/*.out
+	if [ newrun = True ]; then
+		\rm $dir/Out/*.dmp
+		\rm $dir/Out/*.out
+		echo 'cleaning old data'
+	else
+		echo 'continuing previous run'
+	fi
 
 	# Write param.in file
-#	./writeparam.bash $1 $mintime $output $step $mintime $user $mA
+#	./writeparam.bash $dir $mintime $output $step $mintime $user $mA
 	### Loop over time lengths
 	for k in $timerange; do
 
 		### Copy most recent completed run to backup
-		if [ $k -gt $mintime ]; then
-			\cp -p $1/Out/*.out $1/Out/Backup
-			\cp -p $1/Out/*.dmp $1/Out/Backup
-			\cp -p $1/Out/*.tmp $1/Out/Backup
+		if [ $newrun = T ]; then
+			if [ $k -gt $mintime ]; then
+			\cp -p $dir/Out/*.out $dir/Out/Backup
+			\cp -p $dir/Out/*.dmp $dir/Out/Backup
+			\cp -p $dir/Out/*.tmp $dir/Out/Backup
 			echo 'Attempted backup of 1e'$(echo "$k-1"|bc )' timestep'
+			fi
 		fi
 
 		#### Run mercury
-		cd $1/Out;	./merc_disk;	cd $home
+		cd $dir/Out;	./merc_disk;	cd $home
 
 		### Run Element to get orbit details
-		cd $1/Out;	./elem;	cd $home
-		\mv $1/Out/*.aei $1/Out/AeiOutFiles
+		cd $dir/Out;	./elem;	cd $home
+		\mv $dir/Out/*.aei $dir/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
-#		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
+#		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
 
 		if [ $k -ge 5 ]; then
-			R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+			R CMD BATCH -$dir '../Analysis/ReadDisk.R'
 		fi	# k >= 5
 
 		# For long simulations, write looptime
-		if [ $k -ge 1 ]; then
+		if [ $k -ge 5 ]; then
 			# Get end time
 			endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
-			size=$(python -c 'import os;print(os.path.getsize("'$1'/Out/xv.out"))')
+			size=$(python -c 'import os;print(os.path.getsize("'$dir'/Out/xv.out"))')
 			# Stop clock for iteration
 			t4=$(date +%s)
-			echo $1'	'$k'	'$(echo "$t4 - $t3"|bc ) >> disktimes.txt
+			echo $dir'	'$k'	'$(echo "$t4 - $t3"|bc ) >> disktimes.txt
 		fi	# k>=7
 		# If stopfile=true, don't continue this simulation
-		stop=$(cat $1/stopfile.txt)
+		stop=$(cat $dir/stopfile.txt)
 		if [ $stop = 'True' ]; then
 			break
 		else
 		# Write param.dmp file for next timestep
 		echo '----------------------------------------------------------------'
-		./writeparam.bash $1 $(echo "$k+1"|bc) $output $step $mintime $user $mA
+		./writeparam.bash $dir $(echo "$k+1"|bc) $output $step $mintime $user $mA
 		fi	# stop
 	done	#timerange
 	# Check for bigstop flag to stop the 'niter' loop
-	bigstop=$(cat $1/bigstopfile.txt)
+	bigstop=$(cat $dir/bigstopfile.txt)
 	if [ $bigstop = 'True' ]; then
 		echo 'Bigstop reached! Proxima-like system?'
-#		./email.sh $1 $j'/'$niter 'Disk sim completed'
+#		./email.sh $dir $j'/'$niter 'Disk sim completed'
 		break
 	fi
 	# Check continuation flag to stop the 'niter' loop
 	cont=$(cat ContinuationFlag.txt)
 	if [ $cont = 'False' ]; then
 		echo 'Iterations stopped by continuation flag.'
-		./email.sh $1 $j'/'$niter 'Iterations stopped by continuation flag'
+		./email.sh $dir $j'/'$niter 'Iterations stopped by continuation flag'
 		break
 	fi
 
-R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+R CMD BATCH -$dir '../Analysis/ReadDisk.R'
 
 # Write stop time for this directory:
 t2=$(date +%s)
 
 
-#echo $1"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
+#echo $dir"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
-./email.sh $1 $j'/'$niter 'Prx disk run finished'
+./email.sh $dir $j'/'$niter 'Prx disk run finished'
 
