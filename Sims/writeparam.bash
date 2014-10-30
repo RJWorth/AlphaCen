@@ -25,7 +25,7 @@ echo ' stop time (days)       = 365.25e'$2'                     ' >> $paramfile
 #echo ' output interval (days) = 365.25e'$3'                     ' >> $paramfile
 echo ' output interval (days) = 365.25e'$output'                ' >> $paramfile
 echo ' timestep (days)        = '$4'                            ' >> $paramfile
-echo ' accuracy parameter     = 1.d-13                          ' >> $paramfile
+echo ' accuracy parameter     = 1.d-12                          ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ') Integration options:                                    ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
