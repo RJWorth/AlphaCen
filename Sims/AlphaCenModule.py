@@ -23,8 +23,9 @@ def where(AList,AnElement):
 	return inds
 
 ###############################################################################
-def GetLastTime(WhichDir):
-	'''Returns end time of the last completed simulation step.'''
+def GetInfoLastTime(WhichDir):
+	'''Returns end time of the last completed simulation step based on 
+info.out.'''
 	
 ### Modules
 	import AlphaCenModule as AC
@@ -33,6 +34,47 @@ def GetLastTime(WhichDir):
 	name,dest,time,LastTime = AC.ReadInfo(WhichDir)
 
 	return LastTime
+
+###############################################################################
+def GetAEILastTime(WhichDir):
+	'''Returns end time of the last completed simulation step based on 
+the .aei files. (Requires up-to-date element run.)'''
+
+### Modules
+	import os, re
+	import numpy as np
+	import AlphaCenModule as AC
+
+	AeiDir = WhichDir+'/Out/AeiOutFiles/'
+### Get list of files in AeiOutDir
+	for root, dirs, files in os.walk(AeiDir):
+		filelist=files
+	filelist=np.array(filelist)
+### Get list of file sizes
+	size=[]
+	for f in filelist:
+		size.append(os.path.getsize(AeiDir+f))
+	size=np.array(size)
+### Check if aei files are older than the xv.out file
+	isnew = []
+	for f in filelist:
+		isnew.append(os.path.getmtime(AeiDir+f) > 
+					 os.path.getmtime(WhichDir+'/Out/xv.out'))
+	isnew = np.array(isnew)
+	# Should this be an error or warning?
+	assertfail='.aei files are older than xv.out file! Run element first'
+	assert (sum(isnew)>=1),assertfail
+
+### Get list of all files that are the maximum size
+	FullLengthFiles = filelist[(size==max(size[isnew])) & isnew]
+
+### Remove '.aei' from the end of the name of the first full-length
+### file that is newer than the xv.out file
+	FirstFileName = re.sub('\.aei$', '', FullLengthFiles[0])
+### Get the maximum time 
+	LastTime = AC.GetT(WhichDir,FirstFileName,-1,-0)
+
+	return(LastTime)
 
 ###########################################################################
 def WriteObjInFile(WhichDir,names,filename,Header,FirstLines,xv,s,append='F'):
@@ -501,8 +543,8 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 	
 ### Other parameters
 	if (m == 'default'):
-		mtot = mEarth				# total disk mass
-		m = mtot/nmax					# mass per disk particle
+		mtot = mEarth/1e6			# total disk mass
+		m = mtot/nmax				# mass per disk particle
 	r = 0.001						# Hill radii for small interactions
 	d = 2.0							# small obj density, g/cm^3
 	
@@ -737,7 +779,7 @@ def ReadAei(whichdir, filename, index1=-1, index2=0):
 
 ###############################################################################
 def GetT(whichdir, filename, index1=-1, index2=0):
-	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
+	'''Read .aei file to get time array'''
 
 	print('	--GetT         '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
