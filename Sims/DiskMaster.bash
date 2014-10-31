@@ -18,6 +18,8 @@ newdisk=T	# generate a new disk, T or F
 amin=0.1	# minimum extent of disk, in AU
 sz=small   	# add to big.in or small.in? (not used yet)
 
+machine=$(hostname -s)
+
 ############### Set up simulations
 for i in ${Which[*]}
 do
@@ -42,9 +44,6 @@ do
 		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'A-3",amin='$amin',objs=[],size="'$sz'")'
 		fi
 	fi	
-	# Start running triple sim
-	nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
-	echo 'master: '$j'A-3  '$!
 
 ### Set up binary system sim
 	if [ $newrun = T ]; then
@@ -57,9 +56,20 @@ do
 		head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 	fi
 
-	# Start running binary sim
-	nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
-	echo 'master: '$j'A-2  '$!
+	# Start running triple and binary sims
+	if [ $machine = 'shapiro' ] || [ $machine = 'chloe' ]; then
+		echo 'use bash script'
+		nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
+		echo 'master: '$j'A-2  '$!
+		nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
+		echo 'master: '$j'A-3  '$!
+	elif [ ${machine:0:5} = 'lionx' ]; then
+		echo 'use qsub script'
+		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
+		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
+	else
+		echo 'unknown host machine -- not running!!!'
+	fi
 
 done
 
