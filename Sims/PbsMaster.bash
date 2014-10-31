@@ -26,39 +26,39 @@ do
 
 	# Set up triple system sim
 	if [ $newrun = T ]; then
-		if [ ! -d $j-C ]; then
-			echo 'Creating '$j-C
-			\cp -rp $sim$i/Original $j-C
+		if [ ! -d $j'A-3' ]; then
+			echo 'Creating '$j'A-3'
+			\cp -rp $sim$i/Original $j'A-3'
 		else
-			echo $j-C exists
+			echo $j'A-3' exists
 		fi
 		# If no backup dir yet, make one
-		mkdir -p $j-C/Out/Backup
+		mkdir -p $j'A-3'/Out/Backup
 		# Reset stop files
-		echo 'False' > $j-C/stopfile.txt
-		echo 'False' > $j-C/bigstopfile.txt
+		echo 'False' > $j'A-3'/stopfile.txt
+		echo 'False' > $j'A-3'/bigstopfile.txt
 	
 		# Generate disk
 		if [ $newdisk = T ]; then
-		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'-C",amin='$amin',objs=[],size="'$sz'")'
+		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'A-3",amin='$amin',objs=[],size="'$sz'")'
 		fi
 	fi	
 	# Start running triple system
-	qsub -v dir=$j-C,mA=$mA,newrun=$newrun -o $j-C/run.pipe -j oe run1.pbs
+	qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
 
 	# Set up binary system sim
 	if [ $newrun = T ]; then
-		if [ -d $j-B ]; then
-			\rm -r $j-B
+		if [ -d $j'A-2' ]; then
+			\rm -r $j'A-2'
 		fi
-		echo 'Creating '$j-B
-		\cp -rp $j-C $j-B
+		echo 'Creating '$j'A-2'
+		\cp -rp $j'A-3' $j'A-2'
 
-		head -10 $j-C/In/big.in > $j-B/In/big.in
+		head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 	fi
 
 	# Start binary system
-	qsub -v dir=$j-B,mA=$mA,newrun=$newrun -o $j-B/run.pipe -j oe run1.pbs
+	qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
 
 done
 

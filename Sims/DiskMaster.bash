@@ -28,7 +28,7 @@ do
 	j=$sim$i$dir
 
 	# Set up triple system sim
-	if [ ! -d $j-C ]; then
+	if [ ! -d $j'A-3' ]; then
 		echo 'Creating '$j'A-3'
 		\cp -rp $sim$i/Original $j'A-3'
 	else
