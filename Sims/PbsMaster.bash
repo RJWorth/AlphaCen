@@ -43,11 +43,11 @@ do
 		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'A-3",amin='$amin',objs=[],size="'$sz'")'
 		fi
 	fi	
-	# Start running triple system
+	# Start running triple sim
 	qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
 
 
-	# Set up binary system sim
+### Set up binary system sim
 	if [ $newrun = T ]; then
 		if [ -d $j'A-2' ]; then
 			\rm -r $j'A-2'
@@ -58,7 +58,7 @@ do
 		head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 	fi
 
-	# Start binary system
+	# Start running binary sim
 	qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
 
 
