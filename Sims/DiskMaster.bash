@@ -75,10 +75,10 @@ do
 #	head -6 $j-C/In/big.in > $j-A/In/big.in
 
 	# Start all sims
-	nice -n 10 ./DiskRun.bash $j'A-' $mA T > $j'A-3'/run.pipe &
-	echo 'master: '$j'-C  '$!
+	nice -n 10 ./DiskRun.bash $j'A-3' $mA T > $j'A-3'/run.pipe &
+	echo 'master: '$j'A-3  '$!
 	nice -n 10 ./DiskRun.bash $j'A-2' $mA T > $j'A-2'/run.pipe &
-	echo 'master: '$j'-B  '$!
+	echo 'master: '$j'A-2  '$!
 #	nice -n 10 ./DiskRun.bash $j-A $mA T > $j-A/run.pipe &
 #	echo 'master: '$j'-A  '$!
 
