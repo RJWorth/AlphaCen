@@ -17,7 +17,7 @@ newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
 mintime=3	# = log(years)
-maxtime=8	# = log(years)
+maxtime=6	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
 user='no'	# use user-defined forces?
