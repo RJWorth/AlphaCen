@@ -11,7 +11,7 @@
 # Which sim(s)?
 sim='Proxlike/Prx'
 Which=()
-dir='/Disk1'
+dir='/Disk'
 
 ### Simulation parameters
 mA=0.123	#1.105
@@ -29,20 +29,20 @@ do
 
 	# Set up triple system sim
 	if [ ! -d $j-C ]; then
-		echo 'Creating '$j-C
-		\cp -rp $sim$i/Original $j-C
+		echo 'Creating '$j'A-3'
+		\cp -rp $sim$i/Original $j'A-3'
 	else
-		echo $j-C exists
+		echo $j'A-3' exists
 	fi
 	# If no backup dir yet, make one
-	mkdir -p $j-C/Out/Backup
+	mkdir -p $j'A-3'/Out/Backup
 	# Reset stop files
-	echo 'False' > $j-C/stopfile.txt
-	echo 'False' > $j-C/bigstopfile.txt
+	echo 'False' > $j'A-3'/stopfile.txt
+	echo 'False' > $j'A-3'/bigstopfile.txt
 
 	# Generate disk
 	if [ $newdisk = T ]; then
-		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'-C",amin='$amin',objs=[],size="'$sz'")'
+		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'A-3",amin='$amin',objs=[],size="'$sz'")'
 	fi
 	
 	# Set up binary system sim
@@ -56,13 +56,13 @@ do
 #		echo 'False' > $j-C/bigstopfile.txt
 #		echo $j-B exists, copying small list over
 #	fi
-	if [ -d $j-B ]; then
-		\rm -r $j-B
+	if [ -d $j'A-2' ]; then
+		\rm -r $j'A-2'
 	fi
-	echo 'Creating '$j-B
-	\cp -rp $j-C $j-B
+	echo 'Creating '$j'A-2'
+	\cp -rp $j'A-3' $j'A-2'
 
-	head -10 $j-C/In/big.in > $j-B/In/big.in
+	head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 
 	# Set up single star sim
 #	if [ ! -d $j-A ]; then
@@ -75,9 +75,9 @@ do
 #	head -6 $j-C/In/big.in > $j-A/In/big.in
 
 	# Start all sims
-	nice -n 10 ./DiskRun.bash $j-C $mA T > $j-C/run.pipe &
+	nice -n 10 ./DiskRun.bash $j'A-' $mA T > $j'A-3'/run.pipe &
 	echo 'master: '$j'-C  '$!
-	nice -n 10 ./DiskRun.bash $j-B $mA T > $j-B/run.pipe &
+	nice -n 10 ./DiskRun.bash $j'A-2' $mA T > $j'A-2'/run.pipe &
 	echo 'master: '$j'-B  '$!
 #	nice -n 10 ./DiskRun.bash $j-A $mA T > $j-A/run.pipe &
 #	echo 'master: '$j'-A  '$!
