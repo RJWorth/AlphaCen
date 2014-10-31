@@ -546,7 +546,7 @@ def El2X(el, m):
 	
 ###########################################################################
 def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
-	objs=['AlCenB'], size='small'):
+	centobj='AlCenA', size='small'):
 	'''Make a disk of small objects around A and B
  and write to small.in'''
 
@@ -562,11 +562,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 
 ### Objects per disk (one disk each around A and B)
 	nmax = int(nmax)
-	n1   = np.array(range(1,nmax+1))
-	if (len(objs) > 0):
-		n2   = np.array(range(1,nmax*2+1))
-	else:
-		n2   = n1
+	num  = np.array(range(1,nmax+1))
 	
 ### Other parameters
 	if (m == 'default'):
@@ -579,51 +575,47 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 	mstars = np.array(AC.GetStellarMasses(WhichDir))*mSun
 
 	aeiA, xvA = [0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0.]
-	# If using non-central star:
-	if (len(objs) > 0):
-		aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
-		aeiB[0] = aeiB[0]*AU
-		### Transform aei to xyz
-		xvB  = AC.Merc_El2X(aeiB, [mstars[0],mstars[1]])
-		xvB  = [xvB[0]/AU,     xvB[1]/AU,     xvB[2]/AU, 
-				xvB[3]*day/AU, xvB[4]*day/AU, xvB[5]*day/AU]
+
+	aeiB = AC.GetObjParams('{0}/In/big.in'.format(WhichDir), 'AlCenB')
+	aeiB[0] = aeiB[0]*AU
+	### Transform aei to xyz
+	xvB  = AC.Merc_El2X(aeiB, [mstars[0],mstars[1]])
+	xvB  = [xvB[0]/AU,     xvB[1]/AU,     xvB[2]/AU, 
+			xvB[3]*day/AU, xvB[4]*day/AU, xvB[5]*day/AU]
 
 ### Small object parameters
 	# List of small object names
-	names    = ['M'+str(i) for i in n2]
+	names    = ['M'+str(i) for i in num]
 
 	# Determine disk boundaries (in AU)
-	if (len(objs) > 0):
-		peri = aeiB[0]*(1-aeiB[1])/AU	# min distance btwn A and B
-	else:
-		peri = 20.
-	amax = peri/2				# could experiment with this...
+	peri = aeiB[0]*(1-aeiB[1])/AU	# min distance btwn A and B
+	amax = peri/2					# could experiment with this...
 	# disk spacing = logorithmic
 #	aspacing = amax - (amax-amin)*( log(nmax-n1+1)/log(nmax) )
 	# or disk spacing = linear
-	aspacing = (amin + (amax-amin)*( (n1-1)/float(nmax-1) ))
+	aspacing = (amin + (amax-amin)*( (num-1)/float(nmax-1) ))
 
 	# aei parameters for each object, relative to central object
 #	smallaei = np.array([[0. for j in range(6)] for i in n1])
 	# Small object xv's
-	SmlXV  = np.array([[0. for j in range(6)] for i in n2])
+	SmlXV  =     np.array([[0. for j in range(6)] for i in num])
 	if (size == 'big'):
-		SmlAEI = np.array([[0. for j in range(6)] for i in n2])
+		SmlAEI = np.array([[0. for j in range(6)] for i in num])
 ### Generate rocks
 	for j in range(0,len(names)):
 		
 		# Determine parameters for central object
-		if   (j <  nmax):
+		if   (centobj=='AlCenA'):
 			cent = xvA
 			centmass = mstars[0]
-		elif (j >= nmax):
+		elif (centobj=='AlCenB'):
 			cent = xvB
 			centmass = mstars[1]
 		else:
-			print('what is going on? n={0}, nmax={1}'.format(j,nmax))
+			print('what is going on? error with central object')
 
 ### Assign orbital parameters
-		a        = aspacing[(n2[j]-1)%nmax]*AU
+		a        = aspacing[(num[j]-1)%nmax]*AU
 		e,i, g,n = 0.0,0.0, 0.0,0.0,
 		M        = 360*random()		# mean anomaly
 #		E        =                  # eccentric anomaly
