@@ -6,7 +6,7 @@
 newrun=T
 
 sim='Proxlike/Prx'
-Which=()
+Which=(06)
 dir='/Disk'
 
 ### Simulation parameters
@@ -59,14 +59,14 @@ do
 	# Start running triple and binary sims
 	if [ $machine = 'shapiro' ] || [ $machine = 'chloe' ]; then
 		echo 'use bash script'
-		nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
+#		nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
 		echo 'master: '$j'A-2  '$!
-		nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
+#		nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
 		echo 'master: '$j'A-3  '$!
 	elif [ ${machine:0:5} = 'lionx' ]; then
 		echo 'use qsub script'
-		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
-		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
+#		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
+#		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
 	else
 		echo 'unknown host machine -- not running!!!'
 	fi
