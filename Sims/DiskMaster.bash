@@ -2,13 +2,9 @@
 ############################################################################### 
 # Start an instance of run.sh in each Dir
 
-# to clean previous run:
-# move plots, SumAll, AllParams, Rout files to Saved/whatever
-# \cp -p BlankDir/summary.out *Dir*		or
-# \rm *Dir*/summary.out
-# \rm *Dir*/InParams.txt
-
 # Which sim(s)?
+newrun=T
+
 sim='Proxlike/Prx'
 Which=()
 dir='/Disk'
@@ -27,7 +23,8 @@ for i in ${Which[*]}
 do
 	j=$sim$i$dir
 
-	# Set up triple system sim
+### Set up triple system sim
+
 	if [ ! -d $j'A-3' ]; then
 		echo 'Creating '$j'A-3'
 		\cp -rp $sim$i/Original $j'A-3'
@@ -45,17 +42,12 @@ do
 		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'A-3",amin='$amin',objs=[],size="'$sz'")'
 	fi
 	
-	# Set up binary system sim
-#	if [ ! -d $j-B ]; then
-#		echo 'Creating '$j-B
-#		\cp -rp $j-C $j-B
-#	else
-#		\cp -p $j-C/In/small.in $j-B/In/small.in
-#		mkdir -p $j-C/Out/Backup
-#		echo 'False' > $j-C/stopfile.txt
-#		echo 'False' > $j-C/bigstopfile.txt
-#		echo $j-B exists, copying small list over
-#	fi
+	# Start triple sim
+	nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
+	echo 'master: '$j'A-3  '$!
+
+### Set up binary system sim
+
 	if [ -d $j'A-2' ]; then
 		\rm -r $j'A-2'
 	fi
@@ -64,23 +56,10 @@ do
 
 	head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 
-	# Set up single star sim
-#	if [ ! -d $j-A ]; then
-#		echo 'Creating '$j-A
-#		\cp -rp $j-C $j-A
-#	else
-#		\cp -p $j-C/In/small.in $j-A/In/small.in
-#		echo $j-A exists, copying small list over
-#	fi
-#	head -6 $j-C/In/big.in > $j-A/In/big.in
 
-	# Start all sims
-	nice -n 10 ./DiskRun.bash $j'A-3' $mA T > $j'A-3'/run.pipe &
-	echo 'master: '$j'A-3  '$!
-	nice -n 10 ./DiskRun.bash $j'A-2' $mA T > $j'A-2'/run.pipe &
+	# Start binary sim
+	nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
 	echo 'master: '$j'A-2  '$!
-#	nice -n 10 ./DiskRun.bash $j-A $mA T > $j-A/run.pipe &
-#	echo 'master: '$j'-A  '$!
 
 done
 

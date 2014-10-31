@@ -24,7 +24,7 @@ for i in ${Which[*]}
 do
 	j=$sim$i$dir
 
-	# Set up triple system sim
+### Set up triple system sim
 	if [ $newrun = T ]; then
 		if [ ! -d $j'A-3' ]; then
 			echo 'Creating '$j'A-3'
@@ -46,6 +46,7 @@ do
 	# Start running triple system
 	qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
 
+
 	# Set up binary system sim
 	if [ $newrun = T ]; then
 		if [ -d $j'A-2' ]; then
@@ -59,6 +60,7 @@ do
 
 	# Start binary system
 	qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
+
 
 done
 
