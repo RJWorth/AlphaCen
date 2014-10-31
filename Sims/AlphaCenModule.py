@@ -23,22 +23,39 @@ def where(AList,AnElement):
 	return inds
 
 ###############################################################################
+def GetLastTime(WhichDir):
+	'''Returns how far a simulation has gotten, based on info and aei.'''
+	
+### Modules
+	import AlphaCenModule as AC
+
+	AeiTime  = AC.GetAEILastTime(WhichDir)
+	InfoTime = AC.GetInfoLastTime(WhichDir)
+	
+	LastTime = max([AeiTime,InfoTime])
+
+	return LastTime
+
+###############################################################################
 def GetInfoLastTime(WhichDir):
-	'''Returns end time of the last completed simulation step based on 
-info.out.'''
+	'''Returns how far a simulation has gotten, based on info.out.'''
 	
 ### Modules
 	import AlphaCenModule as AC
 	import numpy as np
 
-	name,dest,time,LastTime = AC.ReadInfo(WhichDir)
+	name,dest,time,LastTime,complete = AC.ReadInfo(WhichDir)
+	time = [float(i) for i in time]
+
+	if (complete == False):
+		LastTime = max(time+[LastTime])
 
 	return LastTime
 
 ###############################################################################
 def GetAEILastTime(WhichDir):
 	'''Returns end time of the last completed simulation step based on 
-the .aei files. (Requires up-to-date element run.)'''
+the .aei files. (Requires up-to-date element run for accuracy.)'''
 
 ### Modules
 	import os, re
@@ -50,23 +67,33 @@ the .aei files. (Requires up-to-date element run.)'''
 	for root, dirs, files in os.walk(AeiDir):
 		filelist=files
 	filelist=np.array(filelist)
+	validname = np.array([('.aei' in i) for i in filelist])
+	filelist = filelist[validname]
 ### Get list of file sizes
 	size=[]
 	for f in filelist:
 		size.append(os.path.getsize(AeiDir+f))
 	size=np.array(size)
-### Check if aei files are older than the xv.out file
-	isnew = []
+### Check which aei files are current (i.e. newer than the xv.out file)
+	xvage = os.path.getmtime(WhichDir+'/Out/xv.out')
+	age = []
 	for f in filelist:
-		isnew.append(os.path.getmtime(AeiDir+f) > 
-					 os.path.getmtime(WhichDir+'/Out/xv.out'))
-	isnew = np.array(isnew)
-	# Should this be an error or warning?
+		age.append(os.path.getmtime(AeiDir+f)-xvage)
+	age = np.array(age)
+	isnew = (age >= 0.)
 	assertfail='.aei files are older than xv.out file! Run element first'
-	assert (sum(isnew)>=1),assertfail
 
-### Get list of all files that are the maximum size
-	FullLengthFiles = filelist[(size==max(size[isnew])) & isnew]
+### If none of the files are new, look at just the newest ones
+	if not (sum(isnew)>=1):
+		print("Warning! "+assertfail)
+		mostrecent = max(age)
+		isnew = np.array((age > (mostrecent-10.)))
+
+### Get list of all files that are the maximum size (of the recent ones)
+	isFullLength = np.array(size==max(size[isnew]))
+
+### Want a file that is both recent and full length
+	FullLengthFiles = filelist[isFullLength & isnew]
 
 ### Remove '.aei' from the end of the name of the first full-length
 ### file that is newer than the xv.out file
@@ -1085,7 +1112,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 #------------------------------------------------------------------------------
 ########## Get object's fate and collision/ejection time from info.out #######
-	name,dest,time,LastTime = AC.ReadInfo(WhichDir)
+	name,dest,time,LastTime,complete = AC.ReadInfo(WhichDir)
 	DestB,TimeB = '-'.rjust(8),str(ThisT).rjust(13)
 	DestC,TimeC = '-'.rjust(8),str(ThisT).rjust(13)
 	for j in range(len(name)):
@@ -1875,9 +1902,11 @@ def ReadInfo(WhichDir):
 	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
 	if (max(CompleteInd) > max(FindTimeInd)):
 		LastTime = (max(np.log10(FindTime))+1)
+		complete = True
 		print('Last iteration complete, final time = {0}'.format(LastTime))
 	else:
 		LastTime = (max(np.log10(FindTime)))
+		complete = False
 		print('Last iteration incomplete, final time = {0}'.format(LastTime))
 
 	# Extract name, dest, and time from 'want' section
@@ -1894,7 +1923,7 @@ def ReadInfo(WhichDir):
 			elif len(splitline)==5 and splitline[0]!='Fractional':
 				name[j],dest[j],time[j]=splitline[0],'ejected',splitline[3]
 
-	return name,dest,time,10.**LastTime
+	return name,dest,time,10.**LastTime,complete
 
 ###############################################################################
 def SumAll(WhichDirs,cent,suffix=''):
