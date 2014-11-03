@@ -49,7 +49,7 @@ fi
 	t3=$(date +%s)
 	echo '================================================================'
 	# Clean out old sim
-	if [ newrun = True ]; then
+	if [ $newrun = T ]; then
 		\rm $dir/Out/*.dmp
 		\rm $dir/Out/*.out
 		echo 'cleaning old data'
@@ -79,7 +79,7 @@ fi
 		cd $dir/Out;	./elem;	cd $home
 		\mv $dir/Out/*.aei $dir/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
-#		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', 1e'$maxtime', WhichTime="Disk", machine="'$machine'", wantsum=True, wantplot=False, mode="triple", mA='$mA', mB='$mB', mC='$mC')'
+		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123, mC=.123)'
 
 		if [ $k -ge 5 ]; then
 			R CMD BATCH -$dir '../Analysis/ReadDisk.R'
@@ -98,7 +98,7 @@ fi
 		stop=$(cat $dir/stopfile.txt)
 		if [ $stop = 'True' ]; then
 			break
-		else
+		elif [ $k -lt $maxtime ]; then
 		# Write param.dmp file for next timestep
 		echo '----------------------------------------------------------------'
 		./writeparam.bash $dir $(echo "$k+1"|bc) $output $step $mintime $user $mA

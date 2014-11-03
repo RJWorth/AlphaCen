@@ -6,7 +6,8 @@
 newrun=T
 
 sim='Proxlike/Prx'
-Which=(06)
+#Which=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
+Which=()
 dir='/Disk'
 
 ### Simulation parameters
@@ -19,6 +20,7 @@ newdisk=T	# generate a new disk, T or F
 #sz=small   	# add to big.in or small.in? (not used yet)
 
 machine=$(hostname -s)
+home=$(pwd)
 
 ############### Set up simulations
 for i in ${Which[*]}
@@ -34,6 +36,7 @@ do
 		else
 			echo $j'A-3' exists
 		fi
+                \rm $j'A-3'/run.pipe
 		# If no backup dir yet, make one
 		mkdir -p $j'A-3'/Out/Backup
 		# Reset stop files
@@ -66,6 +69,7 @@ do
 		else
 			echo $j'B-3' exists
 		fi
+		\rm ${j}B-3/run.pipe
 		# If no backup dir yet, make one
 		mkdir -p $j'B-3'/Out/Backup
 		# Reset stop files
@@ -92,23 +96,31 @@ do
 	# Start running triple and binary sims
 	if [ $machine = 'shapiro' ] || [ $machine = 'chloe' ]; then
 		echo 'using bash script'
-#		nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
+		nice -n 10 ./DiskRun.bash $j'A-2' $mA $newrun > $j'A-2'/run.pipe &
 		echo 'master: '$j'A-2  '$!
-#		nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
+		nice -n 10 ./DiskRun.bash $j'A-3' $mA $newrun > $j'A-3'/run.pipe &
 		echo 'master: '$j'A-3  '$!
-#		nice -n 10 ./DiskRun.bash $j'B-2' $mA $newrun > $j'B-2'/run.pipe &
+		nice -n 10 ./DiskRun.bash $j'B-2' $mA $newrun > $j'B-2'/run.pipe &
 		echo 'master: '$j'B-2  '$!
-#		nice -n 10 ./DiskRun.bash $j'B-3' $mA $newrun > $j'B-3'/run.pipe &
+		nice -n 10 ./DiskRun.bash $j'B-3' $mA $newrun > $j'B-3'/run.pipe &
 		echo 'master: '$j'B-3  '$!
 	elif [ ${machine:0:5} = 'lionx' ]; then
 		echo 'using qsub script'
-#		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun -o $j'A-2'/run.pipe -j oe run1.pbs
-#		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun -o $j'A-3'/run.pipe -j oe run1.pbs
-#		qsub -v dir=$j'B-2',mA=$mA,newrun=$newrun -o $j'B-2'/run.pipe -j oe run1.pbs
-#		qsub -v dir=$j'B-3',mA=$mA,newrun=$newrun -o $j'B-3'/run.pipe -j oe run1.pbs
+		dirname=${j}A-2
+	        runname=${dirname:12:2}_${dirname:19:3}
+		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                dirname=${j}A-3
+                runname=${dirname:12:2}_${dirname:19:3}
+		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                dirname=${j}B-2
+                runname=${dirname:12:2}_${dirname:19:3}
+		qsub -v dir=$j'B-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                dirname=${j}B-3
+                runname=${dirname:12:2}_${dirname:19:3}
+		qsub -v dir=$j'B-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+
 	else
 		echo 'unknown host machine -- not running!!!'
 	fi
-
 done
 
