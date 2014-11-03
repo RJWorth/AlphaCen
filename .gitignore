@@ -1,0 +1,28 @@
+# stuff that always needs to be here
+._.DS_Store
+
+# mercury created output
+*.out
+*.dmp
+*.tmp
+*.aei
+
+# compiled code
+*.pyc
+
+# other
+*.Rout
+*.RData
+*.txt
+.DS_Store
+*~
+git.status
+*.pdf
+CDir*
+SDir*
+PDir*
+Proxlike
+Saved
+Err
+Good
+Backup*
