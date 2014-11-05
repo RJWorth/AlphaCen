@@ -1,16 +1,31 @@
 #!/bin/bash
 ############################################################################### 
 # Start an instance of run.sh in each Dir
+machine=$(hostname -s)
+home=$(pwd)
 
 # Which sim(s)?
 newrun=T
 
 sim='Proxlike/Prx'
-#Which=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
-#Which=(01 02 03 04 05 06 07 08)
-#Which=(09 10 11 12 13 14 15 16)
-Which=(18)
 dir='/Disk'
+### Assign directories based on machine
+if [ ${machine:0:5} = 'lionx' ]; then
+	if [ ${machine:5:1} = 'j' ]; then
+	Which=(01 02 03 04 05 06 07)
+	elif  [ ${machine:5:1} = 'g' ]; then
+	Which=(08 09 10 11 12 13 14)
+	elif  [ ${machine:5:1} = 'f' ]; then
+	Which=(15 16 17 18 19 20 21)
+	elif  [ ${machine:5:1} = 'i' ]; then
+	Which=(22 23 24 25 26 27 28)
+	elif  [ ${machine:5:1} = 'h' ]; then
+	Which=(29 30 31 32 33 34)
+else
+	Which=()
+fi
+print(Which)
+Which=()
 
 ### Simulation parameters
 mA=0.123	#1.105
@@ -20,9 +35,6 @@ mC=0.123
 newdisk=T	# generate a new disk, T or F
 #amin=0.1	# minimum extent of disk, in AU
 #sz=small   	# add to big.in or small.in? (not used yet)
-
-machine=$(hostname -s)
-home=$(pwd)
 
 ############### Set up simulations
 for i in ${Which[*]}
