@@ -7,7 +7,9 @@ newrun=T
 
 sim='Proxlike/Prx'
 #Which=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
-Which=()
+#Which=(01 02 03 04 05 06 07 08)
+#Which=(09 10 11 12 13 14 15 16)
+Which=(18)
 dir='/Disk'
 
 ### Simulation parameters
@@ -108,16 +110,16 @@ do
 		echo 'using qsub script'
 		dirname=${j}A-2
 	        runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v dir=$j'A-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$j'A-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
                 dirname=${j}A-3
                 runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v dir=$j'A-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$j'A-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
                 dirname=${j}B-2
                 runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v dir=$j'B-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$j'B-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
                 dirname=${j}B-3
                 runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v dir=$j'B-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$j'B-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
 
 	else
 		echo 'unknown host machine -- not running!!!'
