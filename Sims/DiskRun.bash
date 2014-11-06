@@ -20,7 +20,7 @@ mintime=3	# = log(years)
 maxtime=6	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
-user='no'	# use user-defined forces?
+user='yes'	# use user-defined forces?
 
 ### Range for iterations
 if [ $machine = chloe ]; then
@@ -58,7 +58,7 @@ fi
 	fi
 
 	# Write param.in file
-#	./writeparam.bash $dir $mintime $output $step $mintime $user $mA
+	./writeparam.bash $dir $mintime $output $step $mintime $user $mA
 	### Loop over time lengths
 	for k in $timerange; do
 
@@ -115,7 +115,7 @@ fi
 	cont=$(cat ContinuationFlag.txt)
 	if [ $cont = 'False' ]; then
 		echo 'Iterations stopped by continuation flag.'
-		./email.sh $dir $j'/'$niter 'Iterations stopped by continuation flag'
+#		./email.sh $dir $j'/'$niter 'Iterations stopped by continuation flag'
 		break
 	fi
 
@@ -127,5 +127,5 @@ t2=$(date +%s)
 
 #echo $dir"	"$machine"	"$j"/"$niter"	"$user"	"$vers"	"$(echo "$t2 - $t1"|bc ) >> runtime.txt
 
-./email.sh $dir $j'/'$niter 'Prx disk run finished'
+#./email.sh $dir $j'/'$niter 'Prx disk run finished'
 
