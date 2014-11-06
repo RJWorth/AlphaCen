@@ -1163,9 +1163,11 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	else:
 ### Or two stars, if just a binary system
 		xvA_AU=np.array([xvA_A_AU, xvB_A_AU])
-	if ((any(np.isnan(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:]))))) |
-	    (any(np.isinf(np.concatenate((xvB_A_AU[-1,:],xvC_A_AU[-1,:])))))):
+	if ((any(np.isnan(xvB_A_AU[-1,:]))) | (any(np.isinf(xvB_A_AU[-1,:])))):
 		MercNanError = True
+	elif ( mode=='triple'):
+		if (any(np.isnan(xvC_A_AU[-1,:])) | any(np.isinf(xvC_A_AU[-1,:]))):
+			MercNanError = True
 #		if ((not any(np.isnan(np.concatenate((xvB_A_AU[-2,:],xvC_A_AU[-2,:]))))) |
 #		    (not any(np.isinf(np.concatenate((xvB_A_AU[-2,:],xvC_A_AU[-2,:])))))):
 #			print('NaNs in last timestep only; backing up by one')
@@ -1180,35 +1182,41 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 ### Get distances between stars (== rAij_AU*AU), and rel. velocity
 	rAB = AC.Distance(xvA[0,:,:], xvA[1,:,:])
-	rBC = AC.Distance(xvA[1,:,:], xvA[2,:,:])
-	rAC = AC.Distance(xvA[0,:,:], xvA[2,:,:])
+	if (mode=='triple'):
+		rBC = AC.Distance(xvA[1,:,:], xvA[2,:,:])
+		rAC = AC.Distance(xvA[0,:,:], xvA[2,:,:])
 
 
 ### Determine system classification based on last triple timestep
-	distances = np.array([rAB[iTri-1], rBC[iTri-1], rAC[iTri-1]])
-	if (((DestB.strip() != 'Center') & (DestB.strip() != 'PrxCen')) & 
-		((DestC.strip() != 'Center') & (DestC.strip() != 'AlCenB'))):
-		if   (min(distances) == rAB[iTri-1]):
+	if (mode=='triple'):
+		distances = np.array([rAB[iTri-1], rBC[iTri-1], rAC[iTri-1]])
+		if (((DestB.strip() != 'Center') & (DestB.strip() != 'PrxCen')) & 
+			((DestC.strip() != 'Center') & (DestC.strip() != 'AlCenB'))):
+			if   (min(distances) == rAB[iTri-1]):
+				sysclass = 'AB'
+				abc = [0,1,2]
+				if (ntB  < ntC):
+					iBin = imin
+			elif (min(distances) == rBC[iTri-1]):
+				sysclass = 'BC'
+				abc = [1,2,0]
+				if (ntB != ntC):
+					iBin = imin
+			elif (min(distances) == rAC[iTri-1]):
+				sysclass = 'AC'
+				abc = [0,2,1]
+				if (ntB  > ntC):
+					iBin = imin
+			else:
+				print('no class assigned...???')
+		else:
+			# If any objects collide, assume AB binary?
 			sysclass = 'AB'
 			abc = [0,1,2]
-			if (ntB  < ntC):
-				iBin = imin
-		elif (min(distances) == rBC[iTri-1]):
-			sysclass = 'BC'
-			abc = [1,2,0]
-			if (ntB != ntC):
-				iBin = imin
-		elif (min(distances) == rAC[iTri-1]):
-			sysclass = 'AC'
-			abc = [0,2,1]
-			if (ntB  > ntC):
-				iBin = imin
-		else:
-			print('no class assigned...???')
 	else:
 		# If any objects collide, assume AB binary?
 		sysclass = 'AB'
-		abc = [0,1,2]
+		abc = [0,1,float('NaN')]
 		
 
 ### Print basic info about simulation
@@ -1863,7 +1871,7 @@ def ReadInfo(WhichDir):
 	ends=where(AllInfo,"   Integration complete.\n")
 	nloops=len(ends)
 
-	InfoBody = np.array(AllInfo[ (start[0]+2): ])
+	InfoBody = np.array(AllInfo[ (start[0]): ])
 
 	# Read the last loop only
 #	if (nloops == 1):	
@@ -1883,16 +1891,21 @@ def ReadInfo(WhichDir):
 		if (row != '\n'):
 			if not ( (row.split()[0] == 'Fractional' ) | 
 					 (row.split()[0] == 'Integration') | 
-					 (row.split()[0] == 'Continuing' ) ):
+					 (row.split()[0] == 'Continuing')  | 
+					 (row.split()[0] == 'Beginning' )   ):
 				want.append(row)
-			if (row.split()[0] == 'Continuing' ):
+			if (row.split()[0] == 'Continuing'):
 				FindTimeInd.append(i)
 			if (row.split()[0] == 'Integration' ):
 				CompleteInd.append(i)
 
 	# Find the last completed timestep iteration
 	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
-	if (max(CompleteInd) > max(FindTimeInd)):
+	if (len(CompleteInd) == 1):
+		LastTime = 0.
+		complete = True
+		print('First iteration, no time written'.format(LastTime))
+	elif (max(CompleteInd) > max(FindTimeInd)):
 		LastTime = (max(np.log10(FindTime))+1)
 		complete = True
 		print('Last iteration complete, final time = {0}'.format(LastTime))
