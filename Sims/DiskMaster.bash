@@ -11,21 +11,26 @@ sim='Proxlike/Prx'
 dir='/Disk'
 ### Assign directories based on machine
 if [ ${machine:0:5} = 'lionx' ]; then
+	echo 'running on '$machine
 	if [ ${machine:5:1} = 'j' ]; then
 	Which=(01 02 03 04 05 06 07)
 	elif  [ ${machine:5:1} = 'g' ]; then
-	Which=(08 09 10 11 12 13 14)
+	Which=(09 10 11 12 13 14)
 	elif  [ ${machine:5:1} = 'f' ]; then
-	Which=(15 16 17 18 19 20 21)
+	Which=(15 16 19 20 21)
 	elif  [ ${machine:5:1} = 'i' ]; then
 	Which=(22 23 24 25 26 27 28)
 	elif  [ ${machine:5:1} = 'h' ]; then
 	Which=(29 30 31 32 33 34)
+	else
+		echo 'unknown lionx machine'
+	fi
 else
+	echo 'Non-lionx machine'
 	Which=()
 fi
-print(Which)
-Which=()
+echo ${Which[*]}
+#Which=()
 
 ### Simulation parameters
 mA=0.123	#1.105
