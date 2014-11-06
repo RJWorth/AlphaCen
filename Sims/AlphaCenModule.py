@@ -1225,50 +1225,39 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 			float(TimeB),float(TimeC), sysclass))
 
 # Get binary data
-	aB, eB, iB, epsB, xvCM_AB, xvAB, kB, uB, rB, vB = AC.Binary(
+	aB, eB, iB, epsB, xvCM_AB, kB, uB, rB, vB = AC.Binary(
 			[ m[abc[0]],m[abc[1]] ], 
-			xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:], 
+			np.array([xvA[abc[0],:,:], xvA[abc[1],:,:]]), 
 			nobjs, iBin)
+	xvAB = AC.wrtCM(np.array([xvA[abc[0],:,:], xvA[abc[1],:,:]]), xvCM_AB)
 # Get triple system data
 	if (mode=='triple'):
 		aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB = AC.Triple(
 			[ m[abc[0]],m[abc[1]],m[abc[2]] ], 
-			xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:], 
+			np.array([xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:]]), 
 			nobjs, iTri, DestB, xvA_AU, xvCM_AB, xvAB)
 #------------------------------------------------------------------------------
 ### Print results
 	print('	   aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
 			   aB[-1]/AU,  eB[-1],    iB[-1]         ) )
-	print('	   aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
-			   aC[-1]/AU,  eC[-1],    iC[-1]         ) )
+	if (mode=='triple'):
+		print('	   aC = {0:10.4g}, eC = {1:6.4g}, iC = {2:6.4g}'.format(
+				   aC[-1]/AU,  eC[-1],    iC[-1]         ) )
 
-	### Check for consistency
-		# Change in energy
-	dEpsB = epsB[-1]-epsB[0]
-	dEpsC = epsC[-1]-epsC[0]
-
-#	if abs(dEpsB/epsB[0])<0.05:
-#		print('	  dEpsB = {0:10.4g} J, {1:7.4g}%'.format(
-#						   dEpsB,       100.*dEpsB/epsB[0]) )
-#	else:
-#		print('	  dEpsB = {0:10.4g} J, {1:7.4g}% - large energy variation (AB)'.format(
-#						   dEpsB,       100.*dEpsB/epsB[0]) )
-
-#	if abs(dEpsC/epsC[0])>0.02:
-#		print('	  dEpsC = {0:10.4g} J, {1:7.4g}% - large energy variation (ABC)'.format(
-#						   dEpsC,       100.*dEpsC/epsC[0]) )
-#	else:
-#		print('	  dEpsC = {0:10.4g} J, {1:7.4g}%'.format(
-#						   dEpsC,       100.*dEpsC/epsC[0]) )
-
-
+### Check for consistency
 ### Ejected objects should have pos. energy, stable ones should be neg.
-	if ((DestC=='ejected') & (epsC[-1]<0.)):
-		print('C: Energy weirdness!!!')
+	dEpsB = epsB[-1]-epsB[0]
 	if ((DestB=='ejected') & (epsB[-1]<0.)):
 		print('B: Energy weirdness!!!')
+	if (mode=='triple'):
+		dEpsC = epsC[-1]-epsC[0]
+		if ((DestC=='ejected') & (epsC[-1]<0.)):
+			print('C: Energy weirdness!!!')
 
 #------------------------------------------------------------------------------
+	if (mode=='binary'):
+		rC_AB,vC_AB, dEpsC, epsC, kC, uC,aC, eC, iC = [float('NaN')]*9
+		print(TimeC, DestC)
 ### Return all the data
 	return	m, iBin, iTri, imin, imax, MercNanError,\
 	   rB,    vB, dEpsB, epsB, kB, uB, \
@@ -1279,7 +1268,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 #------------------------------------------------------------------------------
 ######################## Binary system: #################################
 #------------------------------------------------------------------------------
-def Binary(m, xv1, xv2, xv3, nobjs, ind):
+def Binary(m, xv, nobjs, ind):
 	'''Calculate orbital parameters for the binary of the system, stars 1 & 2.
  Usually the binary will be stars A and B, but substitute the values of A & C 
 or B & C if they are actually closer. They'll still be referred to as A & B
@@ -1290,9 +1279,6 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 	import numpy as np
 	from mks_constants import G, mSun, AU, day
 	from numpy import log10
-
-### Combine xv data into 3D array in binary-triple order (usually ABC):
-	xv = np.array([xv1,xv2,xv3])
 
 ### Relative distance/velocity of binary stars
 	r2 = AC.Distance(xv[0,0:ind,:], xv[1,0:ind,:])
@@ -1327,7 +1313,7 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 	# inclination
 	i2 = AC.i(h2[:,2], hbar2)
 
-	return(a2, e2, i2, eps2, xvCM_2, xv2, k2, u2, r2, v2)
+	return(a2, e2, i2, eps2, xvCM_2, k2, u2, r2, v2)
 
 #------------------------------------------------------------------------------
 ####################### Triple system: ########################################
