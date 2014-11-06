@@ -79,7 +79,11 @@ fi
 		cd $dir/Out;	./elem;	cd $home
 		\mv $dir/Out/*.aei $dir/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
+		if [ ${dir: -1:1} = 2 ]; then
+		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', WhichTime="Disk", wantsum=False, wantplot=False, mode="binary", mA='$mA', mB=.123, mC=.123)'
+		else
 		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123, mC=.123)'
+		fi
 
 		if [ $k -ge 5 ]; then
 			R CMD BATCH -$dir '../Analysis/ReadDisk.R'
