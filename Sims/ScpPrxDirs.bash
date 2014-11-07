@@ -9,7 +9,8 @@ suf=('/DiskA-2' '/DiskA-3' '/DiskB-2' '/DiskB-3')
 for i in ${Dir[*]}; do
 	for j in ${suf[*]}; do
 		d=$pre$i$j
-		echo rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d/*.pdf $d
+		mkdir -p $d
+		echo    rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d/*.pdf $d
 		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d/*.pdf $d 		
 #		scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d $pre$i
 	done
