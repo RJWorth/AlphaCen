@@ -17,7 +17,8 @@ if (length(dir) == 0 |
 	print(dir)
 
 ### Locations
-simdir=paste('../Sims/',dir,sep='')
+if (substr(dir,1,1)=='/') simdir=dir else {
+	simdir=paste('../Sims/',dir,sep='') }
 aeidir=paste(simdir,'/Out/AeiOutFiles/',sep='')
 
 ### Load relevant constants/functions etc
