@@ -11,7 +11,7 @@ for i in ${Dir[*]}; do
 		d=$pre$i$j
 		mkdir -p $d
 		echo    rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d/*.pdf $d
-		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d/*.pdf $d 		
+		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d $d 		
 #		scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d $pre$i
 	done
 done
