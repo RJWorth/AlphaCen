@@ -1,4 +1,3 @@
-
 ### Get run version from input variable
 args <- commandArgs(trailingOnly = F)
 	print(length(args))
@@ -13,7 +12,7 @@ if (length(dir) == 0 |
 	dir=="/usr/lib64/R/bin/exec/R" |
 	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		dir='Proxlike/Prx01/Disk1-B'	#'Prx02/Disk'
+		dir='Proxlike/Prx01/DiskB-2'	#'Prx02/Disk'
 		}
 	print(dir)
 
@@ -35,6 +34,10 @@ print(disknames)
 starnames=c('AlCenA','AlCenB')
 nstars=length(starnames)
 
+### Determine where disk is centered
+cent = substr(dir, nchar(dir)-2, nchar(dir)-2)
+if (cent == 'A') cent=1 else if (cent =='B') cent=2 else {
+	print('unrecognized name format, assuming disk is centered on A') }
 ### Determine dimensions
 maxTlength = 0
 for (obj in c(disknames,starnames[-1]))  {
@@ -47,13 +50,13 @@ ndims = dim(read.table(
 if (ndims == 12) {
 	cols=c('Time', 'a','e','i', 'mass','dens', 
 									'x','y','z', 'vx','vy','vz')
-	c.ind=c(2:4,7:12)
 	} else {
 	print('Wrong number of columns in .aei file')}
+c.ind=c("a", "e", "i", "x", "y", "z", "vx","vy","vz")
 
 ### Generate matrix of star aei data
-star = array(data = 0., dim = c( nstars, maxTlength, ndims-3), 
-	dimnames = list(NULL,NULL,cols[c.ind]) )
+star = array(data = NA, dim = c( nstars, maxTlength, length(c.ind)), 
+	dimnames = list(NULL,NULL,c.ind) )
 for (i in 2:length(starnames)) {
 	Tlength = length(readLines( paste(aeidir,starnames[i],'.aei',sep='') ) )-4
 	objdata = read.table(
@@ -61,7 +64,7 @@ for (i in 2:length(starnames)) {
 		col.names=cols)[,c.ind]
 	# It's stupid that I have to iterate over this, but otherwise it
 	# turns my matrix into a list of n*maxTlength*ndim single elements...???
-	for (j in 1:(ndims-3))	{
+	for (j in 1:length(c.ind))	{
 		for (k in 1:Tlength)	star[i, k, j] = objdata[ k,j]	}
 	# Get list of timesteps from the longest sim(s)
 	if (Tlength>length(time))	time=read.table(
@@ -69,8 +72,8 @@ for (i in 2:length(starnames)) {
 		col.names=cols)[,1]
 	}
 ### Generate matrix of disk aei data
-disk = array(data = NA, dim = c( n, maxTlength, ndims-3), 
-	dimnames = list(NULL,NULL,cols[c.ind]) )
+disk = array(data = NA, dim = c( n, maxTlength, length(c.ind)+1), 
+	dimnames = list(NULL,NULL,c(c.ind,'r')) )
 for (i in 1:length(disknames)) {
 	Tlength = length(readLines( paste(aeidir,disknames[i],'.aei',sep='') ) )-4
 	objdata = read.table(
@@ -78,8 +81,15 @@ for (i in 1:length(disknames)) {
 		col.names=cols)[,c.ind]
 	# It's stupid that I have to iterate over this, but otherwise it
 	# turns my matrix into a list of n*maxTlength*ndim single elements...???
-	for (j in 1:(ndims-3))	{
-		for (k in 1:Tlength)	disk[i, k, j] = objdata[ k,j]	}
+	for (k in 1:Tlength)	{
+		for (j in 1:length(c.ind))	{
+				disk[i, k, j] = objdata[k,j]
+			}
+		r = sqrt( (disk[i,k,'x']-star[cent,k,'x'])^2 +
+				  (disk[i,k,'y']-star[cent,k,'y'])^2 +
+				  (disk[i,k,'z']-star[cent,k,'z'])^2 )
+		disk[i, k, length(c.ind)+1] = r
+	}
 	# Get list of timesteps from the longest sim(s)
 	if (Tlength>length(time))	time=read.table(
 		paste(aeidir,disknames[i],'.aei',sep=''), header=F,skip=4,
@@ -89,15 +99,18 @@ for (i in 1:length(disknames)) {
 print(sum3d(disk))
 
 ### Calculate % of disk surviving, as a f'n of time
+outerbound = min(star[2,,'a'],na.rm=T)
 surviving = matrix(, nrow = length(time), ncol = dim(disk)[1])
 stable = matrix(, nrow = length(time), ncol = dim(disk)[1])
 surv.per = rep(0., length(time))
 stab.per = rep(0., length(time))
+for (i in 1:length(disknames)) {
+	surviving[,i] =  !is.na(disk[i,,'r']) & !is.na(disk[i,,'a'])
+	stable[,i]    = (!is.na(disk[i,,'r']) & !is.na(disk[i,,'a'])
+					 & (abs(disk[i,,'r']-disk[i,1,'r']) <= 1.)
+					 & ((cent==2) | (disk[i,,'a'] >= 0.)))
+	}
 for (j in 1:length(time))	{
-	surviving[j,] =  !is.na(disk[,j,'a'])
-	stable[j,]    = (!is.na(disk[,j,'a'])
-					 & (disk[,j,'a'] >= 0.)
-					 & (disk[,j,'a'] <= 2*max(disk[,1,'a'],na.rm=T)))
 	surv.per[j] = sum(surviving[j,])/n
 	stab.per[j] = sum(   stable[j,])/n
 	}
@@ -133,10 +146,11 @@ diskimg = matrix(, nrow = samprate, ncol = dim(disk)[1])
 
 ### Measure the difference between actual and expected velocity, 
 ### as a fraction of expected
-verr=(v(1:100,1)-vorb_expect(1:100,1))/vorb_expect(1:100,1)
+#verr=(v(1:100,1)-vorb_expect(1:100,1))/vorb_expect(1:100,1)
 
 ### Make a 2D array of initial parameters for each object
-pairframe=cbind(disk[,1,],verr)
+#pairframe=cbind(disk[,1,],verr)
+pairframe=disk[,1,]
 
 time.all  =               1:maxTlength
 timeslice = (maxTlength-99):maxTlength
@@ -149,7 +163,7 @@ pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=4,width=8)
 
 image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
 axis(4, col="red", lwd=2,
-	labels=c( min(disk[,1,'a']), 5, 10 ),
+	labels=c( min(disk[,1,'r']), 5, 10 ),
 	at=c(0,.5,1) )
 
 par(new=T)
