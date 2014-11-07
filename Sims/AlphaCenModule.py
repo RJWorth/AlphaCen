@@ -1080,6 +1080,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 ### Number of objects
 	nobjs=len(filenames)+1
+	print('nobjs = ',nobjs)
 ### Number of timesteps
 	ntB=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[0]+'.aei')-4
 	if (mode == 'triple'):
