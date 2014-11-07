@@ -2,7 +2,7 @@
 args <- commandArgs(trailingOnly = F)
 	print(length(args))
 	print(args)
-if (length(args) >2) options(echo = FALSE)
+#if (length(args) >2) options(echo = FALSE)
 dir <- sub("-","",args[length(args)])
 
 ### If version not given at input, try using version specified here
@@ -12,7 +12,7 @@ if (length(dir) == 0 |
 	dir=="/usr/lib64/R/bin/exec/R" |
 	dir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		dir='Proxlike/Prx01/DiskB-2'	#'Prx02/Disk'
+		dir='Proxlike/Prx01/DiskA-2'	#'Prx02/Disk'
 		}
 	print(dir)
 
