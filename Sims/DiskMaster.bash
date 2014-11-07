@@ -15,9 +15,9 @@ if [ ${machine:0:5} = 'lionx' ]; then
 	if [ ${machine:5:1} = 'j' ]; then
 	Which=(01 02 03 04 05 06 07)
 	elif  [ ${machine:5:1} = 'g' ]; then
-	Which=(09 10 11 12 13 14)
+	Which=(08 09 10 11 12 13 14)
 	elif  [ ${machine:5:1} = 'f' ]; then
-	Which=(15 16 19 20 21)
+	Which=(15 16 17 18 19 20 21)
 	elif  [ ${machine:5:1} = 'i' ]; then
 	Which=(22 23 24 25 26 27 28)
 	elif  [ ${machine:5:1} = 'h' ]; then
@@ -30,7 +30,9 @@ else
 	Which=()
 fi
 echo ${Which[*]}
-#Which=()
+#sim=''
+#dir=''
+Which=()
 
 ### Simulation parameters
 mA=0.123	#1.105
@@ -125,18 +127,18 @@ do
 		echo 'master: '$j'B-3  '$!
 	elif [ ${machine:0:5} = 'lionx' ]; then
 		echo 'using qsub script'
-		dirname=${j}A-2
-	        runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v h=$home,dir=$j'A-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
-                dirname=${j}A-3
-                runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v h=$home,dir=$j'A-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
-                dirname=${j}B-2
-                runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v h=$home,dir=$j'B-2',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
-                dirname=${j}B-3
-                runname=${dirname:12:2}_${dirname:19:3}
-		qsub -v h=$home,dir=$j'B-3',mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		d=${j}A-2
+	        runname=${d:12:2}_${d:19:3}
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                d=${j}A-3
+                runname=${d:12:2}_${d:19:3}
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                d=${j}B-2
+                runname=${d:12:2}_${d:19:3}
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+                d=${j}B-3
+                runname=${d:12:2}_${d:19:3}
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
 
 	else
 		echo 'unknown host machine -- not running!!!'
