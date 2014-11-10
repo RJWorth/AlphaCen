@@ -56,7 +56,7 @@ if (ndims == 12) {
 c.ind=c("a", "e", "i", "x", "y", "z", "vx","vy","vz")
 
 ### Generate matrix of star aei data
-star = array(data = NA, dim = c( nstars, maxTlength, length(c.ind)), 
+star = array(data = 0., dim = c( nstars, maxTlength, length(c.ind)), 
 	dimnames = list(NULL,NULL,c.ind) )
 for (i in 2:length(starnames)) {
 	Tlength = length(readLines( paste(aeidir,starnames[i],'.aei',sep='') ) )-4
