@@ -1,6 +1,6 @@
 
 
-n=23	#34
+n=34
 dirs=array(data=NA,dim = c(n))
 for (i in 1:n) dirs[i] = sprintf("%02d", i)
 data = array(data = NA, dim = c(n,4,2), 
