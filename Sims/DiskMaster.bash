@@ -5,9 +5,9 @@ machine=$(hostname -s)
 home=$(pwd)
 
 # Which sim(s)?
-newrun=T
+newrun=F
 
-sim='Proxlike/Prx'
+sim='Proxlike/081414/Prx'
 dir='/Disk'
 ### Assign directories based on machine
 if [ ${machine:0:5} = 'lionx' ]; then
@@ -32,7 +32,7 @@ fi
 echo ${Which[*]}
 #sim=''
 #dir=''
-Which=()
+Which=(01)
 
 ### Simulation parameters
 mA=0.123	#1.105
