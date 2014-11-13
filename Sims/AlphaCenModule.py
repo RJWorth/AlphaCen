@@ -1173,6 +1173,9 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 #		    (not any(np.isinf(np.concatenate((xvB_A_AU[-2,:],xvC_A_AU[-2,:])))))):
 #			print('NaNs in last timestep only; backing up by one')
 #			iBin, iTri = iBin-1, iTri-1
+		# placeholder so code runs even though I haven't fixed the above clause
+		else:
+			MercNanError = False
 	else:
 		MercNanError = False
 
@@ -1193,20 +1196,20 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 		distances = np.array([rAB[iTri-1], rBC[iTri-1], rAC[iTri-1]])
 		if (((DestB.strip() != 'Center') & (DestB.strip() != 'PrxCen')) & 
 			((DestC.strip() != 'Center') & (DestC.strip() != 'AlCenB'))):
-			if   (min(distances) == rAB[iTri-1]):
+			if   ( (min(distances) == rAB[iTri-1]) | (ntB > ntC)):
 				sysclass = 'AB'
 				abc = [0,1,2]
 				if (ntB  < ntC):
+					iBin = imin
+			elif ((min(distances) == rAC[iTri-1]) | (ntB < ntC)):
+				sysclass = 'AC'
+				abc = [0,2,1]
+				if (ntB  > ntC):
 					iBin = imin
 			elif (min(distances) == rBC[iTri-1]):
 				sysclass = 'BC'
 				abc = [1,2,0]
 				if (ntB != ntC):
-					iBin = imin
-			elif (min(distances) == rAC[iTri-1]):
-				sysclass = 'AC'
-				abc = [0,2,1]
-				if (ntB  > ntC):
 					iBin = imin
 			else:
 				print('no class assigned...???')
@@ -1229,14 +1232,15 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	aB, eB, iB, epsB, xvCM_AB, kB, uB, rB, vB = AC.Binary(
 			[ m[abc[0]],m[abc[1]] ], 
 			np.array([xvA[abc[0],:,:], xvA[abc[1],:,:]]), 
-			nobjs, iBin)
+			iBin)
 	xvAB = AC.wrtCM(np.array([xvA[abc[0],:,:], xvA[abc[1],:,:]]), xvCM_AB)
 # Get triple system data
 	if (mode=='triple'):
 		aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB = AC.Triple(
 			[ m[abc[0]],m[abc[1]],m[abc[2]] ], 
 			np.array([xvA[abc[0],:,:], xvA[abc[1],:,:], xvA[abc[2],:,:]]), 
-			nobjs, iTri, DestB, xvA_AU, xvCM_AB, xvAB)
+			iTri, DestB, xvA_AU, xvCM_AB, 
+		AC.wrtCM(np.array([xvA[abc[0],:,:], xvA[abc[1],:,:],xvA[abc[2],:,:]]), xvCM_AB))
 #------------------------------------------------------------------------------
 ### Print results
 	print('	   aB = {0:10.4g}, eB = {1:6.4g}, iB = {2:6.4g}'.format(
@@ -1269,7 +1273,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 #------------------------------------------------------------------------------
 ######################## Binary system: #################################
 #------------------------------------------------------------------------------
-def Binary(m, xv, nobjs, ind):
+def Binary(m, xv, ind):
 	'''Calculate orbital parameters for the binary of the system, stars 1 & 2.
  Usually the binary will be stars A and B, but substitute the values of A & C 
 or B & C if they are actually closer. They'll still be referred to as A & B
@@ -1292,8 +1296,8 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 ### Convert to center-of-momentum units
 	xv2  = AC.wrtCM(xv[:,0:ind,:], xvCM_2)
 ### Get r, v in CM units
-	rCM2 = np.array([ AC.XVtoR(xv2[i,:,:]) for i in range(nobjs) ])
-	vCM2 = np.array([ AC.XVtoV(xv2[i,:,:]) for i in range(nobjs) ])
+	rCM2 = np.array([ AC.XVtoR(xv2[i,:,:]) for i in range(2) ])
+	vCM2 = np.array([ AC.XVtoV(xv2[i,:,:]) for i in range(2) ])
 #---------------------------- Energies ----------------------------------------
 ### Get orbital parameters
 	# grav. paramater for binary
@@ -1319,16 +1323,15 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 #------------------------------------------------------------------------------
 ####################### Triple system: ########################################
 #------------------------------------------------------------------------------
-def Triple(m, xv1, xv2, xv3, nobjs, ind, DestB, xvA_AU, xvCM_AB, xvAB):
+def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	import AlphaCenModule as AC
 	import numpy as np
 	from mks_constants import G, mSun, AU, day
 	from numpy import log10
-### Only relevant if B and C both survived
-#		nobjs = 3
+### 
 	mu = G*sum(m)
 ### Combine xv data into 3D array in binary-triple order (usually ABC):
-	xv = np.array([xv1,xv2,xv3])
+#	xv = np.array([xv1,xv2,xv3])
 
 ### If B is ejected before C, extend the AB CM, and set equal to A during that
 #	if ((ntB < ntC) & (DestB.strip(' ')=='ejected')):
