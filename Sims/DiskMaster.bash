@@ -7,7 +7,7 @@ home=$(pwd)
 # Which sim(s)?
 newrun=F
 
-sim='Proxlike/081414/Prx'
+sim='Proxlike/Prx'
 dir='/Disk'
 ### Assign directories based on machine
 if [ ${machine:0:5} = 'lionx' ]; then
