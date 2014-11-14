@@ -36,3 +36,22 @@ legend('topright',legend=c('Binary','Triple','Survival','Stability'),
 
 dev.off()
 
+### Make array of just the average binary and triple stability rates for each
+avgs = array(data=NA, dim = c(n, 4), dimnames = list(dirs,c('Bin','Tri','delta','match')))
+for (i in 1:length(dirs))	{
+	avgs[i,1] = mean(data[i,c(1,3),2])
+	avgs[i,2] = mean(data[i,c(2,4),2])
+	avgs[i,3] = mean(data[i,c(1,3),2]) - mean(data[i,c(2,4),2])
+	}	# i, dirs
+
+FinalParamsMatch = c(
+	TRUE,FALSE, TRUE,FALSE, TRUE, TRUE, TRUE,FALSE, TRUE, TRUE,
+	TRUE,   NA, TRUE, TRUE, TRUE, TRUE, TRUE,FALSE, TRUE, TRUE,
+	TRUE, TRUE, TRUE, TRUE,FALSE, TRUE,FALSE,FALSE,   NA,   NA,
+	  NA,   NA,   NA,   NA)
+avgs[,4] = FinalParamsMatch
+sink('Proxlike/DiskSummary.txt')
+print(avgs)
+sink()
+
+
