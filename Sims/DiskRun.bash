@@ -16,8 +16,8 @@ newrun=$3
 newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
-mintime=3	# = log(years)
-maxtime=6	# = log(years)
+mintime=7	# = log(years)
+maxtime=7	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
 user='yes'	# use user-defined forces?
@@ -58,7 +58,11 @@ fi
 	fi
 
 	# Write param.in file
-	./writeparam.bash $dir $mintime $output $step $mintime $user $mA
+	if [ $newrun = T ]; then
+		./writeparam.bash $dir $mintime $output $step $mintime $user $mA
+	else
+		./writeparam.bash $dir $mintime $output $step        0 $user $mA
+	fi
 	### Loop over time lengths
 	for k in $timerange; do
 

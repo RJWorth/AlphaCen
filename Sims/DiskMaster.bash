@@ -5,7 +5,7 @@ machine=$(hostname -s)
 home=$(pwd)
 
 # Which sim(s)?
-newrun=T
+newrun=F
 
 sim='Proxlike/Prx'
 dir='/Disk'
@@ -32,7 +32,7 @@ fi
 echo ${Which[*]}
 #sim=''
 #dir=''
-Which=()
+Which=(01)
 
 ### Simulation parameters
 mA=0.123	#1.105
