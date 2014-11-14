@@ -8,16 +8,15 @@ Dir=(29 30 31 32 33 34)
 suf=('/DiskA-3' '/DiskB-3')
 
 for i in ${Dir[*]}; do
-#	for j in ${suf[*]}; do
-		d=$pre$i	#$j
+	for j in ${suf[*]}; do
+		d=$pre$i$j
 		mkdir -p $d
 		echo    '~/work/AlphaCen/Sims/'$d
-		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/SurvGrid.txt' $d
- 		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/DiskSurv.pdf' $d 		
+		scp -rp rjw274@lionxj.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/run.pipe' $d
 #		scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d $pre$i
 
 #		echo R CMD BATCH -$d '../Analysis/ReadDisk.R'
 #		R CMD BATCH -$d '../Analysis/ReadDisk.R'
 
-#	done
+	done
 done
