@@ -23,6 +23,45 @@ def where(AList,AnElement):
 	return inds
 
 ###############################################################################
+def WriteParam(WhichFile, stop, mA=1.105, step=10., user='yes', 
+					output='default', dump='default'):
+	'''Write param.in or param.dmp with specified parameters'''
+
+	print('	WriteParam,          stop time = {0}'.format(stop))
+
+	import numpy as np
+
+	assert (user == 'yes') | (user == 'no')
+
+### Read in the boilerplate text
+	ParamBlankFile = open('paramblank.txt','r')
+	ParamBlank = ParamBlankFile.readlines()
+	ParamBlankFile.close()
+
+	ParamText = np.array(ParamBlank)
+
+### Assign values to any 'default' parameters
+	NextT = np.ceil(np.log10(stop/365.25))
+	if output == 'default':
+		output =  365.25 * 10**(NextT - 3)
+	if dump   == 'default':
+		dump   = (365.25 * 10**NextT)/step/5
+
+### Make lists of parameter info
+	params = [stop, output, step, user, mA, dump]
+	inds   = [   7,      8,    9,   22, 28,   35]
+
+### Insert parameters into the relevant lines
+	for i,ind in enumerate(inds):
+		ParamText[ind] = ParamText[ind].strip('\n')+str(params[i])+'\n'
+
+### Write complete param text to file
+	WriteParamFile = open(WhichFile,'w')
+	for line in ParamText:
+		WriteParamFile.write(line)
+	WriteParamFile.close()
+
+###############################################################################
 def GetLastTime(WhichDir):
 	'''Returns how far a simulation has gotten, based on info and aei.'''
 	
