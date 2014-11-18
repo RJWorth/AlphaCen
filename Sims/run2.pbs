@@ -1,14 +1,14 @@
 #!/bin/tcsh
 #PBS -l nodes=1:ppn=1      # this requests ppn processor cores per node, n nodes
-#PBS -l walltime=100:00:00  # specifies a maximum run time in format of hh:mm:ss
+#PBS -l walltime=20:00:00 # specifies a maximum run time in format of hh:mm:ss
 #PBS -l pmem=1gb           # this requests 1GB of memory per process
 #PBS -j oe                 # combine the stdout and stderr into one file
 #PBS -o $dir/pbs.pipe      # name of output file
 #PBS -m a                  # send email on (a)bort, (b)egin, and/or (e)xit
 #PBS -M rjw274@psu.edu     # send email to this address
-#PBS -q lionxf-sxs540	# specify queue
-##PBS -V                    # passes all environment variables to job
-#PBS -N DiskRun           # job name 
+#PBS -q lionxf-sxs540      # specify queue
+##PBS -V                   # passes all environment variables to job
+#PBS -N DiskRun            # job name 
 
 set PBS_JOBNAME=$runname
 echo $PBS_JOBNAME

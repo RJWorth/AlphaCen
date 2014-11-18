@@ -29,8 +29,8 @@ dir='/Disk'
 #	echo 'Non-lionx machine'
 #	Which=()
 #fi
-#Which=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
-Which=()
+Which=(01) # 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
+#Which=()
 echo ${Which[*]}
 
 ### Simulation parameters
@@ -144,10 +144,10 @@ do
 #		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
                 d=${j}B-2
                 runname=${d:12:2}_${d:19:3}
-		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run2.pbs
                 d=${j}B-3
                 runname=${d:12:2}_${d:19:3}
-		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run2.pbs
 
 	else
 		echo 'unknown host machine -- not running!!!'
