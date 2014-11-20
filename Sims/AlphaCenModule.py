@@ -48,7 +48,7 @@ def WriteParam(WhichFile, stop, mA=1.105, step=10., user='yes',
 		dump   = (365.25 * 10**NextT)/step/5
 
 ### Make lists of parameter info
-	params = [stop, output, step, user, mA, dump]
+	params = [stop, output, step, user, mA, int(dump)]
 	inds   = [   7,      8,    9,   22, 28,   35]
 
 ### Insert parameters into the relevant lines

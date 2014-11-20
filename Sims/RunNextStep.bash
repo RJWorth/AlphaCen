@@ -4,7 +4,7 @@
 ### e.g: ./RunNextStep.bash dir >> dir/run.pipe &
 
 ### Five stop times = [2.8, 4.6, 6.4, 8.2, 10]*365.25e7
-stop=1.01*365.25e7
+stop=2.8*365.25e7
 echo $stop
 
 mA=0.123
@@ -38,7 +38,8 @@ cd $pwd
 # For long simulations, write looptime
 	# Stop clock for iteration
 	t2=$(date +%s)
-echo $1'	'$stop'	'$(echo "$t2 - $t1"|bc ) >> disktimes.txt
+logt=$(python -c 'from math import log10;print(log10('$stop'/365.25))')
+echo $1'	'$logt'	'$(echo "$t2 - $t1"|bc ) >> disktimes.txt
 
 
 ### Run summary (pick appropriate masses)
@@ -48,5 +49,6 @@ else
 	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop', WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123)'
 fi
 
-R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+#R CMD BATCH -$1 '../Analysis/ReadDisk.R'
+#mv ReadDisk.Rout $1
 

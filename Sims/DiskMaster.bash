@@ -29,8 +29,8 @@ dir='/Disk'
 #	echo 'Non-lionx machine'
 #	Which=()
 #fi
-Which=(01) # 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
-#Which=()
+#Which=(01 03 05 06 07 09 10 11 12 13 15 17 19 20 21 22 23 24 26 33) #14 16
+Which=(16)
 echo ${Which[*]}
 
 ### Simulation parameters
