@@ -65,11 +65,20 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 	for i in range(len(cases)):
 		if (allT[i]!=allT[0]):
 			print('Mismatch in time: {0}'.format(allT))
+	matching=3
 	for j in range(3):
 		for i in range(len(cases)):
 			if (Binary[i,j]!=Binary[0,j]):
 				print('***Mismatch in {0}: {1}***'.format(names[j],Binary[:,j]))
+				matching=matching-1
+				print(matching)
 
+	print(WhichDir+'/match.txt')
+	print(matching)
+	Matchfile=open(WhichDir+'/match.txt','w')
+	Matchfile.write(str(matching))
+	Matchfile.close()
+	
 
 ###############################################################################
 def FindParams(A,nlines,time='default'):

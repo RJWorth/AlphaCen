@@ -44,11 +44,14 @@ for (i in 1:length(dirs))	{
 	avgs[i,3] = mean(data[i,c(1,3),2]) - mean(data[i,c(2,4),2])
 	}	# i, dirs
 
-FinalParamsMatch = c(
-	 TRUE,FALSE, TRUE,FALSE, TRUE, TRUE, TRUE,FALSE, TRUE, TRUE,
-	 TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,FALSE, TRUE, TRUE,
-	 TRUE, TRUE, TRUE, TRUE,FALSE, TRUE,FALSE,FALSE,FALSE,FALSE,
-	FALSE,FALSE, TRUE,FALSE)
+### Read in matching parameter, calculated from Compare.py
+### ( := how many of aei parameters match (0-3))
+FinalParams = rep(0,length(dirs))
+	for (i in 1:length(dirs))	{
+		fileName = paste('Proxlike/Prx',dirs[i],'/match.txt',sep='')
+		FinalParams[i] = as.integer(readChar(fileName, file.info(fileName)$size))
+	}	# i, dirs
+
 avgs[,4] = FinalParamsMatch
 sink('Proxlike/DiskSummary.txt')
 print(avgs)
