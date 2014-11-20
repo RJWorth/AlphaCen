@@ -1,8 +1,8 @@
 # Make all four disk survival plots on one 
 ###############################################################################
 
-pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=12,width=12)
-par(mfrow=c(2,2))
+pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=12,width=8)
+par(mfrow=c(2,1))
 
 for (i in 1:length(subdirs))	{
 
@@ -14,9 +14,10 @@ for (i in 1:length(subdirs))	{
 
 ### Plot background image
 image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
-axis(4, col="red", lwd=2,
-	labels=c( min(disk[,1,'r']), 5, 10 ),
-	at=c(0,.5,1) )
+axis(4, col='red',col.axis="red", lwd=2,
+	labels = AxLabs,
+	at     = AxLocs)
+mtext(4,text="Disk particle semimajor axis (AU)",line=2,col='red')
 
 ### Plot lines over the top
 par(new=T)

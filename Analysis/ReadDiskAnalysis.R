@@ -55,3 +55,15 @@ pairframe=disk[,1,]
 time.all  =               1:maxTlength
 timeslice = (maxTlength-99):maxTlength
 
+### Find where to put axis ticks in DiskSurv plot
+r0=disk[,1,'r']
+AxisFraction = (0:length(r0))/length(r0)
+LabelSuggestions = 2*(0:10)
+AxLabs = LabelSuggestions[LabelSuggestions>min(r0) & LabelSuggestions<max(r0)]
+AxLocs = rep(NA,length(AxLabs))
+for (i in 1:length(AxLabs))	AxLocs[i] = AxisFraction[FindClosest(r0,AxLabs[i])]
+
+FindClosest(r0,5)
+
+
+

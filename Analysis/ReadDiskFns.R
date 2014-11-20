@@ -1,4 +1,3 @@
-
 ReadDisk = function(aeidir, disknames, n, maxTlength, c.ind)	{
 disk = array(data = NA, dim = c( n, maxTlength, length(c.ind)+1), 
 	dimnames = list(NULL,NULL,c(c.ind,'r')) )
@@ -21,4 +20,17 @@ for (i in 1:length(disknames)) {
 	}	# i, disknames
 	return(disk)
 	}	# function
+#------------------------------------------------------------------------------
+FindClosest = function(x,n)	{
+	Delta  = abs(x-n)
+	MinDel = min(Delta)
+	MinInd = which(Delta == MinDel)
+	if (length(MinInd) >1) MinInd = MinInd[1]
+	return(MinInd)
+	}	# function
+
+
+
+
+
 

@@ -3,11 +3,14 @@ pairs(pairframe,pch=20,col=grays)
 dev.off()
 ###
 pdf(paste(dir,'/DiskSurv.pdf',sep=''), height=4,width=8)
+par(mar=c(4, 4, 4, 4) + 0.1)
 
 image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
-axis(4, col="red", lwd=2,
-	labels=c( min(disk[,1,'r']), 5, 10 ),
-	at=c(0,.5,1) )
+axis(4, col='red',col.axis="red", lwd=2,
+	labels = AxLabs,
+	at     = AxLocs)
+mtext(4,text="Disk particle semimajor axis (AU)",line=2,col='red')
+
 
 par(new=T)
 plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
