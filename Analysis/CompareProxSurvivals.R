@@ -62,6 +62,7 @@ FinalParams = rep(0,length(dirs))
 		fileName = paste('Proxlike/Prx',dirs[i],'/match.txt',sep='')
 		FinalParams[i] = as.integer(readChar(fileName, file.info(fileName)$size))
 	}	# i, dirs
+avgs[,4]=FinalParams
 
 sink('Proxlike/DiskSummary.txt')
 print(avgs)
