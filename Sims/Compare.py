@@ -10,6 +10,7 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 ### Currently, must have original version included
 	assert 'O' in cases
 
+	print(WhichDir)
 ### Read in the three relevant run.pipe files
 	nOlines = AC.FileLength(WhichDir+'/Original/run.pipe')
 	origfile=open(          WhichDir+'/Original/run.pipe')
@@ -71,10 +72,7 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 			if (Binary[i,j]!=Binary[0,j]):
 				print('***Mismatch in {0}: {1}***'.format(names[j],Binary[:,j]))
 				matching=matching-1
-				print(matching)
 
-	print(WhichDir+'/match.txt')
-	print(matching)
 	Matchfile=open(WhichDir+'/match.txt','w')
 	Matchfile.write(str(matching))
 	Matchfile.close()

@@ -8,8 +8,9 @@ data = array(data = NA, dim = c(n,4,2),
 
 
 for (i in 1:n)	{
+	print(dirs[i])
 	file = paste('Proxlike/Prx',dirs[i],'/SurvGrid.txt',sep='')
-	readin = read.table(file,header=TRUE,row.names=1,nrows=4)
+	readin = read.table(file,header=TRUE,row.names=1,nrows=2)
 	for (j in 1:4)	{
 		for (k in 1:2)	{
 			data[i,j,k] = readin[j,k]
@@ -52,7 +53,6 @@ FinalParams = rep(0,length(dirs))
 		FinalParams[i] = as.integer(readChar(fileName, file.info(fileName)$size))
 	}	# i, dirs
 
-avgs[,4] = FinalParamsMatch
 sink('Proxlike/DiskSummary.txt')
 print(avgs)
 sink()
