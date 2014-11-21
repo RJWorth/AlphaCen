@@ -6,9 +6,10 @@ def FileLength(fname):
 	if os.path.getsize(fname)==0.:
 		i = -2
 	else:
-	    with open(fname) as f:
-	        for i, l in enumerate(f):
-	            pass
+#		with open(fname) as f:
+		f = open(fname,'r')
+        	for i, l in enumerate(f):
+        		pass
 
 	return i + 1
 
