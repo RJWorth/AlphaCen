@@ -4,7 +4,7 @@
 ### e.g: ./RunNextStep.bash dir >> dir/run.pipe &
 
 ### Five stop times = [2.8, 4.6, 6.4, 8.2, 10]*365.25e7
-stop=2.8*365.25e7
+stop=1.1*365.25e7
 echo $stop
 
 mA=0.123
@@ -18,12 +18,12 @@ echo '================================================================'
 echo 'Continuing simulation: '$1', t='$stop
 
 ### Copy most recent completed run to backup
-if [ $k -gt $mintime ]; then
-	\cp -p $1/Out/*.out $1/Out/Backup
-	\cp -p $1/Out/*.dmp $1/Out/Backup
-	\cp -p $1/Out/*.tmp $1/Out/Backup
-	echo 'Attempted backup of previous timestep'
-fi
+#if [ $k -gt $mintime ]; then
+#	\cp -p $1/Out/*.out $1/Out/Backup
+#	\cp -p $1/Out/*.dmp $1/Out/Backup
+#	\cp -p $1/Out/*.tmp $1/Out/Backup
+#	echo 'Attempted backup of previous timestep'
+#fi
 
 ### Update param.dmp file
 python -c 'import AlphaCenModule as AC;AC.WriteParam("'$1'/Out/param.dmp", '$stop', mA=.123)'
@@ -44,9 +44,9 @@ echo $1'	'$logt'	'$(echo "$t2 - $t1"|bc ) >> disktimes.txt
 
 ### Run summary (pick appropriate masses)
 if [ ${1: -1:1} = 2 ]; then
-	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop', WhichTime="Disk", wantsum=False, wantplot=False, mode="binary", mA='$mA', mB=.123)'
+	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="binary", mA='$mA', mB=.123)'
 else
-	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop', WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123)'
+	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123)'
 fi
 
 #R CMD BATCH -$1 '../Analysis/ReadDisk.R'
