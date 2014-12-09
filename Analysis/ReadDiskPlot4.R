@@ -25,7 +25,8 @@ plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
 	xaxs='i',yaxs='i',
 	xlim=c(min(time[-1]),max(time)),ylim=c(0,1),
 	ylab='Surviving percentage',xlab='Time (yrs)',
-	main=paste(substr(subdirs[i], nchar(subdirs[i])-5, nchar(subdirs[i])),
+	main=paste(substr(    simdir, nchar(    simdir)-1, nchar(    simdir) ),'/',
+		   substr(subdirs[i], nchar(subdirs[i])-2, nchar(subdirs[i]) ),
 		   ': ',stab.per[length(time)]*100,'% of disk remains stable',sep=''))
 #lines(time,surv.per, lwd=2)
 lines(time,stab.per, lwd=3, lty=3,col='blue')
