@@ -16,7 +16,7 @@ newrun=$3
 newmerc=T	# recompile the merc/elem executables?
 vers='ury_TG.for'	# 'merc'+vers = filename for mercury
 
-mintime=7	# = log(years)
+mintime=3	# = log(years)
 maxtime=7	# = log(years)
 output=1	# = log(years)
 step=10.0	# = days
@@ -89,12 +89,12 @@ fi
 		python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$dir'", 1e'$k', WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123, mC=.123)'
 		fi
 
-		if [ $k -ge 5 ]; then
-			R CMD BATCH -$dir '../Analysis/ReadDisk.R'
-		fi	# k >= 5
+#		if [ $k -ge 5 ]; then
+#			R CMD BATCH -$dir '../Analysis/ReadDisk.R'
+#		fi	# k >= 5
 
 		# For long simulations, write looptime
-		if [ $k -ge 5 ]; then
+		if [ $k -ge 3 ]; then
 			# Get end time
 			endtime=$(python -c 'import datetime;print(datetime.datetime.now())')
 			size=$(python -c 'import os;print(os.path.getsize("'$dir'/Out/xv.out"))')
@@ -127,7 +127,7 @@ fi
 		break
 	fi
 
-R CMD BATCH -$dir '../Analysis/ReadDisk.R'
+#R CMD BATCH -$dir '../Analysis/ReadDisk.R'
 
 # Write stop time for this directory:
 t2=$(date +%s)

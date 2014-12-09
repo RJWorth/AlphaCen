@@ -4,7 +4,7 @@
 ### e.g: ./RunNextStep.bash dir >> dir/run.pipe &
 
 ### Five stop times = [2.8, 4.6, 6.4, 8.2, 10]*365.25e7
-stop=1.1*365.25e7
+stop=1.7*365.25e7
 echo $stop
 
 mA=0.123
