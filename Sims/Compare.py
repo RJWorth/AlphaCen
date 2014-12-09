@@ -32,17 +32,19 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 	BaeiB,BaeiC,BT = Compare.FindParams(B,nBlines)
 
 ### Check lengths against each other
-#	if ('A' in cases) & ('B' in cases):
-	if (nAlines != nBlines):
-		print('Warning: lengths of run.pipe for A-3 and B-3 do not match!')
-
+	if ('A' in cases) & ('B' in cases):
+		if (nAlines != nBlines):
+			print('Warning: lengths of run.pipe for A-3 and B-3 do not match!')
 ### Find param lines from end of A
-	if (AT != BT):
-		print('Warning: lengths of run.pipe for A-3 and B-3 do not match! {0} {1}'.format(AT,BT))
+		if (AT != BT):
+			print('Warning: lengths of run.pipe for A-3 and B-3 do not match! {0} {1}'.format(AT,BT))
 	if ( max(float(AT),float(BT)) == float(AT) ):
 		T = AT
 	else:
-		T = BT
+		if ('A' in cases) & ('B' not in cases):
+			T = AT
+		else:
+			T = BT
 	OaeiB,OaeiC,OT = Compare.FindParams(O,nOlines,T)
 
 	allT = np.array([])
@@ -69,12 +71,18 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 	matching=3
 	for j in range(3):
 		for i in range(len(cases)):
-			if (Binary[i,j]!=Binary[0,j]):
-				print('***Mismatch in {0}: {1}***'.format(names[j],Binary[:,j]))
+			a,b = float(Binary[i,j].strip(',')), float(Binary[0,j].strip(','))
+			eps = abs(a-b)/abs(min(a,b))
+#			print(a,b,eps)
+			if ( (eps > 0.01) | np.isnan(eps) ):
+				print('***{0:.1f}% mismatch in {1}: {2}***'.format(eps*100.,names[j],Binary[:,j]))
 				matching=matching-1
 
 	Matchfile=open(WhichDir+'/match.txt','w')
-	Matchfile.write(str(matching))
+	Matchfile.write("{0} {1} {2} {3} {4} {5} {6} {7}".format(matching,OT,
+		OaeiB[0].strip(','),OaeiB[1].strip(','),OaeiB[2].strip(','),
+		OaeiC[0].strip(','),OaeiC[1].strip(','),OaeiC[2].strip(',') ) )
+#	Matchfile.write(str(matching))	
 	Matchfile.close()
 	
 
