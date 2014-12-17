@@ -84,11 +84,20 @@ def GetInfoLastTime(WhichDir):
 	import AlphaCenModule as AC
 	import numpy as np
 
-	name,dest,time,LastTime,complete = AC.ReadInfo(WhichDir)
+	name,dest,time,PrevTime,complete = AC.ReadInfo(WhichDir)
 	time = [float(i) for i in time]
 
-	if (complete == False):
-		LastTime = max(time+[LastTime])
+### If Info was complete, final time = stoptime from param.dmp
+	if (complete == True):
+		ParamFile = open(WhichDir+'/Out/param.dmp','r')
+		Param = ParamFile.readlines()
+		ParamFile.close()
+		for line in Param:
+			if "stop time" in line:
+				LastTime = float(line.split()[-1])/365.25
+### If not complete, use max of last info starttime and collision times
+	elif (complete == False):
+		LastTime = max(time+[PrevTime])
 
 	return LastTime
 
@@ -1929,20 +1938,20 @@ def ReadInfo(WhichDir):
 			if (row.split()[0] == 'Integration' ):
 				CompleteInd.append(i)
 
-	# Find the last completed timestep iteration
+	# Find the start time of the last iteration
 	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
 	if (len(CompleteInd) == 1):
-		LastTime = 0.
+		PrevTime = 0.
 		complete = True
-		print('First iteration, no time written'.format(LastTime))
+#		print('First iteration, no time written'.format(PrevTime))
 	elif (max(CompleteInd) > max(FindTimeInd)):
-		LastTime = (max(np.log10(FindTime))+1)
+		PrevTime = max(np.log10(FindTime))
 		complete = True
-		print('Last iteration complete, final time = {0}'.format(LastTime))
+#		print('Last iteration complete, final time = {0}'.format(PrevTime))
 	else:
-		LastTime = (max(np.log10(FindTime)))
+		PrevTime = max(np.log10(FindTime))
 		complete = False
-		print('Last iteration incomplete, final time = {0}'.format(LastTime))
+#		print('Last iteration incomplete, final time = {0}'.format(PrevTime))
 
 	# Extract name, dest, and time from 'want' section
 	name,dest,time = [], [], []
@@ -1958,7 +1967,7 @@ def ReadInfo(WhichDir):
 			elif len(splitline)==5 and splitline[0]!='Fractional':
 				name[j],dest[j],time[j]=splitline[0],'ejected',splitline[3]
 
-	return name,dest,time,10.**LastTime,complete
+	return name,dest,time,10.**PrevTime,complete
 
 ###############################################################################
 def SumAll(WhichDirs,cent,suffix=''):

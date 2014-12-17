@@ -1,5 +1,23 @@
+### Get run version from input variable
+args <- commandArgs(trailingOnly = F)
+        print(length(args))
+        print(args)
+#if (length(args) >2) options(echo = FALSE)
+basedir <- sub("-","",args[length(args)])
 
+### If version not given at input, try using version specified here
+if (length(dir) == 0 |
+        basedir=="-no-readline" |
+        basedir=="/usr/lib/R/bin/exec/R" |
+        basedir=="/usr/lib64/R/bin/exec/R" |
+        basedir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
+                print('no args')
+                basedir='Proxlike/'
+                }
+        print(basedir)
 
+#basedir='Proxlike/'
+pre='Prx'
 n=34
 cases = c('B-2','B-3')
 selection = 'B'
@@ -18,7 +36,7 @@ data = array(data = NA, dim = c(n,length(cases),2),
 ### Read data
 for (i in 1:n)	{
 	print(dirs[i])
-	GridFile = paste('Proxlike/Prx',dirs[i],'/SurvGrid.txt',sep='')
+	GridFile = paste(basedir,pre,dirs[i],'/SurvGrid.txt',sep='')
 	GridLen = length(readLines(GridFile))-4
 	readin = read.table(GridFile,header=TRUE,row.names=1,nrows=GridLen)
 	wantrows = grep(selection,rownames(readin))
@@ -32,7 +50,7 @@ for (i in 1:n)	{
 ### Made index to reorder sims
 ind = order(data[,length(cases),2])	# sort by B-3 stability
 
-pdf('Proxlike/PrxDisksSurvival.pdf')
+pdf(paste(basedir,'PrxDisksSurvival.pdf',sep=''))
 plot(1:n, data[ind,1,1], pch=1,col='blue', type='n',
 	xaxt='n', ylim=c(0,1), 
 	main='Final Disk Survival Fractions',
@@ -66,7 +84,7 @@ for (i in 1:length(ind))	{
 ### (matching param := how many of aei parameters match (0-3))
 FinalParams = rep(0,length(dirs))
 	for (i in 1:length(ind))	{
-		fileName = paste('Proxlike/Prx',dirs[ind[i]],'/match.txt',sep='')
+		fileName = paste(basedir,pre,dirs[ind[i]],'/match.txt',sep='')
 		readmatch = readChar(fileName, file.info(fileName)$size)
 		words = strsplit(readmatch,' ')[[1]]
 		print(readmatch)
@@ -77,7 +95,7 @@ FinalParams = rep(0,length(dirs))
 		}
 	}	# i, dirs
 
-sink('Proxlike/DiskSummary.txt')
+sink(paste(basedir,'DiskSummary.txt',sep=''))
 options(width=100)
 print(avgs)
 options(width=80)

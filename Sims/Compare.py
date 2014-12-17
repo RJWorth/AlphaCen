@@ -17,19 +17,23 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 	O=origfile.readlines()
 	origfile.close()
 
-#	if 'A' in cases:
-	nAlines = AC.FileLength(WhichDir+'/DiskA-3/run.pipe')
-	Afile=open(          WhichDir+'/DiskA-3/run.pipe')
-	A=Afile.readlines()
-	Afile.close()
-	AaeiB,AaeiC,AT = Compare.FindParams(A,nAlines)
+	if 'A' in cases:
+		nAlines = AC.FileLength(WhichDir+'/DiskA-3/run.pipe')
+		Afile=open(          WhichDir+'/DiskA-3/run.pipe')
+		A=Afile.readlines()
+		Afile.close()
+		AaeiB,AaeiC,AT = Compare.FindParams(A,nAlines)
+	else:
+		AT = 0.
 
-#	if 'B' in cases:
-	nBlines = AC.FileLength(WhichDir+'/DiskB-3/run.pipe')
-	Bfile=open(          WhichDir+'/DiskB-3/run.pipe')
-	B=Bfile.readlines()
-	Bfile.close()
-	BaeiB,BaeiC,BT = Compare.FindParams(B,nBlines)
+	if 'B' in cases:
+		nBlines = AC.FileLength(WhichDir+'/DiskB-3/run.pipe')
+		Bfile=open(          WhichDir+'/DiskB-3/run.pipe')
+		B=Bfile.readlines()
+		Bfile.close()
+		BaeiB,BaeiC,BT = Compare.FindParams(B,nBlines)
+	else:
+		BT = 0.
 
 ### Check lengths against each other
 	if ('A' in cases) & ('B' in cases):
@@ -95,27 +99,31 @@ def FindParams(A,nlines,time='default'):
 	stop1,stop2,stop3 = False,False,False
 	for i in range(nlines):
 		j=nlines-i-1
-		if (A[j].split()[0] == 'stop'):
-			if (time=='default'):
-				indT=j
-				stop3=True
-			elif (A[j].split()[5] == time):
-				indT=j
-				stop3=True
-		if (stop3 == True):
-			if (  A[j].split()[0] == 'aC'):
-				indC=j
-				stop1=True
-			elif (A[j].split()[0] == 'aB'):
-				indB=j
-				stop2=True
-		if (stop1 & stop2 & stop3):
-			break
-		if (i==nlines-1):
-			print('Incomplete matching, stops = {0} {1} {2}'.format(
-					stop1,stop2,stop3))
-	aeiB = np.array(A[indB].split())[ [2,5,8] ]
-	aeiC = np.array(A[indC].split())[ [2,5,8] ]
-	T = A[indT].split()[ 5 ]
+		if ( len(A[j].split()) > 0 ):
+			if (A[j].split()[0] == 'stop'):
+				if (time=='default'):
+					indT=j
+					stop3=True
+				elif (A[j].split()[5] == time):
+					indT=j
+					stop3=True
+			if (stop3 == True):
+				if (  A[j].split()[0] == 'aC'):
+					indC=j
+					stop1=True
+				elif (A[j].split()[0] == 'aB'):
+					indB=j
+					stop2=True
+			if (stop1 & stop2 & stop3):
+				break
+			if (i==nlines-1):
+				print('Incomplete matching, stops = {0} {1} {2}'.format(
+						stop1,stop2,stop3))
+	if (stop1 & stop2 & stop3):
+		aeiB = np.array(A[indB].split())[ [2,5,8] ]
+		aeiC = np.array(A[indC].split())[ [2,5,8] ]
+		T = A[indT].split()[ 5 ]
+	else:
+		aeiB,aeiC,T = ['nan', 'nan','nan'], [ 'nan','nan','nan' ], 0.
 
 	return (aeiB,aeiC,T)

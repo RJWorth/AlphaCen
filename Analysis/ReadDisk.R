@@ -10,9 +10,10 @@ if (length(dir) == 0 |
 	readdir=="-no-readline" | 
 	readdir=="/usr/lib/R/bin/exec/R" | 
 	readdir=="/usr/lib64/R/bin/exec/R" |
+	readdir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" | 
 	readdir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		readdir='Proxlike/Prx01'	#'Prx02/Disk'
+		readdir='Proxlike/081414/Prx01'	#'Prx02/Disk'
 		}
 	print(readdir)
 

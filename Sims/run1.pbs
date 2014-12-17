@@ -10,7 +10,6 @@
 ##PBS -V                    # passes all environment variables to job
 #PBS -N DiskRun           # job name 
 
-set PBS_JOBNAME=$runname
 echo $PBS_JOBNAME
 echo 'regular echo'
 echo $h

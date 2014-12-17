@@ -17,13 +17,16 @@ plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
 	xaxs='i',yaxs='i',
 	xlim=c(min(time[-1]),max(time)),ylim=c(0,1),
 	ylab='Surviving percentage',xlab='Time (yrs)',
-	main=paste(substr(subdirs[i], nchar(subdirs[i])-5, nchar(subdirs[i])),
-		   ': ',stab.per[length(time)]*100,'% of disk remains stable',sep=''))
+	main=paste(substr(    simdir, nchar(    simdir)-1, nchar(    simdir) ),'/',
+                   substr(subdirs[i], nchar(subdirs[i])-2, nchar(subdirs[i]) ),
+                   ': ',stab.per[length(time)]*100,'% of disk remains stable',sep=''))
 #lines(time,surv.per, lwd=2)
 lines(time,stab.per, lwd=3, lty=3,col='blue')
 legend('bottomleft',
-	legend=c('Fraction surviving','Fraction remaining stable'),
-	lty=c(1,3),col='blue',lwd=3)
+	legend=c('Unstable','Ejected/accreted',
+		 'Fraction surviving','Fraction remaining stable'),
+	fill=c('lightgray','darkgray','white','white'), border='white',
+	lty=c(NA,NA,1,3),col='blue',lwd=3)
 
 dev.off()
 ###

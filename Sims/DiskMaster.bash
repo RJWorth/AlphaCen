@@ -7,7 +7,8 @@ home=$(pwd)
 # Which sim(s)?
 newrun=T
 
-sim='Proxlike/Prx'
+#sim='Proxlike/Prx'
+sim='Proxlike/071714/Prx'
 dir='/Disk'
 ### Assign directories based on machine
 #if [ ${machine:0:5} = 'lionx' ]; then
@@ -29,15 +30,15 @@ dir='/Disk'
 #	echo 'Non-lionx machine'
 #	Which=()
 #fi
-#Which=(01 03 05 06 07 09 10 11 13 15 16 17 19 20 21 22 23 24 26 33) #
-Which=(02 04 08 18 25 27 28 29 30 31 32 34)
-#Which=(12 14)
-#Which=()
+#Which=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33) #
+#Which=(02 04 08 18 25 27 28 29 30 31 32 34)
+#Which=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
+Which=(2 3 4 5 6 7 8 9 10 11 12)
 echo ${Which[*]}
 
 ### Simulation parameters
-mA=0.123	#1.105
-mB=0.123	#0.934
+mA=1.105	#1.105
+mB=0.934	#0.934
 mC=0.123
 
 newdisk=T	# generate a new disk, T or F
@@ -81,7 +82,14 @@ do
 #
 #		head -10 $j'A-3'/In/big.in > $j'A-2'/In/big.in
 #	fi
-#
+
+### Move data into 'Original' dir
+	if [ ! -d $sim$i/Original ]; then
+		echo 'No Original directory; creating one now'
+		mkdir $sim$i/Original
+		mv $sim$i/* $sim$i/Original
+	fi
+
 ### Set up triple system sim (disk around B)
 	cent='AlCenB'
 	if [ $newrun = T ]; then
@@ -103,10 +111,10 @@ do
 		python -c 'import AlphaCenModule as AC; AC.MakeSmallTestDisk("'$j'B-3",centobj="'$cent'",m=0.0)'
 		fi
 	else
-		mkdir -p $j'B-3'/Out/Backup1_1
-		\cp -p $j'B-3'/Out/*.out    $j'B-3'/Out/Backup1_1
-		\cp -p $j'B-3'/Out/*.dmp    $j'B-3'/Out/Backup1_1
-		\cp -p $j'B-3'/Out/*.tmp    $j'B-3'/Out/Backup1_1
+		mkdir -p $j'B-3'/Out/Backup
+		\cp -p $j'B-3'/Out/*.out    $j'B-3'/Out/Backup
+		\cp -p $j'B-3'/Out/*.dmp    $j'B-3'/Out/Backup
+		\cp -p $j'B-3'/Out/*.tmp    $j'B-3'/Out/Backup
 
 #		\cp -p $j'B-3'/Out/Backup/* $j'B-3'/Out
 		echo 'Attempted backup of previous timestep'
@@ -122,10 +130,10 @@ do
 
 		head -10 $j'B-3'/In/big.in > $j'B-2'/In/big.in
 	else
-		mkdir -p $j'B-2'/Out/Backup1_1
-		\cp -p $j'B-2'/Out/*.out    $j'B-2'/Out/Backup1_1
-		\cp -p $j'B-2'/Out/*.dmp    $j'B-2'/Out/Backup1_1
-		\cp -p $j'B-2'/Out/*.tmp    $j'B-2'/Out/Backup1_1
+		mkdir -p $j'B-2'/Out/Backup
+		\cp -p $j'B-2'/Out/*.out    $j'B-2'/Out/Backup
+		\cp -p $j'B-2'/Out/*.dmp    $j'B-2'/Out/Backup
+		\cp -p $j'B-2'/Out/*.tmp    $j'B-2'/Out/Backup
 
 #		\cp -p $j'B-2'/Out/Backup/* $j'B-2'/Out
 		echo 'Attempted backup of previous timestep'
@@ -152,11 +160,20 @@ do
 #		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
                 d=${j}B-2
                 runname=${d:12:2}_${d:19:3}
-		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
+		if [ $newrun = T ]; then
+			qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun run1.pbs
+		elif [ $newrun = F ]; then
+			qsub -v h=$home,dir=$d,mA=$mA,mB=$mB,newrun=$newrun run2.pbs
+		fi
                 d=${j}B-3
                 runname=${d:12:2}_${d:19:3}
-		qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun,runname=$runname run1.pbs
-
+		if [ $newrun = T ]; then
+			qsub -v h=$home,dir=$d,mA=$mA,newrun=$newrun run1.pbs
+		elif [ $newrun = F ]; then
+			qsub -v h=$home,dir=$d,mA=$mA,mB=$mB,newrun=$newrun run2.pbs
+		else
+			echo 'invalid newrun parameter, not running!'
+		fi 
 	else
 		echo 'unknown host machine -- not running!!!'
 	fi

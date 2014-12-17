@@ -4,10 +4,11 @@
 ### e.g: ./RunNextStep.bash dir >> dir/run.pipe &
 
 ### Five stop times = [2.8, 4.6, 6.4, 8.2, 10]*365.25e7
-stop=1.7*365.25e7
+stop=1.0*365.25e7
 echo $stop
 
-mA=0.123
+mA=$2
+mB=$3
 
 ### Start clock
 t1=$(date +%s)
@@ -26,7 +27,7 @@ echo 'Continuing simulation: '$1', t='$stop
 #fi
 
 ### Update param.dmp file
-python -c 'import AlphaCenModule as AC;AC.WriteParam("'$1'/Out/param.dmp", '$stop', mA=.123)'
+python -c 'import AlphaCenModule as AC;AC.WriteParam("'$1'/Out/param.dmp", '$stop', mA='$mA')'
 
 ### Run the next step
 cd $1/Out
