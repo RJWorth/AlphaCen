@@ -49,7 +49,11 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 			T = AT
 		else:
 			T = BT
-	OaeiB,OaeiC,OT = Compare.FindParams(O,nOlines,T)
+	if ('071714' in WhichDir):
+		print('071714: using last timestep from Original')
+		OaeiB,OaeiC,OT = Compare.FindParams(O,nOlines)	
+	else:
+		OaeiB,OaeiC,OT = Compare.FindParams(O,nOlines,T)
 
 	allT = np.array([])
 	allT = np.append(allT,OT)
@@ -72,18 +76,33 @@ def ComparePipedParams(WhichDir,cases=['O','A','B']):
 	for i in range(len(cases)):
 		if (allT[i]!=allT[0]):
 			print('Mismatch in time: {0}'.format(allT))
-	matching=3
+	matching=6
 	for j in range(3):
-		for i in range(len(cases)):
+		for i in range(1,len(cases)):
 			a,b = float(Binary[i,j].strip(',')), float(Binary[0,j].strip(','))
 			eps = abs(a-b)/abs(min(a,b))
-#			print(a,b,eps)
+#			print(j,i,a,b,eps)
 			if ( (eps > 0.01) | np.isnan(eps) ):
 				print('***{0:.1f}% mismatch in {1}: {2}***'.format(eps*100.,names[j],Binary[:,j]))
 				matching=matching-1
+			ab,c= float(Triple[i,j].strip(',')), float(Triple[0,j].strip(','))
+			eps2= abs(ab-c)/abs(min(ab,c))
+#			print(j,i,ab,c,eps2)
+			if ((eps2 > 0.01) | np.isnan(eps2)):
+				print('***{0:.1f}% mismatch in {1}: {2}***'.format(eps2*100.,names[j],Triple[:,j]))
+				matching=matching-1
 
+### Is the new sim also proxlike?
+	apo = float(BaeiC[0].strip(',')) * ( 1 + float(BaeiC[1].strip(',')) )
+	if (apo>10000):
+		proxlike=1
+	else:
+		proxlike=0 
+	print('Proxlike = ',proxlike)
+	
 	Matchfile=open(WhichDir+'/match.txt','w')
-	Matchfile.write("{0} {1} {2} {3} {4} {5} {6} {7}".format(matching,OT,
+	Matchfile.write("{0} {1} {2} {3} {4} {5} {6} {7} {8}".format(
+		matching,proxlike,OT,
 		OaeiB[0].strip(','),OaeiB[1].strip(','),OaeiB[2].strip(','),
 		OaeiC[0].strip(','),OaeiC[1].strip(','),OaeiC[2].strip(',') ) )
 #	Matchfile.write(str(matching))	

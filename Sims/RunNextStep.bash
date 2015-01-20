@@ -45,9 +45,9 @@ echo $1'	'$logt'	'$(echo "$t2 - $t1"|bc ) >> disktimes.txt
 
 ### Run summary (pick appropriate masses)
 if [ ${1: -1:1} = 2 ]; then
-	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="binary", mA='$mA', mB=.123)'
+	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="binary", mA='$mA', mB='$mB')'
 else
-	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB=.123)'
+	python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$1'", '$stop'/365.25, WhichTime="Disk", wantsum=False, wantplot=False, mode="triple", mA='$mA', mB='$mB')'
 fi
 
 #R CMD BATCH -$1 '../Analysis/ReadDisk.R'

@@ -25,7 +25,8 @@ axis(4, col='red',col.axis="red", lwd=2,
 	labels = AxLabs,
 	at     = AxLocs)
 #mtext(4,text="Disk particle semimajor axis (AU)",line=2.25,col='red')
-
+SimID = paste(substr(    simdir, nchar(    simdir)-1, nchar(    simdir) ),'/',
+	      substr(subdirs[i], nchar(subdirs[i])-2, nchar(subdirs[i]) ) )
 plottitle = paste(substr(    simdir, nchar(    simdir)-1, nchar(    simdir) ),'/',
 		   substr(subdirs[i], nchar(subdirs[i])-2, nchar(subdirs[i]) ),
 		   ': ',stab.per[length(time)]*100,'% of disk remains stable',sep='')
@@ -51,7 +52,9 @@ if (i==1)	{
 axis(1,labels=FALSE)
 axis(2,at=c(0., .2, .4, .6, .8, 1.0), lwd=2, col='blue',col.axis='blue')
 #mtext(2,text='Surviving fraction', line=2.25)
-mtext(3,text='Disk Stability Without and With Proxima', line=1,cex=1.25)
+#mtext(3,text='Disk Stability Without and With Proxima', line=1,cex=1.25)
+mtext(3,text=paste(SimID,'Disk Stability Without and With Proxima'), 
+	line=1,cex=1.25)
 legend('bottomleft',bty='n',
 	legend=c('Unstable','Ejected/accreted'),
 	pch=c(15,15),pt.cex=2,

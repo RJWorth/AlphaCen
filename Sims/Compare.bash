@@ -9,26 +9,41 @@ module load R
 h=$(pwd)
 echo $h
 
-#pre='Proxlike/Prx'
+#hom='Proxlike/'
+#pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
-#Dir=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
-#Dir=(02 04 08 18 25 27 28 29 30 31 32 34)
+##Dir=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
+##Dir=(02 04 08 18 25 27 28 29 30 31 32 34)
 
-#pre='Proxlike/071714/Prx'
+#hom='Proxlike/071714/'
+#pre='Prx'
 #Dir=(1 2 3 4 5 6 7 8 9 10 11 12)
 
-
-#pre='Proxlike/072314/Prx'
+#hom='Proxlike/072314/'
+#pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
 
-pre='Proxlike/081414/Prx'
+hom='Proxlike/081414/'
+pre='Prx'
 Dir=(01 02 03 04 05 06 07 08)
 
 for i in ${Dir[*]}; do
-	d=$pre$i
+	d=$hom$pre$i
 	echo '--------------------------------'$d'--------------------------------'
-	R CMD BATCH -$d '../Analysis/ReadDisk.R'
-	mv ReadDisk.Rout $d
+
+#	cd $d/Original/Out
+#	scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/AeiOutFiles' .
+#	scp -p  rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/info.out' .
+#	./elem
+#	mv *.aei AeiOutFiles
+#	cd $h
+
+#        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/Original", 1e9, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/Original/run.pipe
+#        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-2", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="binary", mA=1.105, mB=.934)' >> $d/DiskB-2/run.pipe
+#        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-3", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/DiskB-3/run.pipe
+
+#	R CMD BATCH -$d '../Analysis/ReadDisk.R'
+#	mv ReadDisk.Rout $d
 	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
 
 #	python -c 'import AlphaCenModule as AC;print(AC.GetLastTime("'$d'/DiskB-2"))'
@@ -56,6 +71,7 @@ for i in ${Dir[*]}; do
 #	echo '\cp -p '$d/DiskB-3/Out/Backup/* $d/DiskB-3/Out
 done
 
-#R CMD BATCH '../Analysis/CompareProxSurvivals.R'
+echo 'final i value: '$i
+R CMD BATCH -$i -$hom '../Analysis/CompareProxSurvivals.R'
 
 

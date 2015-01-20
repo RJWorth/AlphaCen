@@ -4,6 +4,7 @@ args <- commandArgs(trailingOnly = F)
         print(args)
 #if (length(args) >2) options(echo = FALSE)
 basedir <- sub("-","",args[length(args)])
+n       =  sub("-","",args[length(args)-1])
 
 ### If version not given at input, try using version specified here
 if (length(dir) == 0 |
@@ -13,18 +14,24 @@ if (length(dir) == 0 |
         basedir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
                 print('no args')
                 basedir='Proxlike/'
+		n=34
                 }
         print(basedir)
-
+	print(n)
 #basedir='Proxlike/'
+#n=34
 pre='Prx'
-n=34
 cases = c('B-2','B-3')
 selection = 'B'
 
 ### Make array of directory numbers
 dirs=array(data=NA,dim = c(n))
-for (i in 1:n) dirs[i] = sprintf("%02d", i)
+if (basedir=='Proxlike/071714/')	{
+	for (i in 1:n) dirs[i] = as.character(i)
+} else {
+	for (i in 1:n) dirs[i] = sprintf("%02d", i)
+}
+print(dirs)
 
 ### Get number of cases from dimensions of SurvGrid.txt file
 ### Note: file also contains 3 footer lines and one column names line
@@ -72,8 +79,9 @@ legend('topright',legend=c('Binary','Triple','Survival','Stability'),
 dev.off()
 
 ### Make array of just the average binary and triple stability rates for each
-avgs = array(data=NA, dim = c(n, 11), 
-	dimnames = list(dirs[ind],c('Bin','Tri','delta','match','t','aB','eB','iB','aC','eC','iC')))
+cols = c('Bin','Tri','delta','match','prox','t','aB','eB','iB','aC','eC','iC')
+avgs = array(data=NA, dim = c(n, length(cols)), 
+	dimnames = list(dirs[ind],cols))
 for (i in 1:length(ind))	{
 	avgs[i,1] = mean(data[ind[i], grep('2',colnames(data)) ,2])
 	avgs[i,2] = mean(data[ind[i], grep('3',colnames(data)) ,2])
@@ -89,7 +97,7 @@ FinalParams = rep(0,length(dirs))
 		words = strsplit(readmatch,' ')[[1]]
 		print(readmatch)
 		print(words)
-		for (j in 1:8)	{
+		for (j in 1:(length(cols)-3))	{
 			print(as.numeric(words[j]))
 			avgs[i,j+3] = as.numeric(words[j])
 		}

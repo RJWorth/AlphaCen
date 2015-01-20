@@ -1712,3 +1712,28 @@ dEABC =  0.00207 - OK
 	 bigstop = True,                             WhichTime = 22
 	WriteSummary SDir7
 Bigstop reached! Proxima-like system.
+	Summary        Proxlike/071714/Prx8/Original,                          WhichTime = Fix
+No InParams file!
+	-GetFinalData  Proxlike/071714/Prx8/Original
+('nobjs = ', 2)
+	--GetT         Proxlike/071714/Prx8/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx8/Original/Out/AeiOutFiles/AlCenB, 4:6405
+       AB,        - ( 1e+09 y),        - ( 1e+09 y)
+	--FindCM       m = [' 1.1', ' 0.934']
+	   aB =      27.39, eB = 0.3337, iB =  18.77
+(' 1000000000.0', '       -')
+	Summary        Proxlike/071714/Prx8/Original,                          WhichTime = Fix
+No InParams file!
+	-GetFinalData  Proxlike/071714/Prx8/Original
+('nobjs = ', 3)
+	--GetT         Proxlike/071714/Prx8/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx8/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx8/Original/Out/AeiOutFiles/PrxCen, 4:6405
+       AB,        - ( 1e+09 y),        - ( 1e+09 y)
+	--FindCM       m = [' 1.1', ' 0.934']
+	   aB =      27.39, eB = 0.3337, iB =  18.77
+	   aC =       2890, eC = 0.8444, iC =  26.15
+	    stop = TTFF,               Time = 1e9 yrs
+	Testing for errors
+	  Error check passed
+	 bigstop = False,                                  WhichTime = Fix

@@ -747,8 +747,11 @@ def InitParams(WhichDir):
 	iJst = map(add, [4,2,3, 5,2,4], iRnd) # iRnd+iJst = # char per entry
 
 ### Get input parameters (aei for B and C)
-	if os.path.getsize(WhichDir+'/InParams.txt')==0:
+	if os.path.isfile(WhichDir+'/InParams.txt') == False: 
 		print('No InParams file!')
+		aeiIn=['-','-','-','-','-','-']
+	elif os.path.getsize(WhichDir+'/InParams.txt') == 0:
+		print('Blank InParams file!')
 		aeiIn=['-','-','-','-','-','-']
 	else:
 		InParamsFile=open(WhichDir+'/InParams.txt','r')

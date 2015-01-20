@@ -125,3 +125,33 @@ dEABC =  0.008902 - OK
 	    stop = TTFF,               Time = 1e9 yrs
 	 bigstop = True,                             WhichTime = 1
 Bigstop reached! Proxima-like system.
+	Summary        Proxlike/071714/Prx2/Original,                          WhichTime = Fix
+No InParams file!
+	-GetFinalData  Proxlike/071714/Prx2/Original
+('nobjs = ', 2)
+	Summary        Proxlike/071714/Prx2/Original,                          WhichTime = Fix
+No InParams file!
+	-GetFinalData  Proxlike/071714/Prx2/Original
+('nobjs = ', 2)
+	--GetT         Proxlike/071714/Prx2/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx2/Original/Out/AeiOutFiles/AlCenB, 4:6405
+       AB,        - ( 1e+09 y),        - ( 1e+09 y)
+	--FindCM       m = [' 1.1', ' 0.934']
+	   aB =      25.36, eB = 0.3114, iB =  0.979
+(' 1000000000.0', '       -')
+	Summary        Proxlike/071714/Prx2/Original,                          WhichTime = Fix
+No InParams file!
+	-GetFinalData  Proxlike/071714/Prx2/Original
+('nobjs = ', 3)
+	--GetT         Proxlike/071714/Prx2/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx2/Original/Out/AeiOutFiles/AlCenB, 4:6405
+	--ReadAei      Proxlike/071714/Prx2/Original/Out/AeiOutFiles/PrxCen, 4:6405
+       AB,        - ( 1e+09 y),        - ( 1e+09 y)
+	--FindCM       m = [' 1.1', ' 0.934']
+	   aB =      25.36, eB = 0.3114, iB =  0.979
+	   aC =  2.105e+04, eC = 0.6232, iC =  118.6
+	    stop = TTFF,               Time = 1e9 yrs
+	Testing for errors
+	  Error check passed
+   => *Proxlike!*
+	 bigstop =  True,                                  WhichTime = Fix
