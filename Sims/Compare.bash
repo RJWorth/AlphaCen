@@ -9,9 +9,9 @@ module load R
 h=$(pwd)
 echo $h
 
-#hom='Proxlike/'
-#pre='Prx'
-#Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
+hom='Proxlike/'
+pre='Prx'
+Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
 ##Dir=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
 ##Dir=(02 04 08 18 25 27 28 29 30 31 32 34)
 
@@ -23,9 +23,9 @@ echo $h
 #pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
 
-hom='Proxlike/081414/'
-pre='Prx'
-Dir=(01 02 03 04 05 06 07 08)
+#hom='Proxlike/081414/'
+#pre='Prx'
+#Dir=(01 02 03 04 05 06 07 08)
 
 for i in ${Dir[*]}; do
 	d=$hom$pre$i
@@ -42,8 +42,8 @@ for i in ${Dir[*]}; do
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-2", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="binary", mA=1.105, mB=.934)' >> $d/DiskB-2/run.pipe
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-3", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/DiskB-3/run.pipe
 
-#	R CMD BATCH -$d '../Analysis/ReadDisk.R'
-#	mv ReadDisk.Rout $d
+	R CMD BATCH -$d '../Analysis/ReadDisk.R'
+	mv ReadDisk.Rout $d
 	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
 
 #	python -c 'import AlphaCenModule as AC;print(AC.GetLastTime("'$d'/DiskB-2"))'

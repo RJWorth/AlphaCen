@@ -11,6 +11,7 @@ if (length(dir) == 0 |
         basedir=="-no-readline" |
         basedir=="/usr/lib/R/bin/exec/R" |
         basedir=="/usr/lib64/R/bin/exec/R" |
+	basedir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" |
         basedir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
                 print('no args')
                 basedir='Proxlike/'
