@@ -1,3 +1,5 @@
+
+print('Reading data')
 ### Generate list of disk particle names (for n particles)
 n=(length(readLines(paste(dir,'/In/small.in',sep='')))-5)/4
 disknames=rep( 'M', n)

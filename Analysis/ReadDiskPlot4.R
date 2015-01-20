@@ -1,10 +1,12 @@
 # Make all four disk survival plots on one 
 ###############################################################################
 
+print('Making multiplots')
+
 #pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=7,width=5)
 setEPS()
 postscript(paste(simdir,'/DiskSurv.eps',sep=''), height=3.75,width=5)
-par(mfrow=c(2,1), oma=c(0,1.5,0,1.5) )
+par(mfrow=c(2,1), oma=c(0,1.75,0,1.75) )
 
 marlist=list( c(0.5, 2., 3.5, 2.), 
 	      c(3.5, 2., 0.5, 2.) )
@@ -18,10 +20,11 @@ for (i in 1:length(subdirs))	{
 	time     = l.time[[i]]
 	surv.per = l.surv.per[[i]]
 	stab.per = l.stab.per[[i]]
+	edge     = l.edge[[i]]
 
 ### Plot background image
 image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
-axis(4, col='red',col.axis="red", lwd=2,
+axis(4, col='red',col.axis="red", lwd=2,las=1,
 	labels = AxLabs,
 	at     = AxLocs)
 #mtext(4,text="Disk particle semimajor axis (AU)",line=2.25,col='red')
@@ -42,15 +45,17 @@ plot(time[-1],surv.per[-1], type='l',lwd=2,col='blue',log='x',
 	main='')
 #lines(time,surv.per, lwd=2)
 lines(time,stab.per, lwd=3, lty=3,col='blue')
+lines(time,edge/n  , lwd=2, lty=1,col='black')
 
 ### Add labels to the outer edges of plot
-mtext(side=2,'Surviving fraction of disk',       outer=TRUE, line=0.25,cex=1.25,col='blue')
-mtext(side=4,'Disk particle semimajor axis (AU)',outer=TRUE, line=0.25,cex=1.25,col='red')
+mtext(side=2,'Surviving fraction of disk',       outer=TRUE, line=0.5,cex=1.25,col='blue')
+mtext(side=4,expression('Disk particle a/a'[bin]*''),
+	outer=TRUE, line=0.5,cex=1.25,col='red')
 
 ### Depending on whether it's the top or bottom plot, add axes/labels
 if (i==1)	{
 axis(1,labels=FALSE)
-axis(2,at=c(0., .2, .4, .6, .8, 1.0), lwd=2, col='blue',col.axis='blue')
+axis(2,at=c(0., .2, .4, .6, .8, 1.0), lwd=2, col='blue',col.axis='blue',las=1)
 #mtext(2,text='Surviving fraction', line=2.25)
 #mtext(3,text='Disk Stability Without and With Proxima', line=1,cex=1.25)
 mtext(3,text=paste(SimID,'Disk Stability Without and With Proxima'), 
@@ -64,7 +69,7 @@ axis(1)
 mtext(1,text='Time (yrs)', line=2.25, cex=1.25)
 axis(2,     at=c( 0.0,  0.2,  0.4,  0.6,  0.8, 1.0),
 	labels=c('0.0','0.2','0.4','0.6','0.8', ''), 
-	col='blue',col.axis='blue',lwd=2)
+	col='blue',col.axis='blue',lwd=2,las=1)
 legend('bottomleft',bty='n',
 	legend=c('Fraction surviving','Fraction remaining stable'),
 	pch=c(NA,NA),pt.cex=2,

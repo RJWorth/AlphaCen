@@ -1,3 +1,6 @@
+
+print('Plotting data')
+
 pdf(paste(dir,'/DiskPairs.pdf',sep=''), height=10,width=10)
 pairs(pairframe,pch=20,col=grays)
 dev.off()

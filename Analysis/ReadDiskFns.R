@@ -28,9 +28,21 @@ FindClosest = function(x,n)	{
 	if (length(MinInd) >1) MinInd = MinInd[1]
 	return(MinInd)
 	}	# function
-
-
-
-
-
+#------------------------------------------------------------------------------
+### Moving average that gives NAs for boundaries
+#MovingAvg <- function(x,n=5){filter(x,rep(1/n,n), sides=2)}
+#------------------------------------------------------------------------------
+### Moving average that gives one-sided average for boundaries.
+### n = number of points on either side to include (so n=1 avgs 3 points)
+### (needs work for n>1 -- will fail)
+MovingAvg = function(x,n=1)	{
+	len=length(x)
+	avg = rep(NA,len)
+	for (i in 1:len)	{
+		if (i == 1) avg[i] = mean(x[i:(i+n)]) else if (i == len) {
+			avg[i]=mean(x[(i-1):i])	} else {
+			avg[i] = mean(x[(i-n):(i+n)])	}
+		} 
+	return(avg)
+	}
 
