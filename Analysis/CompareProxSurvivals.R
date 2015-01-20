@@ -37,8 +37,9 @@ print(dirs)
 ### Note: file also contains 3 footer lines and one column names line
 
 ### 3D array for data to be filled into
-data = array(data = NA, dim = c(n,length(cases),2), 
-	dimnames = list(dirs,cases,c('surv','stab')) )
+cols=c('surv','stab','r','r/a')
+data = array(data = NA, dim = c(n,length(cases),length(cols)), 
+	dimnames = list(dirs,cases,cols) )
 
 ### Read data
 for (i in 1:n)	{
@@ -48,14 +49,14 @@ for (i in 1:n)	{
 	readin = read.table(GridFile,header=TRUE,row.names=1,nrows=GridLen)
 	wantrows = grep(selection,rownames(readin))
 	for (j in 1:length(wantrows))	{
-		for (k in 1:2)	{
+		for (k in 1:length(cols))	{
 			data[i,j,k] = readin[wantrows[j],k]
 		}	# k, surv/stab
 	}	# j, disk num.
 	}	# i, dirs
 
 ### Made index to reorder sims
-ind = order(data[,length(cases),2])	# sort by B-3 stability
+ind = order(data[,length(cases),length(cols)])	# sort by B-3 stability
 
 pdf(paste(basedir,'PrxDisksSurvival.pdf',sep=''))
 plot(1:n, data[ind,1,1], pch=1,col='blue', type='n',
