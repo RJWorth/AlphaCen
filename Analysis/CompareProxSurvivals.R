@@ -81,7 +81,7 @@ legend('topright',legend=c('Binary','Triple','Radius','fillertext'),
 dev.off()
 
 ### Make array of just the average binary and triple stability rates for each
-cols = c('r2','r2/a','r3','r3/a','delta','match','prox','t','aB','eB','iB','aC','eC','iC')
+cols = c('r2','r2/a','r3','r3/a','delta','match','prox','t','aB','eB','iB','aC','eC','iC','da','de')
 avgs = array(data=NA, dim = c(n, length(cols)), 
 	dimnames = list(dirs[ind],cols))
 for (i in 1:length(ind))	{
