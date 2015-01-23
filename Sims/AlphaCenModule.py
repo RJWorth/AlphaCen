@@ -824,7 +824,7 @@ def Elem(WhichDir):
 	return(B, C)
 
 ###############################################################################
-def ReadAei(whichdir, filename, index1=-1, index2=0):
+def ReadAei(whichdir, filename, index1=-1, index2=None):
 	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
 
 	print('	--ReadAei      '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
@@ -836,13 +836,16 @@ def ReadAei(whichdir, filename, index1=-1, index2=0):
 ### Get last positions for surviving objects
 	aeiFile=open(whichdir+'/Out/AeiOutFiles/'+filename+'.aei','r')
 	aei = aeiFile.readlines()
-	if index2!=0:
+	if ((index2!=None) & (index1!=None)):
 		xv = aei[index1:index2]
-	else:
+	elif ((index2==None) & (index1==None)):
+		xv = aei[4:]
+	elif (index2==None):
 		xv = aei[index1:]
+	elif (index1==None):
+		xv = aei[4:index2]
 ### Arrange xyz uvw data into array
 	xv = np.array([i.split()[6:12] for i in xv])
-
 ### Convert from strings to floats
 	xv = xv.astype(np.float)
 
