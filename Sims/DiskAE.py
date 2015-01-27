@@ -24,11 +24,14 @@ def WriteAEI(WhichDir, n):
 		else:
 			m = np.array([0.123,0.123])*mSun		
 
+### Empty array to store timesteps for each object
+	nt = [0 for o in objs]
+
 ### Get corresponding time array and maximum # of timesteps from AlCenB
 	t = AC.GetT(WhichDir, objs[1], 4, 0)
 	print(t)
 	np.savetxt(WhichDir+'/Out/AeiOutFiles/t.out',np.transpose(t))
-	maxT = len(t)
+	maxT, nt[0], nt[1] = len(t),len(t),len(t)
 
 ### Read in AlCenB
 	xvB_AU = AC.ReadAei(WhichDir, objs[1], None,None)
@@ -50,9 +53,9 @@ def WriteAEI(WhichDir, n):
 ### Fill remainder of array
 	for j in range(2,len(objs)):
 		thisxv_AU = AC.ReadAei(WhichDir, objs[j], None,None)
-		thisT     = thisxv_AU.shape[0]
+		nt[j]     = thisxv_AU.shape[0]
 		thisxv    = AC.AUtoMKS(thisxv_AU)
-		xv[j,:thisT,:] = thisxv
+		xv[j,:nt[j],:] = thisxv
 	
 ### Make arrays for x, y, z components
 	x=xv[:,:,0]
@@ -72,7 +75,7 @@ def WriteAEI(WhichDir, n):
 		aP, eP, iP, eps, xvCM, k, u, r, v = AC.Binary(
 				[ m[0]+m[1], m[2] ], 
 				np.array([ xvCM_AB, xv[2,:,:] ]), 
-				maxT)
+				nt[2])
 		aei[2,:,0],aei[2,:,1],aei[2,:,2] = aP/AU, eP, iP
 		a[2,:]    ,    e[2,:],    i[2,:] = aP/AU, eP, iP
 
@@ -81,9 +84,9 @@ def WriteAEI(WhichDir, n):
 		aM, eM, iM, eps, xvCM, k, u, r, v = AC.Binary(
 				[ m[1], 0. ], 
 				np.array([ xv[1,:,:], xv[j,:,:] ]), 
-				maxT)
-		aei[j,:,0],aei[j,:,1],aei[j,:,2] = aM/AU, eM, iM
-		a[j,:]    ,    e[j,:],    i[j,:] = aM/AU, eM, iM
+				nt[j])
+		aei[j,:nt[j],0],aei[j,:nt[j],1],aei[j,:nt[j],2] = aM/AU, eM, iM
+		a[j,:nt[j]]    ,    e[j,:nt[j]],    i[j,:nt[j]] = aM/AU, eM, iM
 
 	np.savetxt(WhichDir+'/Out/AeiOutFiles/x.out',np.transpose(x),fmt='%.2e',
 		header=''.join([o.rjust(9) for o in objs]),comments='')
@@ -99,6 +102,6 @@ def WriteAEI(WhichDir, n):
 	np.savetxt(WhichDir+'/Out/AeiOutFiles/i.out',np.transpose(i),fmt='%.2e',
 		header=''.join([o.rjust(9) for o in objs]),comments='')
 	
-	print(xv[:,-1,:])
+#	print(xv[:,-1,:])
 
 ###############################################################################
