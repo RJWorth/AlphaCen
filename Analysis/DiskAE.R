@@ -13,33 +13,29 @@ if (length(dir) == 0 |
 	readdir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" | 
 	readdir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('no args')
-		readdir='Proxlike/Prx01'	#'Prx02/Disk'
+		readdir='Proxlike/Prx01/DiskB-3'
 		}
 	print(readdir)
 
 ### Locations
-if (substr(readdir,1,1)=='/') simdir=readdir else {
-	simdir=paste('../Sims/',readdir,sep='') }
+afile = paste(readdir,'/Out/AeiOutFiles/a.out',sep='')
+efile = paste(readdir,'/Out/AeiOutFiles/e.out',sep='')
+#ifile = paste(readdir,'/Out/AeiOutFiles/i.out',sep='')
 
-#subdirs=c('/DiskA-2','/DiskA-3','/DiskB-2','/DiskB-3')
-subdirs=c('/DiskB-3')	#'/DiskB-2','/DiskB-3')
-
-### Load relevant constants/functions etc
-source('../Analysis/DiskUtils.R')
-source('../Analysis/ReadDiskFns.R')
-
-#survgrid = array(data = NA, dim = c(length(subdirs),4), 
-#	dimnames = list(subdirs,c('surv','stab','rEdge','rAbin')) )
-
-for (dirnum in 1:length(subdirs))	{
-	dir=paste(readdir,subdirs[dirnum],sep='')
-	aeidir=paste(simdir,subdirs[dirnum],'/Out/AeiOutFiles/',sep='')
-	print(aeidir)
-
-	source('../Analysis/ReadDiskData.R')
-	}
+xfile = paste(readdir,'/Out/AeiOutFiles/x.out',sep='')
+yfile = paste(readdir,'/Out/AeiOutFiles/y.out',sep='')
+zfile = paste(readdir,'/Out/AeiOutFiles/z.out',sep='')
 
 
+a=read.table(afile,header=T)
+e=read.table(efile,header=T)
+x=read.table(xfile,header=T)
+y=read.table(yfile,header=T)
+z=read.table(zfile,header=T)
+nt=dim(a)[1]
 
+p=a*(1-e)
+r=sqrt(x^2+y^2+z^2)
 
-
+#plot(a$PrxCen,e$PrxCen,type='l')
+source('../Analysis/DiskAEPlot.R')
