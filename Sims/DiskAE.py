@@ -8,6 +8,7 @@ def WriteAEI(WhichDir, n):
 	import numpy as np
 	from mks_constants import G, mSun, AU, day
 
+### Get object list for stars + n M-particles
 	if 'B-3' in WhichDir:
 		SmlInd=3
 		objs = ['AlCenA','AlCenB','PrxCen']+['M'+str(i) for i in range(1,n+1)]
@@ -23,9 +24,14 @@ def WriteAEI(WhichDir, n):
 		else:
 			m = np.array([0.123,0.123])*mSun		
 
-### First read in AlCenB to get maximum timesteps
+### Get corresponding time array and maximum # of timesteps from AlCenB
+	t = AC.GetT(WhichDir, objs[1], 4, 0)
+	print(t)
+	np.savetxt(WhichDir+'/Out/AeiOutFiles/t.out',np.transpose(t))
+	maxT = len(t)
+
+### Read in AlCenB
 	xvB_AU = AC.ReadAei(WhichDir, objs[1], None,None)
-	maxT = xvB_AU.shape[0]
 	xvB = AC.AUtoMKS(xvB_AU)
 
 ### Make 3D arrays to fill, based on these measurements
