@@ -15,7 +15,7 @@ if (length(dir) == 0 |
         basedir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
                 print('no args')
                 basedir='Proxlike/'
-		n=34
+		n=1
                 }
         print(basedir)
 	print(n)
