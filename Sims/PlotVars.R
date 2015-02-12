@@ -23,8 +23,8 @@ prox2 = (surv  & apCf>r.big)
 prox  = (prox1 | prox2)
 
 ### Collect into one data frame
-indices=data.frame(	surv,grow,prox1,prox2,prox,huge,
-					singB,singC,sing,doub, coll, brkn)
+indices=data.frame(	surv,grow, prox1,prox2,prox, huge,
+					singB,singC,sing, doub, coll, brkn)
 
 ### Data frame of plot point parameters
 #cat=c('brkn','doub','singB','singC','coll', 'surv','grow','prox1','prox2','huge')
