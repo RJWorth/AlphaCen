@@ -1937,6 +1937,8 @@ def ReadInfo(WhichDir):
 			if not ( (row.split()[0] == 'Fractional' ) | 
 					 (row.split()[0] == 'Integration') | 
 					 (row.split()[0] == 'Continuing')  | 
+					 (row.split()[0] == 'WARNING:')    |
+					 (row.split()[0] == 'Modify')      |
 					 (row.split()[0] == 'Beginning' )   ):
 				want.append(row)
 			if (row.split()[0] == 'Continuing'):
