@@ -116,11 +116,20 @@ pairs.panels(AllSums[p,pairscols2], scale=T, #jiggle=T,factor=5,
 	main="All Proxlike disk sims")
 
 ###############################################################################
+### Find medians for each parameter for each mass case
+meds = cbind( rep(0,dim(AllSums)[2]),rep(0,dim(AllSums)[2])  )
+	colnames(meds) = c('True','Equal')
+	rownames(meds)=colnames(AllSums)
+for (i in rownames(meds))	{
+	for (j in colnames(meds))	{
+		meds[i,j] = median(as.numeric(AllSums[p & Masses==j,i]))
+	}	}
+
+###############################################################################
 ### Find 'most median' system(s)
 i=4
 
 subset=AllSums[Masses=='Equal' & p==T,]
-
 
 count = rep(0,dim(subset)[1])
 for (i in c(4:8,11:24))	{
@@ -129,6 +138,24 @@ print(paste(colnames(subset)[i],mid))
 count[mid]=count[mid]+1
 	}
 
+###############################################################################
+### Compare rtr vs. p for B-2 vs B-3
+pB2=((da+aB)*(1-(de+eB)))[p]
+pB3=pB[p]
 
+f2=lm(r2.a[p]~pB2)
+f3=lm(r3.a[p]~pB3)
 
+pdf('../Paper/Inserts/rTr-vs-peri.pdf',height=4.5,width=4.5)
+plot(pB2,r2.a[p], pch=20,
+	xlab='Pericenter (AU)',
+	ylab=expression('Truncation radius (r'[tr]*'/a'[bin]*')'),
+	xlim=c(min(c( pB2, pB3)),max(c( pB2, pB3))),
+	ylim=c(min(c(r2.a[p],r3.a[p])),max(c(r2.a[p],r3.a[p]))) )
+abline(f2)
+points(pB3,r3.a[p], pch=20,col='red')
+abline(f3,col='red')
+legend('topleft',legend=c('Binary','Triple'),
+	lty=1,pch=20,col=c('black','red'))
+dev.off()
 
