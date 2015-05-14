@@ -62,8 +62,12 @@ attach(StarData)
 source('PlotVars.R')
 
 ###############################################################################
+### Calculate and print median orbital paremter changes
+source('SelectChanges.R')
+
+###############################################################################
 ### Set up stellar plot
-source('PaperIOPlot.R')
+#source('PaperIOPlot.R')
 
 ###############################################################################
 ### Read in disk data (for 03?)

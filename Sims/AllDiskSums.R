@@ -46,6 +46,7 @@ attach(AllSums)
 
 
 ### Index to select for valid simulations only
+### better than imported 'prox', which doesn't check time
 p = (prox==1) & (t >= 1e7) & (aB > 0)
 
 ### Max and min of both deltas
@@ -139,21 +140,38 @@ count[mid]=count[mid]+1
 	}
 
 ###############################################################################
-### Compare rtr vs. p for B-2 vs B-3
-pB2=((da+aB)*(1-(de+eB)))[p]
+### Compare rtr vs. p for B-2 vs B-3 -- normalized to aBin
+pB2=((aB+da)*(1-(eB+de)))[p]
 pB3=pB[p]
 
-f2=lm(r2.a[p]~pB2)
-f3=lm(r3.a[p]~pB3)
+f2.a=lm(r2.a[p]~pB2)
+f3.a=lm(r3.a[p]~pB3)
 
-pdf('../Paper/Inserts/rTr-vs-peri.pdf',height=4.5,width=4.5)
+pdf('../Paper/Inserts/rTra-vs-peri.pdf',height=4.5,width=4.5)
 plot(pB2,r2.a[p], pch=20,
 	xlab='Pericenter (AU)',
 	ylab=expression('Truncation radius (r'[tr]*'/a'[bin]*')'),
 	xlim=c(min(c( pB2, pB3)),max(c( pB2, pB3))),
 	ylim=c(min(c(r2.a[p],r3.a[p])),max(c(r2.a[p],r3.a[p]))) )
-abline(f2)
+abline(f2.a)
 points(pB3,r3.a[p], pch=20,col='red')
+abline(f3.a,col='red')
+legend('topleft',legend=c('Binary','Triple'),
+	lty=1,pch=20,col=c('black','red'))
+dev.off()
+###############################################################################
+### Compare rtr vs. p for B-2 vs B-3 -- rTr in AU
+f2=lm(r2[p]~pB2)
+f3=lm(r3[p]~pB3)
+
+pdf('../Paper/Inserts/rTr-vs-peri.pdf',height=4.5,width=4.5)
+plot(pB2,r2[p], pch=20,
+	xlab='Pericenter (AU)',
+	ylab=expression('Truncation radius r'[tr]*' (AU)'),
+	xlim=c(min(c( pB2, pB3)),max(c( pB2, pB3))),
+	ylim=c(min(c(r2[p],r3[p])),max(c(r2[p],r3[p]))) )
+abline(f2)
+points(pB3,r3[p], pch=20,col='red')
 abline(f3,col='red')
 legend('topleft',legend=c('Binary','Triple'),
 	lty=1,pch=20,col=c('black','red'))
