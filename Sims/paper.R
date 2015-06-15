@@ -67,11 +67,15 @@ source('SelectChanges.R')
 
 ###############################################################################
 ### Set up stellar plot
-#source('PaperIOPlot.R')
+source('PaperIOPlot.R')
 
 ###############################################################################
 ### Read in disk data (for 03?)
-#source('../Analysis/ReadDisk.R')
+source('../Analysis/ReadDisk.R')
+
+###############################################################################
+### Read in disk summaries and plot rTr vs pericenter
+source('DiskSimAnalysis.R')
 
 ###############################################################################
 
