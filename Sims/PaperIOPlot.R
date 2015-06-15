@@ -9,7 +9,12 @@ yaxlabs = c(0,.2,.4,.6,.8,1)
 ### Side-by-side input and output parameters
 ##setEPS()
 ##postscript('../Paper/Inserts/ae_io.eps',width=6, height=6)
+for (iter in 1:2)	{
+if (iter==1)	{
 pdf('../Paper/Inserts/ae_io.pdf',width=6, height=6)
+	} else {
+png('../Paper/Inserts/ae_io.png',height=6,width=6,units="in",res=150)
+	}
 par(mfrow=c(2,2),oma=c( 2.75, 2.75, 2.5, 1.5))
 options(scipen=5)
 
@@ -119,6 +124,6 @@ mtext(outer=TRUE,side=4,line=-.20,cex=1.1,
 	'Equal masses               Current masses')
 
 dev.off()
-
+	} # iter
 
 

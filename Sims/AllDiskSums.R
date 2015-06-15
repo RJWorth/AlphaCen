@@ -146,8 +146,15 @@ pB3=pB[p]
 
 f2.a=lm(r2.a[p]~pB2)
 f3.a=lm(r3.a[p]~pB3)
+f2=lm(r2[p]~pB2)
+f3=lm(r3[p]~pB3)
 
+for (iter in 1:2)	{
+if (iter==1)	{
 pdf('../Paper/Inserts/rTra-vs-peri.pdf',height=4.5,width=4.5)
+	} else {
+png('../Paper/Inserts/rTra-vs-peri.png',height=4.5,width=4.5, units="in",res=150)
+	}
 plot(pB2,r2.a[p], pch=20,
 	xlab='Pericenter (AU)',
 	ylab=expression('Truncation radius (r'[tr]*'/a'[bin]*')'),
@@ -161,10 +168,12 @@ legend('topleft',legend=c('Binary','Triple'),
 dev.off()
 ###############################################################################
 ### Compare rtr vs. p for B-2 vs B-3 -- rTr in AU
-f2=lm(r2[p]~pB2)
-f3=lm(r3[p]~pB3)
 
+if (iter==1)	{
 pdf('../Paper/Inserts/rTr-vs-peri.pdf',height=4.5,width=4.5)
+	} else {
+png('../Paper/Inserts/rTr-vs-peri.png',height=4.5,width=4.5, units="in",res=150)
+	}
 plot(pB2,r2[p], pch=20,
 	xlab='Pericenter (AU)',
 	ylab=expression('Truncation radius r'[tr]*' (AU)'),
@@ -176,4 +185,5 @@ abline(f3,col='red')
 legend('topleft',legend=c('Binary','Triple'),
 	lty=1,pch=20,col=c('black','red'))
 dev.off()
+	} # iter
 

@@ -4,10 +4,15 @@
 print('Making multiplots')
 options(scipen=0)
 
+for (iter in 1:2)	{
+if (iter==1)	{
+pdf('../Paper/Inserts/DiskSurv.pdf',height=4.5,width=5)
+	} else {
+png('../Paper/Inserts/DiskSurv.png',height=4.5,width=5,units="in",res=150)
+	}
 #pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=7,width=5)
 ##setEPS()
 ##postscript(paste('../Paper/Inserts','/DiskSurv.eps',sep=''), height=3.75,width=5)
-pdf('../Paper/Inserts/DiskSurv.pdf',height=4.5,width=5)
 par(mfrow=c(2,1), oma=c(3,2,0,0) )
 
 marlist=list( c(0.5, 2., 0.5, 1.5), 
@@ -84,4 +89,5 @@ legend('bottomleft',bty='n',
 	}	# i in 4
 
 dev.off()
+	}	#iter
 
