@@ -21,5 +21,5 @@ mv *.aei Aei
 
 ### Print runtime
 t2=$(date +%s)
-python -c 'print( "------- runtime: "+str(('$t2' - '$t1')/3600.)+" hrs -------")'
+python -c 'import Merc; print(Merc.WriteRuntime('$t1','$t2'))'
 
