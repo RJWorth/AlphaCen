@@ -5,8 +5,8 @@
 )---------------------------------------------------------------------
  algorithm (MVS, BS, BS2, RADAU, HYBRID etc) = hybrid
  start time (days)= 0.0
- stop time (days) = 365250.0
- output interval (days) = 365.25
+ stop time (days) = 365.25
+ output interval (days) = 0.36525
  timestep (days) = 1.0
  accuracy parameter=1e-12
 )---------------------------------------------------------------------
@@ -26,12 +26,12 @@
 )---------------------------------------------------------------------
  ejection distance (AU)= 100
  radius of central body (AU) = 0.005
- central mass (solar) = 1.0
+ central mass (solar) = 1.105
  central J2 = 0
  central J4 = 0
  central J6 = 0
  < not used at present >
  < not used at present >
  Hybrid integrator changeover (Hill radii) = 3.0
- number of timesteps between data dumps = 18262
+ number of timesteps between data dumps = 3
  number of timesteps between periodic effects = 100

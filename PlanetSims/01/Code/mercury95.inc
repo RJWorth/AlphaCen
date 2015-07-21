@@ -17,8 +17,8 @@
       integer NMAX, CMAX, NMESS, NFILES
       real*8 HUGE
 !
-      parameter (NMAX = 2000)
-      parameter (CMAX = 50)
+      parameter (NMAX = 10000)
+      parameter (CMAX = 500)
       parameter (NMESS = 200)
       parameter (HUGE = 9.9d29)
       parameter (NFILES = 50)
