@@ -6,6 +6,8 @@
 *.dmp
 *.tmp
 *.aei
+merc
+elem
 
 # compiled code
 *.pyc
