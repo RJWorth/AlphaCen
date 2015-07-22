@@ -28,12 +28,54 @@
 ! ``Numerical Recipes in Fortran'', pub. Cambridge.
 !------------------------------------------------------------------------------
 !
-! ##R## changes for f95 format:
+! #rjw# changes for f95 format:
 ! All tabs replaced with 4 spaces
 ! 'c' for comments replaced with '!'
 ! real*8 -> real(8), character*X -> character(X)
 ! mercury.inc -> mercury95.inc (and swift.inc. Switch comment chars in those)
+! Updated line continuation symbols: '&' at end of unfinished line instead
+! of or in addition to a character in 6th column of continuing line
 !
+!------------------------------------------------------------------------------
+! User module by Dimitri Veras and R.J. Worth
+!
+! Adds Galactic tides and a dissipating gas cloud potential
+! to the force calculations. Changes marked with either DGV or #rjw#,
+! depending on author.
+
+!------------------------------------------------------------------------------
+! Performance improvement by Avi Mandell
+!
+! Some of the changes from Avi Mandell's version are included here, marked with 
+! AVIMANDELL, including commenting out the output to the ce.out file because
+! it's large and not useful to me, and commenting out writing output at every
+! step, which causes it to run many times slower. 
+! His other modifications are omitted. (He also wrote in a runtime printout, 
+! explicit file closing, and forced migration.)
+
+!------------------------------------------------------------------------------
+! Bug fix courtesy of Alex Mustill
+!
+! The criteria for determining whether a body has collided with the central
+! object worked poorly for moons/satellites. This adds the requirement that
+! in order for a collision to be scored, the collision must occur during the
+!  current timestep.
+!
+! The alteration is in the mce_cent subroutine and is marked with ##ajm##.
+
+!------------------------------------------------------------------------------
+! Bug fix found online
+! Author: Karla de Souza Torres
+!
+! The variable array STAT is now explicitly initialized each time the 
+! integrator (re-)starts. This prevents STAT from getting random values, 
+! independently of compiler. The STAT variable is responsible for flagging 
+! bodies to be deleted after events, and its non-initialization caused bodies
+! to disappear in a non-physical manner in some cases.
+!
+! The alteration is made in the subroutine mio_in and is labelled with ##K##.
+!
+! Please, send your comments to karlchen79@gmail.com
 !------------------------------------------------------------------------------
 !
 ! Variables:

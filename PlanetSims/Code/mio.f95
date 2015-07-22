@@ -86,14 +86,17 @@
       end do
 !
 ! If required, output the stored close encounter details
+! AVIMANDELL
+!  *Commenting close encounter output for speed
+!
       if (nstored.ge.100.or.ceflush.eq.0) then
-  10    open (22, file=outfile(2), status='old', access='append',err=10)
-        do k = 1, nstored
-          write (22,'(a1,a2,a70)') char(12),'6b',c(k)(1:70)
-        end do
-        close (22)
+!  10    open (22, file=outfile(2), status='old', access='append',err=10)
+!        do k = 1, nstored
+!          write (22,'(a1,a2,a70)') char(12),'6b',c(k)(1:70)
+!        enddo
+!        close (22)
         nstored = 0
-      end if
+      endif
 !
 ! If new encounter minima have occurred, decide whether to stop integration
       stopflag = 0
@@ -1017,6 +1020,15 @@
  667  call mio_err (23,mem(81),lmem(81),mem(101),lmem(101),' ',1, &
        mem(83),lmem(83))
 !
+!------------------------------------------------------------------------------
+! ##K##
+! Always initialize the variable array STAT for all bodies with 0.
+
+      do j = 2, nbod
+        stat(j) = 0
+      end do
+
+! ##K##
 !------------------------------------------------------------------------------
 !
       end

@@ -67,7 +67,7 @@
         n = int (abs (time - tstart) / dtout) + 1
         tout = tstart  +  dtout * sign (dble(n), tstop - tstart)
         if ((tstop - tstart)*(tout - tstop).gt.0) tout = tstop
-      end if
+      endif
       tdump = time
       tfun  = time
       tlog  = time
@@ -101,7 +101,7 @@
          rmax,en,am,cefac,ndump,nfun,nbod,nbig,m,xh,vh,s,rho,rceh,stat, &
          id,ngf,epoch,opt,opflag,dumpfile,mem,lmem)
         tdump = time
-      end if
+      endif
 !
 ! If integration has finished return to the main part of programme
       if (abs(tstop-time).le.abs(tsmall).and.opflag.ne.-1) return
@@ -138,7 +138,7 @@
          iclo,jclo,opt,stopflag,tclo,dclo,ixvclo,jxvclo,mem,lmem, &
          outfile,nstored,itmp)
         if (stopflag.eq.1) return
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -152,7 +152,7 @@
             j = jhit(k)
             call mce_coll (thit(k),tstart,en(3),jcen,i,j,nbod,nbig,m,xh, &
              vh,s,rphys,stat,id,opt,mem,lmem,outfile(3))
-          end if
+          endif
         end do
 !
 ! Remove lost objects, reset flags and recompute Hill and physical radii
@@ -162,7 +162,7 @@
         if (opflag.ge.0) opflag = 1
         call mce_init (tstart,algor,h0,jcen,rcen,rmax,cefac,nbod,nbig, &
          m,xh,vh,s,rho,rceh,rphys,rce,rcrit,id,opt,outfile(2),1)
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -188,7 +188,7 @@
         if (opflag.ge.0) opflag = 1
         call mce_init (tstart,algor,h0,jcen,rcen,rmax,cefac,nbod,nbig, &
          m,xh,vh,s,rho,rceh,rphys,rce,rcrit,id,opt,outfile(2),0)
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -206,14 +206,14 @@
          rmax,en,am,cefac,ndump,nfun,nbod,nbig,m,xh,vh,s,rho,rceh,stat, &
          id,ngf,epoch,opt,opflag,dumpfile,mem,lmem)
         tdump = time
-      end if
+      endif
 !
 ! Write a progress report to the log file
       if (abs(time-tlog).ge.abs(dtdump).and.opflag.ge.0) then
         call mxx_en (jcen,nbod,nbig,m,xh,vh,s,en(2),am(2))
         call mio_log (time,tstart,en,am,opt,mem,lmem)
         tlog = time
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -239,9 +239,9 @@
           if (opflag.ge.0) opflag = 1
           call mce_init (tstart,algor,h0,jcen,rcen,rmax,cefac,nbod,nbig, &
            m,xh,vh,s,rho,rceh,rphys,rce,rcrit,id,opt,outfile(2),0)
-        end if
+        endif
         tfun = time
-      end if
+      endif
 !
 ! Go on to the next time step
       goto 100
@@ -294,6 +294,9 @@
       real(8) dclo(CMAX),tclo(CMAX),dhit(CMAX),thit(CMAX)
       real(8) ixvclo(6,CMAX),jxvclo(6,CMAX),a(NMAX)
       external onestep,coord,bcoord
+
+! AVIMANDELL, test for 'confirmdumpfile'
+      logical test
 !
 !------------------------------------------------------------------------------
 !
@@ -316,7 +319,7 @@
         n = int (abs (time-tstart) / dtout) + 1
         tout = tstart  +  dtout * sign (dble(n), tstop - tstart)
         if ((tstop-tstart)*(tout-tstop).gt.0) tout = tstop
-      end if
+      endif
       tdump = time
       tfun  = time
       tlog  = time
@@ -347,20 +350,23 @@
         tout = tout + sign( min( abs(tmp0), abs(dtout) ), tmp0 )
 !
 ! Update the data dump files
-        do j = 2, nbod
-          epoch(j) = time
-        end do
-        call mio_dump (time,tstart,tstop,dtout,algor,h0,tol,jcen,rcen, &
-         rmax,en,am,cefac,ndump,nfun,nbod,nbig,m,xh,vh,s,rho,rceh,stat, &
-         id,ngf,epoch,opt,opflag,dumpfile,mem,lmem)
-        tdump = time
-      end if
+! AVIMANDELL
+!  Data dump is commented; unnecessary at every output. Mistake?
+!        do j = 2, nbod
+!          epoch(j) = time
+!        enddo
+!
+!        call mio_dump (time,tstart,tstop,dtout,algor,h0,tol,jcen,rcen,
+!     %    rmax,en,am,cefac,ndump,nfun,nbod,nbig,m,xh,vh,s,rho,rceh,stat,
+!     %    id,ngf,epoch,opt,opflag,dumpfile,mem,lmem)
+!        tdump = time
+      endif
 !
 ! If integration has finished, convert to heliocentric coords and return
       if (abs(tstop-time).le.hby2.and.opflag.ge.0) then
         call bcoord (time,jcen,nbod,nbig,h0,m,x,v,xh,vh,ngf,ngflag,opt)
         return
-      end if
+      endif
 !
 ! Make sure the integration is heading in the right direction
  150  continue
@@ -373,7 +379,7 @@
         call mco_iden (jcen,nbod,nbig,h0,m,x,v,xh0,vh0)
       else
         call bcoord(time,jcen,nbod,nbig,h0,m,x,v,xh0,vh0,ngf,ngflag,opt)
-      end if
+      endif
       call onestep (time,tstart,h0,tol,rmax,en,am,jcen,rcen,nbod,nbig, &
        m,x,v,s,rphys,rcrit,rce,stat,id,ngf,algor,opt,dtflag,ngflag, &
        opflag,colflag,nclo,iclo,jclo,dclo,tclo,ixvclo,jxvclo,outfile, &
@@ -392,7 +398,7 @@
          iclo,jclo,opt,stopflag,tclo,dclo,ixvclo,jxvclo,mem,lmem, &
          outfile,nstored,itmp)
         if (stopflag.eq.1) return
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -412,7 +418,7 @@
         call mce_init (tstart,algor,h0,jcen,rcen,rmax,cefac,nbod,nbig, &
          m,xh,vh,s,rho,rceh,rphys,rce,rcrit,id,opt,outfile(2),1)
         call coord (time,jcen,nbod,nbig,h0,m,xh,vh,x,v,ngf,ngflag,opt)
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -423,7 +429,7 @@
         call mco_iden(jcen,nbod,nbig,h0,m,x,v,xh,vh)
       else
         call bcoord (time,jcen,nbod,nbig,h0,m,x,v,xh,vh,ngf,ngflag,opt)
-      end if
+      endif
       itmp = 2
       if (algor.eq.11.or.algor.eq.12) itmp = 3
       call mce_cent (time,h0,rcen,jcen,itmp,nbod,nbig,m,xh0,vh0,xh,vh, &
@@ -453,18 +459,24 @@
           call mco_iden (jcen,nbod,nbig,h0,m,xh,vh,x,v)
         else
           call coord (time,jcen,nbod,nbig,h0,m,xh,vh,x,v,ngf,ngflag,opt)
-        end if
+        endif
 !
 ! Redo that integration time step
         goto 150
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
 !  DATA  DUMP  AND  PROGRESS  REPORT
 !
+! AVIMANDELL
+!  Added voluntary data dump when file 'confirmdumpfile' exists
+!
 ! Convert to heliocentric coords and do the data dump
-      if (abs(time-tdump).ge.abs(dtdump).and.opflag.ge.-1) then
+      inquire (file='confirmdumpfile', exist=test)
+
+      if (test.and. &
+       (abs(time-tdump).ge.abs(dtdump).and.opflag.ge.-1)) then
         call bcoord (time,jcen,nbod,nbig,h0,m,x,v,xh,vh,ngf,ngflag,opt)
         do j = 2, nbod
           epoch(j) = time
@@ -476,7 +488,7 @@
          rmax,en,am,cefac,ndump,nfun,nbod,nbig,m,xh,vh,s,rho,rceh,stat, &
          id,ngf,epoch,opt,opflag,dumpfile,mem,lmem)
         tdump = time
-      end if
+      endif
 !
 ! Convert to heliocentric coords and write a progress report to the log file
       if (abs(time-tlog).ge.abs(dtdump).and.opflag.ge.0) then
@@ -484,7 +496,7 @@
         call mxx_en (jcen,nbod,nbig,m,xh,vh,s,en(2),am(2))
         call mio_log (time,tstart,en,am,opt,mem,lmem)
         tlog = time
-      end if
+      endif
 !
 !------------------------------------------------------------------------------
 !
@@ -495,7 +507,7 @@
           call mco_iden (jcen,nbod,nbig,h0,m,x,v,xh,vh)
         else
           call bcoord(time,jcen,nbod,nbig,h0,m,x,v,xh,vh,ngf,ngflag,opt)
-        end if
+        endif
 !
 ! Recompute close encounter limits, to allow for changes in Hill radii
         call mce_hill (nbod,m,xh,vh,rce,a)
@@ -522,10 +534,10 @@
           else
             call coord (time,jcen,nbod,nbig,h0,m,xh,vh,x,v,ngf,ngflag, &
              opt)
-          end if
-        end if
+          endif
+        endif
         tfun = time
-      end if
+      endif
 !
 ! Go on to the next time step
       goto 100

@@ -143,12 +143,10 @@
           q = p / (1.d0 + e)
 !
 ! If the object hit the central body
+! ##ajm## 28-05-12 edited this to check that collision
+! occurs within the timestep
           if (q.le.rcen) then
-            nhit = nhit + 1
-            jhit(nhit) = j
-            dhit(nhit) = rcen
-!
-! Time of impact relative to the end of the timestep
+!     Time of impact relative to the end of the timestep
             if (e.lt.1) then
               a = q / (1.d0 - e)
               uhit = sign (acos((1.d0 - rcen/a)/e), -h)
@@ -163,8 +161,14 @@
               m0   = mod (u0   - e*sinh(u0)   + PI, TWOPI) - PI
             end if
             mm = sqrt((mcen + m(j)) / (a*a*a))
-            thit(nhit) = (mhit - m0) / mm + time
-          end if
+            if ((mhit-m0)/mm.le.h) then
+               nhit = nhit + 1
+               jhit(nhit) = j
+               dhit(nhit) = rcen
+               thit(nhit) = (mhit - m0) / mm + time
+            endif
+         end if
+! ##ajm##
         end if
       end do
 !
@@ -413,13 +417,15 @@
       end do
 !
 ! Write compressed output to file
-  50  open (22, file=outfile, status='old', access='append', err=50)
-      write (22,'(a1,a2,i2,a62,i1)') char(12),'6a',algor,header(1:62), &
-       opt(4)
-      do j = 2, nbod
-        write (22,'(a51)') c(j)(1:51)
-      end do
-      close (22)
+! AVIMANDELL
+! Commenting collision output
+!  50  open (22, file=outfile, status='old', access='append', err=50)
+!      write (22,'(a1,a2,i2,a62,i1)') char(12),'6a',algor,header(1:62),
+!     %  opt(4)
+!      do j = 2, nbod
+!        write (22,'(a51)') c(j)(1:51)
+!      enddo
+!      close (22)
 !
 !------------------------------------------------------------------------------
 !

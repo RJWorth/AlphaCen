@@ -17,6 +17,9 @@
 ! ===
 !------------------------------------------------------------------------------
 !
+! Galactic tides and dispersing gas cloud.
+!
+
       subroutine mfo_user (time,jcen,nbod,nbig,m,x,v,a)
 !
       implicit none
@@ -24,20 +27,102 @@
 !
 ! Input/Output
       integer nbod, nbig
-      real(8) time,jcen(3),m(nbod),x(3,nbod),v(3,nbod),a(3,nbod)
+      real*8 time,jcen(3),m(nbod),x(3,nbod),v(3,nbod),a(3,nbod)
+!  **************   DGV Dimitri Veras added these parameters ************
+      real*8 Omegag,rhog,delta
+      parameter (Omegag=7.66963e-11,rhog=1.05629e-17,delta=-0.0573185)
+!
+! From Veras & Evans (2013) MNRAS
+!
+! R(kpc)      Omega         Delta          Rho
+!  0.1    4.37096*10^-9    0.377521   9.06232*10^-15
+!  0.2    2.75482*10^-9    0.283677   3.26618*10^-15
+!  0.5    1.32134*10^-9    0.105695   6.48106*10^-16
+!  1.0    6.78356*10^-10  -0.0214944  1.94041*10^-16
+!  2.0    3.27146*10^-10  -0.0641641  8.42905*10^-17
+!  3.0    2.13134*10^-10  -0.0469292  5.53658*10^-17
+!  5.0    1.25414*10^-10  -0.0362197  2.77995*10^-17
+!  8.0    7.66963*10^-11  -0.0573185  1.05629*10^-17
+! 12.0    4.99957*10^-11  -0.0431656  3.12614*10^-18
+! 20.0    2.99106*10^-11   0.0313698  4.43947*10^-19
+! 35.0    1.74928*10^-11   0.0346311  8.98535*10^-20
 !
 ! Local
       integer j
+!  **************   #rjw# Rachel Worth added these parameters ************
+      real*8 aa(3,nbod),ab(3,nbod),cm(3)
+      real*8 mtot,mgas0,mgas,rgas,gaslife,gasfrac
 !
+!  **************   DGV Dimitri Veras added this subroutine ************
+! #rjw# changed a to aa
 !------------------------------------------------------------------------------
 !
-      do j = 1, nbod
-        a(1,j) = 0.d0
-        a(2,j) = 0.d0
-        a(3,j) = 0.d0
+      do j = 2, nbod
+        aa(1,j)= (Omegag**2.0) &
+     &         *((1.0-delta)*cos(2.0*Omegag*time) - delta) &
+     &         *x(1,j) + &
+     &          (Omegag**2.0)*(1.0-delta)*sin(2.0*Omegag*time) &
+               *x(2,j)
+
+        aa(2,j)= (Omegag**2.0)*(1.0-delta)*sin(2.0*Omegag*time)*x(1,j) - &
+     &          (Omegag**2.0)*((1.0-delta)*cos(2.0*Omegag*time) + delta) &
+     &         *x(2,j)
+
+        aa(3,j)= -(4.0*3.1415926535897932*K2*rhog - &
+     &           2.0*(Omegag**2.0)*delta)*x(3,j) 
       end do
 !
 !------------------------------------------------------------------------------
+!  **************   DGV Dimitri Veras end ************
+!
+!  **************   #rjw# Rachel Worth added this subroutine ************
+!------------------------------------------------------------------------------
+! Initial mass of cloud, solar masses*K2
+      mgas0 = 10*K2
+! Lifetime of gas cloud (this and 'time' are in days)
+      gaslife = 440000*365.25
+! Mass over time, as cloud dissipates (...What about star accretion?)
+      gasfrac= max(0.0, (gaslife-time)/gaslife)
+      mgas = mgas0*gasfrac
+! Radius of cloud core, in AU
+      rgas = 7500
+
+! Calculate total mass
+      do j = 1, nbod
+        mtot= mtot+m(j)
+      end do
+
+! Calculate location of center of mass
+      do j = 2, nbod
+        cm(1)= cm(1)+(1/mtot)*(m(j)*x(1,j))
+!        write(*,*) cm(1)
+        cm(2)= cm(2)+(1/mtot)*(m(j)*x(2,j))
+
+        cm(3)= cm(3)+(1/mtot)*(m(j)*x(3,j))
+      end do
+      
+! Calculate force from remnant gas cloud
+      do j = 2, nbod
+        ab(1,j)= -mgas*x(1,j) / (x(1,j)**2.0 + rgas**2.0)**1.5
+!         ab(1,j)= 0.0
+        ab(2,j)= -mgas*x(2,j) / (x(2,j)**2.0 + rgas**2.0)**1.5
+!         ab(2,j)= 0.0
+        ab(3,j)= -mgas*x(3,j) / (x(3,j)**2.0 + rgas**2.0)**1.5
+!         ab(3,j)= 0.0
+      end do
+    
+! Combine galactic tide and gas cloud effects
+      do j = 2, nbod
+        a(1,j)= aa(1,j) + ab(1,j)
+
+        a(2,j)= aa(2,j) + ab(2,j)
+
+        a(3,j)= aa(3,j) + ab(3,j)
+      end do
+
+
+!------------------------------------------------------------------------------
+!  **************   #rjw# Rachel Worth end ************
 !
       return
       end
