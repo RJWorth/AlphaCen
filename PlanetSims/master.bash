@@ -4,7 +4,7 @@
 machine=$(hostname -s)
 home=$(pwd)
 ti=0
-tf=0
+tf=6
 
 if [ $machine = Mirka ]; then
 Dirs=(L01)
