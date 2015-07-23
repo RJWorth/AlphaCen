@@ -8,6 +8,7 @@ dir=$1
 ti=$2	# = log(years)
 tf=$3	# = log(years)
 
+home=..
 c=../Code
 in=In/
 out=Out/
@@ -60,7 +61,7 @@ echo '==================== start t = 1e'$ti'-'$tf' yrs ===================='
 	### Print runtime thus far
 		t2=$(date +%s)
 		dt=$(python -c 'print('$t2'-'$t1')')
-		echo $dir'    '$k'    '$dt >> runtimes.txt
+		echo $dir'    '$k'    '$dt >> $home/runtimes.txt
 
 		done
 echo '====================== end t = 1e'$ti'-'$tf' yrs ===================='
@@ -77,7 +78,7 @@ mv *.aei Aei
 t3=$(date +%s)
 python -c 'import Merc; print(Merc.WriteRuntime('$t1','$t3'))'
 
-cd ..
+cd $home
 
 dt=$(python -c 'print('$t3'-'$t1')')
 echo $dir'    '$k'    '$dt >> runtimes.txt
