@@ -16,7 +16,7 @@ for i in ${Dirs[*]}
 do	
 
 	# run sim in 01 directory
-	./run.bash $i $t > $i/run.pipe &
+	nice -n 10 ./run.bash $i $t > $i/run.pipe &
 	echo 'started '$i': '$!
 
 done	# i in Dirs
