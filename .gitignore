@@ -8,6 +8,10 @@
 *.aei
 merc
 elem
+merc_L*
+elem_L*
+merc_S*
+elem_S*
 
 # compiled code
 *.pyc
@@ -31,4 +35,5 @@ Backup*
 Heuristic
 PlanetSims/01/In/big.in
 PlanetSims/01/In/param.in
-01
+L*
+S*

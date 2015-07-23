@@ -7,10 +7,10 @@ ti=0
 tf=0
 
 if [ $machine = Mirka ]; then
-Dirs=(01 02)
+Dirs=(L01)
 fi
 if [ $machine = shapiro ]; then
-Dirs=(01 02 03 04 05 06 07)
+Dirs=(S01 S02 S03 S04 S05 S06 S07)
 fi 
 
 for i in ${Dirs[*]}
