@@ -44,14 +44,24 @@ echo 'run: '$1', t = '$timerange
 echo '==================== start t = 1e'$ti'-'$tf' yrs ===================='
 	### Loop over time lengths
 		for k in $timerange; do
-		# Write param.dmp file
+
+	### Write param.dmp file
 		if [ $k != $ti ]; then
 		python -c "import Merc as M; M.WriteParamInFile(loc='"$out"', f='dmp', tf=365.25e"$k", mStar="$mStar", rEj="$rEj")"
 		fi
-		#### Run mercury
-#		cd $1/Out;	./merc_$end;	cd $pwd
+
+	#### Run mercury
 		./merc_$1
 		echo '----------------------- t = 1e'$k' yrs -------------------------'
+
+	### Backup
+	#	\cp -p Out/* Backup
+
+	### Print runtime thus far
+		t2=$(date +%s)
+		dt=$(python -c 'print('$t2'-'$t1')')
+		echo $dir'    '$k'    '$dt >> runtimes.txt
+
 		done
 echo '====================== end t = 1e'$ti'-'$tf' yrs ===================='
 
@@ -64,12 +74,12 @@ mv *.tmp Out
 mv *.aei Aei
 
 ### Print runtime
-t2=$(date +%s)
-python -c 'import Merc; print(Merc.WriteRuntime('$t1','$t2'))'
+t3=$(date +%s)
+python -c 'import Merc; print(Merc.WriteRuntime('$t1','$t3'))'
 
 cd ..
 
-dt=$(python -c 'print('$t2'-'$t1')')
+dt=$(python -c 'print('$t3'-'$t1')')
 echo $dir'    '$k'    '$dt >> runtimes.txt
 
 
