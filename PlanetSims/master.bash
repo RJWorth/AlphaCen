@@ -3,7 +3,8 @@
 
 machine=$(hostname -s)
 home=$(pwd)
-t=0
+ti=0
+tf=0
 
 if [ $machine = Mirka ]; then
 Dirs=(01 02)
@@ -16,7 +17,7 @@ for i in ${Dirs[*]}
 do	
 
 	# run sim in 01 directory
-	nice -n 10 ./run.bash $i $t > $i/run.pipe &
+	nice -n 10 ./run.bash $i $ti $tf > $i/run.pipe &
 	echo 'started '$i': '$!
 
 done	# i in Dirs
