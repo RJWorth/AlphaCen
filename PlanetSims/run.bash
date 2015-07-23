@@ -35,6 +35,6 @@ python -c 'import Merc; print(Merc.WriteRuntime('$t1','$t2'))'
 cd ..
 
 dt=$(python -c 'print('$t2'-'$t1')')
-echo $1'    '$t'    '$dt >> runtimes.txt
+echo $1'    '$2'    '$dt >> runtimes.txt
 
 
