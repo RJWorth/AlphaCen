@@ -7,6 +7,7 @@ machine=$(hostname -s)
 dir=$1
 ti=$2	# = log(years)
 tf=$3	# = log(years)
+rtr=$4  # truncation radius (AU)
 
 home=..
 c=../Code
@@ -31,7 +32,7 @@ cd $dir
 python -c "import Merc as M; M.WriteParamInFile(loc='"$in"', tf=365.25e"$ti", mStar="$mStar", rEj="$rEj")"
 
 # write big.in file with stars+planetesimals (currently only has planetesimals around AlCenA)
-#python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(), loc='"$in"')"
+#python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(rtr="$rtr",sigC="$sigma"), loc='"$in"')"
 
 ### Compile and run
 gfortran -w -o merc_$1 $c/mercury6_2.f95 $c/drift.f95 $c/orbel.f95 $c/mal.f95 $c/mce.f95 $c/mco.f95 $c/mdt.f95 $c/mio.f95 $c/mfo.f95 $c/mxx.f95 $c/both.f95

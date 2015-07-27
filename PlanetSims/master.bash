@@ -3,8 +3,14 @@
 
 machine=$(hostname -s)
 home=$(pwd)
+
+### Sim parameters
 ti=0
 tf=6
+rtr=3.08
+rice=2.7
+alpha=1.5
+sigma=3.
 
 if [ $machine = Mirka ]; then
 Dirs=(L01)
@@ -17,7 +23,7 @@ for i in ${Dirs[*]}
 do	
 
 	# run sim in 01 directory
-	nice -n 10 ./run.bash $i $ti $tf > $i/run.pipe 2>&1 &
+	nice -n 10 ./run.bash $i $ti $tf $rtr > $i/run.pipe 2>&1 &
 	echo 'started '$i': '$!
 
 done	# i in Dirs
