@@ -16,7 +16,7 @@ in=In/
 out=Out/
 
 mStar=0.934
-rEj=1e5
+rEj=1e2
 
 ### Range for iterations
 if [ $machine = chloe ]; then
