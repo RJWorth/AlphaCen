@@ -8,6 +8,7 @@ dir=$1
 ti=$2	# = log(years)
 tf=$3	# = log(years)
 rtr=$4  # truncation radius (AU)
+sigma=$5 # density scale factor
 
 home=..
 c=../Code

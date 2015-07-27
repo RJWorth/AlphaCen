@@ -23,7 +23,7 @@ for i in ${Dirs[*]}
 do	
 
 	# run sim in 01 directory
-	nice -n 10 ./run.bash $i $ti $tf $rtr > $i/run.pipe 2>&1 &
+	nice -n 10 ./run.bash $i $ti $tf $rtr $sigma > $i/run.pipe 2>&1 &
 	echo 'started '$i': '$!
 
 done	# i in Dirs
