@@ -17,6 +17,9 @@ Dirs=(L01)
 fi
 if [ $machine = shapiro ]; then
 Dirs=(S01 S02 S03 S04 S05 S06 S07)
+fi
+if [ $machine = chloe ];then
+Dirs=(C01)
 fi 
 
 for i in ${Dirs[*]}
