@@ -120,7 +120,7 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 	if (tOut == 'default'):
 		tOut = tf/1.e3
 	if (dtDump == 'default'):
-		dtDump = int(tf/dt/100.)
+		dtDump = int(round(tf/dt/100.))
 
 	text = ''')O+_06 Integration parameters  (WARNING: Do not delete this line!!)
 ) Lines beginning with `)' are ignored.
