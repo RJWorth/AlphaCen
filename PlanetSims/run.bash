@@ -37,7 +37,11 @@ python -c "import Merc as M; M.WriteParamInFile(loc='"$in"', tf=365.25e"$ti", mS
 
 ### Compile and run
 gfortran -w -o merc_$1 $c/mercury6_2.f95 $c/drift.f95 $c/orbel.f95 $c/mal.f95 $c/mce.f95 $c/mco.f95 $c/mdt.f95 $c/mio.f95 $c/mfo.f95 $c/mxx.f95 $c/both.f95
-gfortran -w -o elem_$1 $c/element6.f95 $c/e_sub.f95 $c/orbel.f95 $c/both.f95
+if [ $machine = chloe ]; then
+	gfortran-4.2 -w -o elem_$1 $c/element6.f95 $c/e_sub.f95 $c/orbel.f95 $c/both.f95
+else
+	gfortran -w -o elem_$1 $c/element6.f95 $c/e_sub.f95 $c/orbel.f95 $c/both.f95
+fi
 
 ### Clean previous sim
 rm Out/*
