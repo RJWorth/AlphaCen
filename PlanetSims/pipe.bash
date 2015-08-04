@@ -2,7 +2,7 @@
 ##############################################################################
 
 machine=rjw274@chloe.astro.psu.edu
-dir=C05
+dir=C09
 
 scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei' $dir
 scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/In/big.in' $dir/In
