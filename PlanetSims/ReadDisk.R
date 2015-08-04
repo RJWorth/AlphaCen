@@ -1,5 +1,5 @@
 
-dir='C05/'
+dir='C09/'
 aeidir=paste(dir,'Aei/',sep='')
 cent='B'
 
@@ -19,9 +19,11 @@ maxTind=(1:length(size))[size==max(size)][1]
 testdata = read.table(paste(aeidir,files[maxTind],sep=''),skip=4, header=F ) 
 ndims = dim(testdata)[2]
 if (ndims==12) {
+	form='long'
 	c.all=c('t','a','e','i','mass','dens','x','y','z', 'vx','vy','vz') 
 	c.want=c('t','a','e','i','x','y','z','vx','vy','vz','mass')
 } else { if (ndims==8) {
+	form='short'
 	c.all=c('t','a','e','i','peri','node','M','mass') 
 	c.want=c('t','a','e','i','mass')
 } }
@@ -38,8 +40,13 @@ maxT       = max(testdata$t)
 na=c('*','**','***','****','*****','******','*******',
 	'********','*********','**********')
 
+if (form=='short') {
 aei = array(data = 0., dim = c( length(files), maxTlength, length(c.want)+2), 
 	dimnames = list(names,NULL,c(c.want,'p','ap')) )
+ } else if (form=='long') {
+aei = array(data = 0., dim = c( length(files), maxTlength, length(c.want)+4), 
+	dimnames = list(names,NULL,c(c.want,'p','ap','r','v')) )
+ }
 
 for (i in 1:length(names)) {
 	filename=paste(aeidir,files[i],sep='')
@@ -52,6 +59,10 @@ for (i in 1:length(names)) {
 		for (k in 1:Tlength)	aei[i, k, j] = objdata[ k,j]	}
 	aei[i,,'p']  = aei[i,,'a']*(1-aei[i,,'e'])
 	aei[i,,'ap'] = aei[i,,'a']*(1+aei[i,,'e'])
+	if (form=='long')	{
+		aei[i,,'r'] = (aei[i,, 'x']^2+aei[i,, 'y']^2+aei[i,, 'z']^2)^.5
+		aei[i,,'v'] = (aei[i,,'vx']^2+aei[i,,'vy']^2+aei[i,,'vz']^2)^.5
+		}	
 	}
 
 ### 
@@ -87,7 +98,6 @@ for (i in 1:length(dn))	{
 		this = as.numeric(sub('P','',interactions[i, 'obj']))
 		that = as.numeric(sub('P','',interactions[i,'fate']))
 		dn[i] = this-that
-		print(paste(this,that,dn[i]))
 	}
 }
 interactions$dn = dn
@@ -122,6 +132,7 @@ ult[grep('P[[:digit:]]{4}',fate)] = ''
 		for (i in 1:length(finalized))	{
 			ult[fate==finalized[i]] = ult[names==finalized[i]]	}
 	}
+allfates=levels(as.factor(ult))
 starfate = ult[isstar]
 if (starfate != 'remains') print(paste('Weirdness! Star fate =',starfate))
 
@@ -153,9 +164,16 @@ vsT = function(ycol){
 		ind=length(names)
 	}
 
-	xlims = c(5e4,3e5)
-	if (ycol == 'e') ylims = c(0,1) else if (ycol == 'i') ylims = c(0,180) else {
-		ylims = c(0, max(aei[ind,-1,ycol],na.rm=T))	}
+	xlims = c(minT,maxT)
+	if (ycol == 'e') {
+		ylims = c(0,1) 
+	} else if (ycol == 'i') {
+		ylims = c(0,180)
+	} else if (ycol == 'v') {
+		ylims = c(0,max(aei[2,,ycol]))
+	} else {
+		ylims = c(0, max(aei[ind,-1,ycol],na.rm=T))
+		}
 
 	plot(aei[ind,-1,'t'], aei[ind,-1,ycol], 
 	log='x', xlim=xlims, ylim=ylims, xlab='',ylab=ycol,xaxt='n',
@@ -175,7 +193,8 @@ vsT = function(ycol){
 }
 #-----------------------------------------------------------------------------#
 ### Plot semimajor axis, eccentricity, pericenter, and apocenter vs. time
-pdf(paste(dir,'Tchanges.pdf',sep=''),width=10,height=10)
+#pdf(paste(dir,'Tchanges.pdf',sep=''),width=10,height=10)
+png(paste(dir,'Tchanges.png',sep=''), res = 200, width = 10, height = 10, units = "in")
 par(mfrow=c(5,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
 vsT('a')
 vsT('e')
@@ -229,7 +248,6 @@ fatebars('a')
 #-----------------------------------------------------------------------------#
 ### Where mass from initial disk ends up
 
-allfates=levels(as.factor(ult))
 plotprms = c('a','mass')
 
 n=ceiling(sqrt(length(plotprms)))
@@ -244,32 +262,14 @@ for (i in 1:length(plotprms))	{
 	
 dev.off()
 ##-----------------------------------------------------------------------------#
-
-## stacked barplots of time
-#brk=0:10*10^6
-#stacktime=function(dest1,br)	{
-#	bla=array(dim=c(2,10))
-#	brk=0:10*10^6
-#	bla[1,]=hist(earthrocks$Time[earthrocks$Destination==dest1],breaks=brk,plot=F)$counts/dim(earthrocks)[1]
-#	bla[2,]=hist( marsrocks$Time[ marsrocks$Destination==dest1],breaks=brk,plot=F)$counts/dim( marsrocks)[1]
-#	return(bla)	}
-
-#pdf('stackedtime.pdf', height=13, width=4.5)
-#par(mfrow=c(6,1), mar=c(2.5,2.5,1.5,0.5), oma=c(2,2,2,0))
-
-#over=c(0,2.75,0,0,9,9,3,3,3)
-#up= c(0,.003,0,0,.30,.10,.00012,.00003,.012)
-
-#for (j in c(2,5:9))	{
-#thing=stacktime(destlevels[j])
-#barplot(thing, col=c('blue','red'), space=0, log='', offset=0,	#, ylim=c(min(thing[thing>0]), max(thing))
-#legend.text=c(paste('Earth to',destlevels[j]), paste('Mars to',destlevels[j])), args.legend=list(x=over[j], y=up[j],bg='white'))
-#axis(side=1,at=c(0,5,10),labels=c(0,5,10))
-#}
-
-#mtext('Time (Myr)', side=1, outer=T)
-#mtext('Relative frequency', side=2, outer=T, line=0.5)
-#mtext('Transfer over time', side=3, outer=T, line=0.5)
-#dev.off()
+### Distance from center and velocity vs. time
+if (form=='long')	{
+	png(paste(dir,'CartData.png',sep=''), res = 200, width = 10, height = 5, units = "in")
+	par(mfrow=c(2,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
+	vsT('r')
+	vsT('v')
+	axis(1)
+	dev.off()
+	}
 
 
