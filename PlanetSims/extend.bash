@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # stop script on error
 ##############################################################################
 # This script extends the most recent Merc95 by a single stage
 # ./extend.bash dir tf >> dir/run.pipe &
@@ -23,7 +24,10 @@ cd $dir
 echo '==================== extend t = 1e'$tf' yrs ===================='
 
 ### Write param.dmp file
-python -c "import Merc as M; M.WriteParamInFile(loc='"$out"', f='dmp', tf=365.25e"$tf", mStar="$mStar", rEj="$rEj")"
+tOut=$(python -c 'print('$tf'-3)')
+echo $tOut
+exit 1
+python -c "import Merc as M; M.WriteParamInFile(loc='"$out"', f='dmp', tf=365.25e"$tf", tOut=365.25e"$tOut", mStar="$mStar", rEj="$rEj")"
 
 #### Run mercury
 ./merc_$1

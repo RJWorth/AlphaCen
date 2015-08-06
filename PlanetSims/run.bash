@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e	# stop script on error
 ##############################################################################
 # This script cleanly reruns the most recent Merc95
 t1=$(date +%s)
@@ -20,7 +21,7 @@ rEj=1e2
 
 ### Range for iterations
 if [ $machine = chloe ]; then
-	timerange=$(jot $(echo "$tf-$tie+1" | bc) $mintime)
+	timerange=$(jot $(echo "$tf-$ti+1" | bc) $ti)
 else
 	timerange=$(seq $ti $tf)
 fi
@@ -30,10 +31,11 @@ echo '	timerange '$timerange
 cd $dir
 
 # write param.in file
-python -c "import Merc as M; M.WriteParamInFile(loc='"$in"', tf=365.25e"$ti", mStar="$mStar", rEj="$rEj")"
+tOut=$(python -c 'print('$ti'-3)')
+python -c "import Merc as M; M.WriteParamInFile(loc='"$in"', tf=365.25e"$ti", tOut=365.25e"$tOut", mStar="$mStar", rEj="$rEj")"
 
 # write big.in file with stars+planetesimals (currently only has planetesimals around AlCenA)
-#python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(rtr="$rtr",sigC="$sigma"), loc='"$in"')"
+#python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(rtr="$rtr",sigC="$sigma",iMax=0.), loc='"$in"')"
 
 ### Compile and run
 gfortran -w -o merc_$1 $c/mercury6_2.f95 $c/drift.f95 $c/orbel.f95 $c/mal.f95 $c/mce.f95 $c/mco.f95 $c/mdt.f95 $c/mio.f95 $c/mfo.f95 $c/mxx.f95 $c/both.f95
@@ -54,7 +56,8 @@ echo '==================== start t = 1e'$ti'-'$tf' yrs ===================='
 
 	### Write param.dmp file
 		if [ $k != $ti ]; then
-		python -c "import Merc as M; M.WriteParamInFile(loc='"$out"', f='dmp', tf=365.25e"$k", mStar="$mStar", rEj="$rEj")"
+		tOut=$(python -c 'print('$k'-3)')
+		python -c "import Merc as M; M.WriteParamInFile(loc='"$out"', f='dmp', tf=365.25e"$k", tOut=365.25e"$tOut", mStar="$mStar", rEj="$rEj")"
 		fi
 
 	#### Run mercury
