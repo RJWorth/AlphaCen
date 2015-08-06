@@ -1,5 +1,5 @@
 
-dir='C09/'
+dir='C01/'
 aeidir=paste(dir,'Aei/',sep='')
 cent='B'
 
@@ -134,7 +134,11 @@ ult[grep('P[[:digit:]]{4}',fate)] = ''
 	}
 allfates=levels(as.factor(ult))
 starfate = ult[isstar]
-if (starfate != 'remains') print(paste('Weirdness! Star fate =',starfate))
+if (length(starfate)==0) {
+	print('Weirdness: non-binary simulation') 
+ } else if (starfate != 'remains') {
+	print(paste('Weirdness! Star fate =',starfate))
+ }
 
 #ult=ult[!names %in% c('AlCenA','AlCenB')]
 
