@@ -46,8 +46,8 @@ else
 fi
 
 ### Clean previous sim
-rm Out/*
-rm Aei/*
+if [ $(ls -l Out | wc -l) -gt 0 ]; then rm Out/*; fi
+if [ $(ls -l Aei | wc -l) -gt 0 ]; then rm Aei/*; fi
 
 echo 'run: '$1', t = '$timerange
 echo '==================== start t = 1e'$ti'-'$tf' yrs ===================='
@@ -80,8 +80,8 @@ echo '====================== end t = 1e'$ti'-'$tf' yrs ===================='
 ./elem_$1
 
 ### Organize files
-mv *.tmp Out
-mv *.aei Aei
+if [ $(ls -l *.tmp | wc -l) -gt 0 ]; then mv *.tmp Out; fi
+if [ $(ls -l *.aei | wc -l) -gt 0 ]; then mv *.aei Aei; fi
 
 ### Print runtime
 t3=$(date +%s)
