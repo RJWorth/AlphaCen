@@ -1,12 +1,21 @@
 
-dir='C01/'
+dir='C06/' 
 aeidir=paste(dir,'Aei/',sep='')
 cent='B'
 
 #-----------------------------------------------------------------------------#
 ### read in number of objects and their names
-n=(length(readLines(paste(dir,'/In/big.in',sep='')))-6)/4 # = 1722
-files=list.files(aeidir) # =1722
+if (dir=='C01/') {
+	n=3
+	files=c('AlCenA.aei','P0018.aei','P0053.aei') 
+} else if (dir=='C06/') {
+	n=3
+	files=c('AlCenA.aei','P0003.aei','P0911.aei')
+} else {
+	n=(length(readLines(paste(dir,'/In/big.in',sep='')))-6)/4
+	files=list.files(aeidir)
+	}
+print(paste('Nobj =',n,', nfiles =',length(files)))
 names=sapply(strsplit(files, split='.', fixed=TRUE), function(x) (x[1]))
 
 #-----------------------------------------------------------------------------#
@@ -38,7 +47,7 @@ maxT       = max(testdata$t)
 # array of all possible numbers of stars that might appear in info files, 
 # to replace them with NAs
 na=c('*','**','***','****','*****','******','*******',
-	'********','*********','**********')
+	'********','*********','**********','***********')
 
 if (form=='short') {
 aei = array(data = 0., dim = c( length(files), maxTlength, length(c.want)+2), 
@@ -65,7 +74,12 @@ for (i in 1:length(names)) {
 		}	
 	}
 
-### 
+### Objects that survive to the end of the sim
+Surv  = aei[,maxTlength,'t'] > 0
+print(paste('Objects remaining:',sum(Surv)))
+if (sum(Surv) < 50) print(names[Surv])
+
+### index for object that is the secondary star
 isstar = names %in% c('AlCenA','AlCenB')
 
 #-----------------------------------------------------------------------------#
@@ -158,7 +172,7 @@ print(mass.fracs)
 #-----------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------#
 ### Function to plot the specified column vs. time
-vsT = function(ycol){
+vsT = function(ycol,lg='x'){
 
 	if ('AlCenA' %in% dimnames(aei)[[1]])	{
 		ind=which(dimnames(aei)[[1]]=='AlCenA')	
@@ -179,8 +193,10 @@ vsT = function(ycol){
 		ylims = c(0, max(aei[ind,-1,ycol],na.rm=T))
 		}
 
-	plot(aei[ind,-1,'t'], aei[ind,-1,ycol], 
-	log='x', xlim=xlims, ylim=ylims, xlab='',ylab=ycol,xaxt='n',
+	lines= aei[ind,,'t'] > 0.
+
+	plot(aei[ind,lines,'t'], aei[ind,lines,ycol], 
+	log=lg, xlim=xlims, ylim=ylims, xlab='',ylab=ycol,xaxt='n',
 	pch=20,col=fcol[ind])
 	
 	counts=sort(summary(as.factor(fcol)),decreasing=T)
@@ -248,7 +264,7 @@ fatebars = function(xcol)	{
 	axlocs = (nbr+1)*(axvals-xmin)/(xmax-xmin)
 	axis(side=1,at=axlocs,labels=axvals)
 	}
-fatebars('a')
+#fatebars('a')
 #-----------------------------------------------------------------------------#
 ### Where mass from initial disk ends up
 
@@ -261,6 +277,7 @@ pdf(paste(dir,'massfates.pdf',sep=''),height=m*3,width=n*3)
 par(mfrow=c(m,n), mar=c(5.1,2.1,1.1,1.1))
 
 for (i in 1:length(plotprms))	{
+	print(plotprms[i])
 	fatebars(plotprms[i])
 	}
 	
@@ -270,10 +287,79 @@ dev.off()
 if (form=='long')	{
 	png(paste(dir,'CartData.png',sep=''), res = 200, width = 10, height = 5, units = "in")
 	par(mfrow=c(2,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
-	vsT('r')
-	vsT('v')
+	vsT('r',lg='')
+	vsT('v',lg='')
 	axis(1)
 	dev.off()
 	}
+#-----------------------------------------------------------------------------#
+A=aei['AlCenA',,]
+Ais=A[,'a'] != 0.
+
+pdf(paste(dir,'AlCenApos.pdf',sep=''), width=10, height=10)
+par(mfrow=c(2,2))
+
+plot(A[Ais,'x'],A[Ais,'y'],type='l')
+points(A[Ais,'x'],A[Ais,'y'],pch=20,col='blue')
+points(0.,0., pch=19, col='orange')
+
+plot(A[Ais,'x'],A[Ais,'z'],type='l')
+points(A[Ais,'x'],A[Ais,'z'],pch=20,col='blue')
+points(0.,0., pch=19, col='orange')
+
+plot(A[Ais,'y'],A[Ais,'z'],type='l')
+points(A[Ais,'y'],A[Ais,'z'],pch=20,col='blue')
+points(0.,0., pch=19, col='orange')
+
+dev.off()
+#-----------------------------------------------------------------------------#
+
+r=A[Ais,'r']
+t=A[Ais,'t']*365.25
+v=A[Ais,'v']
+
+#r=r[5:length(r)]
+#t=t[5:length(t)]
+#v=v[5:length(v)]
+
+
+dr=array()
+dt=array()
+dv=array()
+
+for (i in 1:(length(r)-1))	{
+	dr[i]=r[i+1]-r[i]
+	dt[i]=t[i+1]-t[i]
+	dv[i]=v[i+1]-v[i]
+	}
+
+drt=abs(dr/dt)
+dv=abs(dv)
+
+
+up=(abs(dt-4.)<.1)
+dn=(abs(dt-3.)<.1)
+
+if (dir=='C01/') {
+xl=c(5.21e4,5.28e4)
+yl1=c(0,20)
+yl2=c(0,0.05)
+} else if (dir=='C06/') {
+xl=c(2.294e5,2.34e5)
+yl1=c(0,100)
+yl2=c(0,0.03)
+} else {
+xl=c(min(t),max(t))
+}
+
+pdf(paste(dir,'weirdness.pdf',sep=''),width=10,height=10)
+par(mfrow=c(4,1))
+plot(    t,   r, pch=20, xlim=xl, ylim=yl1)
+plot(    t,   v, pch=20, xlim=xl, ylim=yl2)
+plot(t[-1], drt, pch=20, xlim=xl, ylim=yl2)
+plot(t[-1], drt, pch=20, xlim=xl)
+dev.off()
+
+
 
 
