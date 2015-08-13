@@ -9,11 +9,11 @@ source $incl
 ### Determine relevant directories
 if [ $machine = Mirka ]; then
 Dirs=()
+elif [ $machine = chloe ];then
+Dirs=(C01 C02 C03 C04 C05 C06 C07 C08 C09 C10 C11 C12)
+Dirs=()
 elif [ $machine = shapiro ]; then
 Dirs=(S01 S02 S03 S04 S05 S06 S07)
-Dirs=()
-elif [ $machine = chloe ];then
-#Dirs=(C01 C02 C03 C04 C05 C06 C07 C08 C09 C10 C11 C12)
 Dirs=()
 else
 echo '*** unrecognized machine; not running anything ***'

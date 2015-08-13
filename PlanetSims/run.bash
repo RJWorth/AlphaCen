@@ -24,7 +24,7 @@ python -c "import Merc as M; M.WriteParamInFile(loc='"$in"', tf=365.25e"$ti", tO
 
 ### Write big.in file with stars+planetesimals (currently only has planetesimals around AlCenA)
 if [ $new = T ]; then
-	python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(rtr="$rtr",sigC="$sigma",iMax=0.), loc='"$in"')"
+	python -c "import Merc as M; M.WriteObjInFile(objlist=M.GetObjList(rtr="$rtr",sigC="$sigma",starA='$starA',iMax='$iMax'), loc='"$in"')"
 fi
 
 ### Compile and run

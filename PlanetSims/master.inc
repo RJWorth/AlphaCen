@@ -12,6 +12,8 @@ tDmp=3
 ### System parameters not changed often
 mStar=0.934
 rEj=1e2
+starA=False
+iMax=0.
 
 ### Generate a new disk?
 new=F	# T or F

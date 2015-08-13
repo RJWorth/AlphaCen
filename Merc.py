@@ -49,7 +49,7 @@ class Obj(object):
 
 ###############################################################################
 def GetObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun], 
-	f= [0.5, 0.5], alpha = 1.5, iMax=180.):
+	f= [0.5, 0.5], alpha = 1.5, starA=True, iMax=180.):
 	'''Generate list of objects based on the Disks semi-analytic model'''
 
 	disk = D.Disk(r_out=rtr, alpha=alpha, sigC=sigC, rh=rh)
@@ -68,9 +68,10 @@ def GetObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
 
 	### Add binary star (AlCenA)
-	objlist.append( M.Obj(name='AlCenA', mass=1.105, density=1.5,
-	a=23.7,               e=0.5179,             i=R.uniform(0.,iMax), 
-	g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
+	if starA==True:
+		objlist.append( M.Obj(name='AlCenA', mass=1.105, density=1.5,
+		a=23.7,               e=0.5179,             i=R.uniform(0.,iMax), 
+		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
 
 	return objlist
 
