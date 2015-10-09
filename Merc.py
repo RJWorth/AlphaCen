@@ -48,7 +48,7 @@ class Obj(object):
 		self.vel = [self.vx, self.vy, self.vz]
 
 ###############################################################################
-def GetObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun], 
+def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun], 
 	f= [0.5, 0.5], alpha = 1.5, starA=True, iMax=180.):
 	'''Generate list of objects based on the Disks semi-analytic model'''
 
@@ -76,6 +76,33 @@ def GetObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 	return objlist
 
 ###############################################################################
+def MakeEjecShellObjList(cent='Mars',vmin=0.01, vmax=10., r=1.01): 
+	'''Generate list of objects being ejected, in shell around obj cent,
+	with v_inf ranging from vmin to vmax, at distance r in Hill radii'''
+
+### Get coordinates of central object (assumes it is in big.in)
+#	xcent, vcent, scent, mcent
+
+
+### Create positions of objects at distance r*rH from center of cent, 
+### at random angles, with v_inf pulled randomly from [vmin,vmax]
+
+
+#	a, mass = disk.debris.ListParams()
+
+	digits = str(len(str(len(a))))
+	fmt = 'P{0:0'+digits+'}'
+
+### List of planetesimals on circular co-planar orbits with random phases
+	objlist = []
+	for i in range(len(a)):
+		objlist.append( M.Obj(name=fmt.format(i), mass=mass[i], density=3.,
+		a=a[i], 
+		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
+
+	return objlist
+
+###############################################################################
 def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big', epoch=0.):
 	'''Write a big.in or small.in file for mercury'''
 
@@ -84,7 +111,7 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big', epoch=0.)
 
 ### Make list of object parameters, unless provided
 	if (objlist=='default'):
-		objlist = M.GetObjList()
+		objlist = M.MakeDiskObjList()
 
 ### Process big/small differences
 	assert ((infile == 'big') | (infile=='small')), 'invalid infile: must be "big" or "small"'
@@ -115,7 +142,7 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 	ti=0., tf=365.25e3, tOut = 'default', dt=1., acc=1.e-12, 
 	CEstop='no',CE='yes',CEfrag='no',tUnit='years',tRel='yes',prec='medium',
 	rel='no',user='no',
-	rEj=100, rStar=0.005, mStar=1.0, NrH=3.,dtDump='default',dtPer=100):
+	rEj=100, rStar=0.005, mStar=1.0, rCE=3.,dtDump='default',dtPer=100):
 	'''Write a param.in file for mercury'''
 	
 	if (tOut == 'default'):
@@ -157,14 +184,14 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
  central J6 = 0
  < not used at present >
  < not used at present >
- Hybrid integrator changeover (Hill radii) = {NrH}
+ Hybrid integrator changeover (Hill radii) = {rCE}
  number of timesteps between data dumps = {dtDump}
  number of timesteps between periodic effects = {dtPer}
 '''.format(
 	alg=alg, ti=ti, tf=tf, tOut=tOut, dt=dt, acc=acc,
 	CEstop=CEstop, CE=CE, CEfrag=CEfrag, tUnit=tUnit, tRel=tRel,prec=prec,
 	rel=rel, user=user,
-	rEj=rEj, rStar=rStar,mStar=mStar, NrH=NrH, dtDump=dtDump, dtPer=dtPer)
+	rEj=rEj, rStar=rStar,mStar=mStar, rCE=rCE, dtDump=dtDump, dtPer=dtPer)
 
 	fname=loc+'param.'+f
 	with open(fname, 'w') as f:
