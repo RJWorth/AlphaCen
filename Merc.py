@@ -1,51 +1,341 @@
-from cgs_constants import mSun,mEarth,mMoon,mMars,AU
-from cgs_constants import G as G_cgs
+#from cgs_constants import mSun,mEarth,mMoon,mMars,AU,day
+#from cgs_constants import G as G_cgs
+from mks_constants import mSun,mEarth,mMoon,mMars,AU,day
 from mks_constants import deg2rad,rad2deg
 from mks_constants import G as G_mks
 import Disks as D
 import Merc as M
 import random as R
 import numpy as np
-from numpy import pi, sqrt, sin, cos
+from numpy import pi, sqrt, sin, cos, arccos, pi
+
+### tolerance for floats to count as 'equal'
+tol = 1.e-15
 
 ###############################################################################
 class Obj(object):
-	'''Object in a mercury simulation, input in asteroidal coords. Cartesian 
-	coords are calculated based on them.'''
+	'''General object class, but actually use the subclasses, which can be
+	either Asteroidal or Cartesian.'''
 
 #-----------------------------------------------------------------------------#
-	def __init__(self, units='Asteroidal', name='Earth', 
-		mass=mEarth/mSun, mCent = mSun, density=5.51, 
-		a=1., e=0., i=0., g=0., n=0., m=0., s=[0., 0., 0.]):
+	def __init__(self, name, mass, mCent, density, s):
 
 		self.name    = name
 		self.mass    = mass
 		self.mCent   = mCent
 		self.density = density
-		self.a       = a
-		self.e       = e
-		self.i       = i
-		self.g       = g
-		self.n       = n
-		self.m       = m
 		self.s       = s
 
-		self.x, self.y, self.z, self.vx, self.vy, self.vz = M.Merc_El2X(
-			[a,e,i, g*pi/180.,n*pi/180.,m*pi/180.], [mCent, mass])
-		self.pos = [self.x,  self.y,  self.z]
-		self.vel = [self.vx, self.vy, self.vz]
+#-----------------------------------------------------------------------------#
+	def peri(self):
+		return(self.a()*(1-self.e()))
+	def apo(self):
+		return(self.a()*(1+self.e()))
+#-----------------------------------------------------------------------------#
+	def mr(self):
+		'''Reduced mass: 1/mr = sum(1/m_i). Units unchanged.'''
+		m = np.array([self.mass, self.mCent])
+		mr   = 1./sum( [1./i for i in m] )
+		return(mr)
 
 #-----------------------------------------------------------------------------#
-	def RecalcCartesian(self):
-		'''Run this after changing any Asteroidal parameters to make the 
-		Cartesian ones consistent.'''
+	def gm(self):
+		'''Gravitational parameter: gm = G_mks * (mass+mCent). Takes mSun,
+		returns	mks units.'''
+		mTot = mSun*(self.mass+self.mCent)
+		gm = G_mks*mTot
+		return(gm)
 
-		self.x, self.y, self.z, self.vx, self.vy, self.vz = M.Merc_El2X(
-			[self.a,self.e,self.i, 
-				self.g*pi/180.,self.n*pi/180.,self.m*pi/180.],
-			[self.mCent, self.mass])
-		self.pos = [self.x,  self.y,  self.z]
-		self.vel = [self.vx, self.vy, self.vz]
+#-----------------------------------------------------------------------------#
+	def eps(self):
+		"""Specific orbital energy of Body around Central object"""
+		eps = -self.gm()/(2.*self.a()*AU)
+		return eps
+
+#-----------------------------------------------------------------------------#
+	def P(self):
+		"""Orbital period in days"""
+		P = 2*pi * sqrt( (self.a()*AU)**3. / (G_mks*(self.mCent+self.mass)*mSun) )/day
+		return P
+#-----------------------------------------------------------------------------#
+	def RH(self):
+		"""Hill radius of Body"""
+		RH = self.a() * (1-self.e()) * (self.mass/(3.*self.mCent))**(1./3.)
+		return RH		
+
+#-----------------------------------------------------------------------------#
+	def RH2(self, other):
+		"""Mutual Hill radius of two Bodies"""
+  
+		assert (self.mCent == other.mCent), 'Bodies do not have same central object'
+		RH2 = ((self.mass+other.mass)/(3.*self.mCent))**(1./3.) * \
+													((self.a()+other.a())/2.)
+		return RH2		
+#-----------------------------------------------------------------------------#
+	def dr(self,other):
+		'''Distance between two objects.'''
+
+		dr = abs(self.a() - other.a())
+
+		return(dr)
+
+#-----------------------------------------------------------------------------#
+	def IsClose(self,other,rh=10.):
+		'''Check if two adjacent objects are within their mutual Hill radius
+		of each other.'''
+
+
+		dr = self.dr(other)
+		RH = self.RH2(other)
+
+		if (rh*RH >= dr):
+			coll = True
+		else:
+			coll = False
+
+		return coll
+
+###############################################################################
+class AsteroidalObj(Obj):
+	'''Object in a mercury simulation, input in asteroidal coords.
+	Units: AU (a), degrees (i, g, n, m), mSun(mass, mCen), g/cm^3 (density)'''
+
+#-----------------------------------------------------------------------------#
+	def __init__(self, 
+			name='Earth', mass=mEarth/mSun, mCent = 1., density=5.51, 
+			s=[0., 0., 0.],
+			elements = [1.,0.,0., 0.,0.,0.]):
+		super(AsteroidalObj,self).__init__(name, mass, mCent, density, s)
+		self.elements = elements
+
+#-----------------------------------------------------------------------------#
+	def a(self):
+		return(self.elements[0])
+	def e(self):
+		return(self.elements[1])
+	def i(self):
+		return(self.elements[2])
+	def g(self):
+		return(self.elements[3])
+	def n(self):
+		return(self.elements[4])
+	def m(self):
+		return(self.elements[5])
+#-----------------------------------------------------------------------------#
+	def CalcCartesian(self):
+		'''Calculates Cartesian coords from current asteroidal coords.'''
+
+	# Note: must convert to/from mks, and must put angles in radians
+		a, e, i, g, n, m = self.a(), self.e(), self.i(), \
+						   self.g(), self.n(), self.m()
+		x, y, z, vx, vy, vz = M.Merc_El2X(
+			[a*(AU), e, i*pi/180., g*pi/180., n*pi/180., m*pi/180.],
+			[self.mCent*mSun, self.mass*mSun])
+		x, y, z = x/(AU), y/(AU), z/(AU)
+		vx,vy,vz = vx*day/(AU), vy*day/(AU), vz*day/(AU)
+		pos = [x,  y,  z]
+		vel = [vx, vy, vz]
+		return(pos, vel)
+
+
+###############################################################################
+class CartesianObj(Obj):
+	'''Object in a mercury simulation, input in Cartesian coords.
+	Units: AU (pos), AU/day(vel), mSun(mass, mCen), g/cm^3 (density)'''
+
+#-----------------------------------------------------------------------------#
+	def __init__(self, 
+			name='Earth', mass=mEarth/mSun, mCent = 1., density=5.51, 
+			s=[0., 0., 0.],
+			pos=[1.,0.,0.], vel=[0., 0.017204516775334737,0.]):
+		super(CartesianObj,self).__init__(name, mass, mCent, density, s)
+		### Vectors of position and velocity (3 letters = 3 numbers)
+		self.pos = np.array(pos)
+		self.vel = np.array(vel)
+
+#-----------------------------------------------------------------------------#
+### Magnitude of r and v (1 letter = 1 number)
+	def r(self):
+		return(M.mag( self.pos))
+	def v(self):
+		return(M.mag(self.vel))
+
+#-----------------------------------------------------------------------------#
+### Get individual coordinate values
+	def x(self):
+		return(self.pos[0])
+	def y(self):
+		return(self.pos[1])
+	def z(self):
+		return(self.pos[2])
+	def vx(self):
+		return(self.vel[0])
+	def vy(self):
+		return(self.vel[1])
+	def vz(self):
+		return(self.vel[2])
+#-----------------------------------------------------------------------------#
+	def dr(self,other):
+		'''Distance between two objects.'''
+		x1 = self.pos
+		x2 = other.pos
+		dr = M.mag(x1-x2)
+		return(dr)
+
+#-----------------------------------------------------------------------------#
+	def CalcAsteroidal(self):
+		'''Calculates asteroidal coords from current Cartesian coords.'''
+
+		a = self.a()
+		e = self.e()
+		i = self.i()
+
+		return( np.array([a,e,i]) )
+
+#-----------------------------------------------------------------------------#
+#       Asteroidal elements:
+#-----------------------------------------------------------------------------#
+	def a(self):
+		'''Calculate semimajor axis of an object's orbit. Input mks, output AU'''
+		a = -self.gm()/(2.*self.eps())/AU
+		return(np.array(a))
+
+#-----------------------------------------------------------------------------#
+	def e(self):
+		'''Calculate eccentricity of an object's orbit'''
+		
+		val = 1.+2.*self.eps()*M.mag(self.h())**2./self.gm()**2.
+		if ((val < 0) & (-val < tol)):
+			val = 0
+		print(val)
+		
+		e = sqrt(val)
+		return(np.array(e))
+
+#-----------------------------------------------------------------------------#
+	def i(self):
+		'''Calculate inclination of an object's orbit. Takes mks, 
+		returns degrees'''
+		i = arccos(self.h()[2]/M.mag(self.h()))*180./pi
+		return(np.array(i))
+
+#-----------------------------------------------------------------------------#
+#       Internal functions to calculate asteroidal elements:
+#-----------------------------------------------------------------------------#
+	def h(self):
+		'''Calculate angular momentum. Takes AU/day, returns mks.'''
+		h = np.cross(self.pos*AU,self.vel*AU/day)
+		return(np.array(h))
+
+#-----------------------------------------------------------------------------#
+	def eps(self):
+		'''Calculate specific orbital energy
+		where r is the distance between two stars, v is the relative velocity.
+		Final units should be mks (m^2/s^2).'''
+		eps = (self.v()*AU/day)**2./2.-self.gm()/(self.r()*AU)
+		return(eps)
+
+###############################################################################
+def mag(x):
+	'''Takes vector, returns magnitude of that vector.'''
+
+	xbar = sqrt(sum([xi**2. for xi in x]))
+	return(xbar)
+
+###############################################################################
+def ReadInObjList(whichdir='In/',fname='big.in'): 
+	'''Read in object list from big.in-type file'''
+
+	infile=open(whichdir+fname,'r')
+	AllLines=np.array(infile.readlines())
+	infile.close()
+	header = np.array([False for i in range(len(AllLines))])
+	for ind,line in enumerate(AllLines):
+		if line.startswith(')') | ('style' in line) | ('epoch' in line):
+			header[ind] = True
+	nh = sum(header)
+	assert (sum(header==False)%4)==0
+	nObj=int(len(AllLines[header==False])/4)
+	style = AllLines[np.array([('style' in line) for line in AllLines])][0].split()[-1]
+
+	objlist = []
+	if style == 'Cartesian':
+		for i in range(nObj):
+			num = nh+i*4
+			tag = np.array( AllLines[num].split())
+			print(tag)
+			name = tag[0]
+			mass = float(tag[np.array(['m=' in word for word in tag])][0].strip('m='))
+			dens = float(tag[np.array(['d=' in word for word in tag])][0].strip('d='))
+			x = np.array(AllLines[num+1].split()).astype(np.float)
+			v = np.array(AllLines[num+2].split()).astype(np.float)
+			s = np.array(AllLines[num+3].split()).astype(np.float)
+			objlist.append(M.CartesianObj(name=name, mass=mass, density=dens,
+			pos=x,vel=v,s=s) )
+	elif style == 'Asteroidal':
+		for i in range(nObj):
+			num = nh+i*4
+			tag = np.array( AllLines[num].split())
+			name = tag[0]
+			mass = float(tag[np.array(['m=' in word for word in tag])][0].strip('m='))
+			dens = float(tag[np.array(['d=' in word for word in tag])][0].strip('d='))
+			a, e, i = np.array(AllLines[num+1].split()).astype(np.float)
+			g, n, m = np.array(AllLines[num+2].split()).astype(np.float)
+			elements = [a,e,i,g,n,m]
+			s = np.array(AllLines[num+3].split()).astype(np.float)
+			objlist.append(M.AsteroidalObj(name=name, mass=mass, density=dens,
+			elements=elements,s=s) )
+
+	return objlist
+
+###############################################################################
+def ReadObjData(name='Mars',whichdir='In/',fname='big.in'):
+	'''Returns object containing the parameters for an object on a big.in or 
+	small.in list'''
+
+	objlist = M.ReadInObjList(whichdir=whichdir,fname=fname)
+	indlist = []
+	for ind, obj in enumerate(objlist):
+		if obj.name==name:
+			thisobj = obj
+			indlist.append(ind)
+
+	assert len(indlist)>0, 'No matching object!'
+	assert len(indlist)<2, 'Multiple matching objects! indices: {}'.format(indlist) 
+
+	return(thisobj)
+
+###############################################################################
+def MakeEjecShellObjList(whichdir='In/',cent='Mars',vmin=0.01, vmax=10., r=1.01): 
+	'''Generate list of objects being ejected, in shell around obj cent,
+	with v_inf ranging from vmin to vmax, at distance r in Hill radii'''
+
+### Get coordinates of central object (assumes it is in big.in)
+#	xcent, vcent, scent, mcent
+	CenterOjb = M.ReadObjData(whichdir=whichdir,name=cent)
+
+### Create positions of objects at distance r*rH from center of cent, 
+### at random angles, with v_inf pulled randomly from [vmin,vmax]
+	if type(CenterObj)=='CartesianObj':
+		CenterObj.pos, CenterObj.vel
+	elif type(CenterObj)=='AsteroidalObj':
+		CenterObj.CalcCartesian()
+	else:
+		raise ValueError('Error: CenterObj type not recognized')
+
+#	a, mass = disk.debris.ListParams()
+
+	digits = str(len(str(len(a))))
+	fmt = 'P{0:0'+digits+'}'
+
+### List of planetesimals on circular co-planar orbits with random phases
+	objlist = []
+	for i in range(len(a)):
+		objlist.append( M.Obj(name=fmt.format(i), mass=mass[i], density=3.,
+		a=a[i], 
+		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
+
+	return objlist
 
 ###############################################################################
 def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun], 
@@ -71,33 +361,6 @@ def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 	if starA==True:
 		objlist.append( M.Obj(name='AlCenA', mass=1.105, density=1.5,
 		a=23.7,               e=0.5179,             i=R.uniform(0.,iMax), 
-		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
-
-	return objlist
-
-###############################################################################
-def MakeEjecShellObjList(cent='Mars',vmin=0.01, vmax=10., r=1.01): 
-	'''Generate list of objects being ejected, in shell around obj cent,
-	with v_inf ranging from vmin to vmax, at distance r in Hill radii'''
-
-### Get coordinates of central object (assumes it is in big.in)
-#	xcent, vcent, scent, mcent
-
-
-### Create positions of objects at distance r*rH from center of cent, 
-### at random angles, with v_inf pulled randomly from [vmin,vmax]
-
-
-#	a, mass = disk.debris.ListParams()
-
-	digits = str(len(str(len(a))))
-	fmt = 'P{0:0'+digits+'}'
-
-### List of planetesimals on circular co-planar orbits with random phases
-	objlist = []
-	for i in range(len(a)):
-		objlist.append( M.Obj(name=fmt.format(i), mass=mass[i], density=3.,
-		a=a[i], 
 		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
 
 	return objlist
@@ -200,7 +463,7 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
-#   BUT WHAT FRAME ARE THEY IN???
+#   units?
 def Merc_El2X(el, mass):
 	'''Convert orbital elements to cartesian for an ellipse (e < 1). 
 Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
@@ -414,7 +677,7 @@ def Merc_KeplerEllipse(e,oldl):
 #   for orbit with no inclination
 def El2X(el, mass):
 	'''Convert orbital elements to cartesian for an ellipse (e < 1) with zero inclination
-	mu = grav const * sum of masses
+	gm = grav const * sum of masses
 	q = perihelion distance
 	e = eccentricity
 	i = inclination                 )
@@ -426,12 +689,13 @@ def El2X(el, mass):
 
 
 	x,y,z = Cartesian positions  ( units the same as a )
-	u,v,w =     "     velocities ( units the same as sqrt(mu/a) )'''
+	u,v,w =     "     velocities ( units the same as sqrt(gm/a) )
+	EDIT: USE MKS UNITS TO MATCH G'''
 
 
 ### Extract needed parameters from input list
 	a,e,i,g,la,f = [float(i) for i in el]
-	mu = G_mks*sum(mass)
+	gm = G_mks*sum(mass)
 
 ### Convert input degrees to radians
 #	i, g, la = deg2rad*i, deg2rad*g, deg2rad*la
@@ -446,7 +710,7 @@ def El2X(el, mass):
 	z = 0.
 
 ### Period
-	T = ( (4*pi**2/mu) * a**3 )**0.5
+	T = ( (4*pi**2/gm) * a**3 )**0.5
 
 ### Mean motion
 	n = 2*pi/T
