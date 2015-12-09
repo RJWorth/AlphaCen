@@ -19,7 +19,7 @@ echo ') Lines beginning with ")" are ignored.                   ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
 echo ') Important integration parameters:                       ' >> $paramfile
 echo ')---------------------------------------------------------' >> $paramfile
-echo ' algorithm (MVS, BS, BS2, RADAU, HYBRID etc) = '$8'        ' >> $paramfile
+echo ' algorithm (MVS, BS, BS2, RADAU, HYBRID etc) = '$8'       ' >> $paramfile
 echo ' start time (days)      = 0.0                             ' >> $paramfile
 echo ' stop time (days)       = 365.25e'$2'                     ' >> $paramfile
 #echo ' output interval (days) = 365.25e'$3'                     ' >> $paramfile

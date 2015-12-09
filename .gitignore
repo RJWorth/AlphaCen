@@ -6,6 +6,12 @@
 *.dmp
 *.tmp
 *.aei
+merc
+elem
+merc_L*
+elem_L*
+merc_S*
+elem_S*
 
 # compiled code
 *.pyc
@@ -26,3 +32,9 @@ Saved
 Err
 Good
 Backup*
+Heuristic
+PlanetSims/01/In/big.in
+PlanetSims/01/In/param.in
+L*
+S*
+C*

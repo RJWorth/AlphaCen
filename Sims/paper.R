@@ -62,12 +62,20 @@ attach(StarData)
 source('PlotVars.R')
 
 ###############################################################################
+### Calculate and print median orbital paremter changes
+source('SelectChanges.R')
+
+###############################################################################
 ### Set up stellar plot
 source('PaperIOPlot.R')
 
 ###############################################################################
 ### Read in disk data (for 03?)
-#source('../Analysis/ReadDisk.R')
+source('../Analysis/ReadDisk.R')
+
+###############################################################################
+### Read in disk summaries and plot rTr vs pericenter
+source('DiskSimAnalysis.R')
 
 ###############################################################################
 
