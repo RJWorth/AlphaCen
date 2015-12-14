@@ -4,9 +4,9 @@
 machine=rjw274@chloe.astro.psu.edu
 dir=$1
 
-#scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/In/big.in' $dir/In
-#scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/info.out' $dir/Out
-#scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/element.out' $dir/Out
+scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/In/big.in' $dir/In
+scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/info.out' $dir/Out
+scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/element.out' $dir/Out
 
 ### download all, or a subset, of the .aei files
 

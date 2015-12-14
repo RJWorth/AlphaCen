@@ -1,16 +1,16 @@
 dir  AlCenA  rtr  rej   iA    tf  outcome
 C01       T    5  100    0 52100d  discontinuities
-C02       T    5  100   31   1e_    running
-C03       T    5  100  140   1e_    running
-C04       T    5  100    4   1e_    running
-C05       T    5  100   52   1e7    
+C02       T    5  100   31   1e6    running
+C03       T    5  100  140   1e6    running
+C04       T    5  100    4   1e6 v. many plts
+C05       T    5  100   52   1e7 24 plts, most ej
 C06       T    5  100    2 2e5 d   discontinuities
 C07       T    5  100  166   1e5  1085 plts at 1e5
 C08       T    5  100  157   1e5  1098 plts at 1e5  
 C09       T    5  100   74   1e8   Kozai'd
-C10       T    5  100   27   1e_    running
+C10       T    5  100   27   1e6    running
 C11       T    5  100   .3   1e6   discontinuities
-C12       T    5  100   .3   1e_    running
+C12       T    5  100   .3   1e6 v. many plts
 C13       F 2.77  100    -   1e7  7 plts,  0% ej
 C14       F 3.08  100    -   1e7  7 plts,  1% ej
 C15       F 3.08  100    -   1e7  7 plts,  2% ej
@@ -20,14 +20,14 @@ C18       F 2.77  100    -   1e7  7 plts,  0% ej
 C19       F 2.77  100    -   1e7  9 plts,  0% ej
 C20       F 2.77  100    -   1e7  7 plts,  0% ej
 C21       T 2.77  100    0   1e7  5 plts,  6% ej
-C22       F 2.77 2.77    -   1e8 (9 plts, 18% ej at 1e7)
+C22       F 2.77 2.77    -   1e8  8 plts (9 plts, 18% ej at 1e7)
 C23       F 2.77 2.77    -   1e7  6 plts, 20% ej
-C24       F 3.08 3.08    -   1e8 (7 plts, 35% ej at 1e7)
+C24       F 3.08 3.08    -   1e8  7 plts (7 plts, 35% ej at 1e7)
 C25       F 3.08 3.08    -   1e7  8 plts, 34% ej
 C26       T 2.77  100    0   1e3   discontinuities
 C27       T 3.08  100    0   1e7  4 plts, 19% ej
 C28       T 3.08  100    0 2.5e3   discontinuities
-C29       F 2.77 3.08    -   1e8 (9 plts, 15% ej at 1e7)
+C29       F 2.77 3.08    -   1e8  9 plts (9 plts, 15% ej at 1e7)
 C30       F 2.77 3.08    -   1e7  8 plts, 17% ej 
 C31       T 2.77  100    0   1e7  4 plts, 12% ej
 C32       T 2.77  100    0   1e7  5 plts, 11% ej
@@ -38,21 +38,21 @@ C36       F 2.77 3.08    -   1e7  7 plts, 19% ej
 C37       F 3.08 3.08    -   1e7  9 plts, 32% ej
 C38       T 3.08  100    0   1e7   discontinuities
 C39       T 3.08  100    0   1e7  4 plts, __% ej
-C40       T 2.77  100  5.7   1e7                  
-C41       T 2.77  100  .06   1e7                
-C42       T 3.08  100  3.5   1e7                   
-C43       T 3.08  100 10.3   1e7                
+C40       T 2.77  100  5.7   1e7      --currently 3.6e6
+C41       T 2.77  100  .06   1e7 47 plts, 26% ej      
+C42       T 3.08  100  3.5   1e7      --currently 3.4e6             
+C43       T 3.08  100 10.3   1e7      --currently 2.4e6          
 
 
 ###############################################################################
 ## No A (master_smallrtr.inc)
-C22       F 2.77 2.77    -   1e7  9 plts, 18% ej
+C22       F 2.77 2.77    -   1e8  8 plts, 18% ej
 C23       F 2.77 2.77    -   1e7  6 plts, 20% ej
 C35       F 2.77 2.77    -   1e7  8 plts, 24% ej
-C29       F 2.77 3.08    -   1e7  9 plts, 15% ej  
+C29       F 2.77 3.08    -   1e8  9 plts, 15% ej  
 C30       F 2.77 3.08    -   1e7  8 plts, 17% ej 
 C36       F 2.77 3.08    -   1e7  7 plts, 19% ej
-C24       F 3.08 3.08    -   1e7  7 plts, 35% ej
+C24       F 3.08 3.08    -   1e8  7 plts, 35% ej
 C25       F 3.08 3.08    -   1e7  8 plts, 34% ej
 C37       F 3.08 3.08    -   1e7  9 plts, 32% ej
 

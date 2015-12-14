@@ -2,19 +2,25 @@
 #from cgs_constants import G as G_cgs
 from mks_constants import mSun,mEarth,mMoon,mMars,AU,day
 from mks_constants import deg2rad,rad2deg
-from mks_constants import G as G_mks
+from mks_constants import G as G
 import Disks as D
 import Merc as M
 import random as R
+from random import uniform
 import numpy as np
 from numpy import pi, sqrt, sin, cos, arccos, pi
+import re
 
 ### tolerance for floats to count as 'equal'
 tol = 1.e-15
 
 ###############################################################################
+###############################################################################
+#------------------------------- Objects --------------------------------------
+###############################################################################
+###############################################################################
 class Obj(object):
-	'''General object class, but actually use the subclasses, which can be
+	'''General object class -- actually use the subclasses, which can be
 	either Asteroidal or Cartesian.'''
 
 #-----------------------------------------------------------------------------#
@@ -40,10 +46,10 @@ class Obj(object):
 
 #-----------------------------------------------------------------------------#
 	def gm(self):
-		'''Gravitational parameter: gm = G_mks * (mass+mCent). Takes mSun,
+		'''Gravitational parameter: gm = G * (mass+mCent). Takes mSun,
 		returns	mks units.'''
 		mTot = mSun*(self.mass+self.mCent)
-		gm = G_mks*mTot
+		gm = G*mTot
 		return(gm)
 
 #-----------------------------------------------------------------------------#
@@ -55,7 +61,7 @@ class Obj(object):
 #-----------------------------------------------------------------------------#
 	def P(self):
 		"""Orbital period in days"""
-		P = 2*pi * sqrt( (self.a()*AU)**3. / (G_mks*(self.mCent+self.mass)*mSun) )/day
+		P = 2*pi * sqrt( (self.a()*AU)**3. / (G*(self.mCent+self.mass)*mSun) )/day
 		return P
 #-----------------------------------------------------------------------------#
 	def RH(self):
@@ -207,7 +213,6 @@ class CartesianObj(Obj):
 		val = 1.+2.*self.eps()*M.mag(self.h())**2./self.gm()**2.
 		if ((val < 0) & (-val < tol)):
 			val = 0
-		print(val)
 		
 		e = sqrt(val)
 		return(np.array(e))
@@ -234,13 +239,28 @@ class CartesianObj(Obj):
 		Final units should be mks (m^2/s^2).'''
 		eps = (self.v()*AU/day)**2./2.-self.gm()/(self.r()*AU)
 		return(eps)
-
+###############################################################################
+###############################################################################
+#------------------------------- Functions ------------------------------------
+###############################################################################
 ###############################################################################
 def mag(x):
 	'''Takes vector, returns magnitude of that vector.'''
 
 	xbar = sqrt(sum([xi**2. for xi in x]))
 	return(xbar)
+
+###############################################################################
+def FileLength(fname):
+	'''Function to count the number of lines in a file'''
+	import os
+	if os.path.getsize(fname)==0.:
+		i = -2
+	else:
+		f = open(fname,'r')
+        	for i, l in enumerate(f):
+        		pass
+	return i + 1
 
 ###############################################################################
 def ReadInObjList(whichdir='In/',fname='big.in'): 
@@ -253,6 +273,7 @@ def ReadInObjList(whichdir='In/',fname='big.in'):
 	for ind,line in enumerate(AllLines):
 		if line.startswith(')') | ('style' in line) | ('epoch' in line):
 			header[ind] = True
+
 	nh = sum(header)
 	assert (sum(header==False)%4)==0
 	nObj=int(len(AllLines[header==False])/4)
@@ -263,10 +284,12 @@ def ReadInObjList(whichdir='In/',fname='big.in'):
 		for i in range(nObj):
 			num = nh+i*4
 			tag = np.array( AllLines[num].split())
-			print(tag)
 			name = tag[0]
-			mass = float(tag[np.array(['m=' in word for word in tag])][0].strip('m='))
-			dens = float(tag[np.array(['d=' in word for word in tag])][0].strip('d='))
+			'm *= *[0-9]*\.[0-9E+-]*'
+			massword = re.search('m *= *[0-9E+-.]*', AllLines[num]).group()
+			densword = re.search('d *= *[0-9E+-.]*', AllLines[num]).group()
+			mass = float(re.sub('m *= *','',massword))
+			dens = float(re.sub('d *= *','',densword))
 			x = np.array(AllLines[num+1].split()).astype(np.float)
 			v = np.array(AllLines[num+2].split()).astype(np.float)
 			s = np.array(AllLines[num+3].split()).astype(np.float)
@@ -277,8 +300,10 @@ def ReadInObjList(whichdir='In/',fname='big.in'):
 			num = nh+i*4
 			tag = np.array( AllLines[num].split())
 			name = tag[0]
-			mass = float(tag[np.array(['m=' in word for word in tag])][0].strip('m='))
-			dens = float(tag[np.array(['d=' in word for word in tag])][0].strip('d='))
+			massword = re.search('m *= *[0-9E+-.]*', AllLines[num]).group()
+			densword = re.search('d *= *[0-9E+-.]*', AllLines[num]).group()
+			mass = float(re.sub('m *= *','',massword))
+			dens = float(re.sub('d *= *','',densword))
 			a, e, i = np.array(AllLines[num+1].split()).astype(np.float)
 			g, n, m = np.array(AllLines[num+2].split()).astype(np.float)
 			elements = [a,e,i,g,n,m]
@@ -306,34 +331,66 @@ def ReadObjData(name='Mars',whichdir='In/',fname='big.in'):
 	return(thisobj)
 
 ###############################################################################
-def MakeEjecShellObjList(whichdir='In/',cent='Mars',vmin=0.01, vmax=10., r=1.01): 
-	'''Generate list of objects being ejected, in shell around obj cent,
-	with v_inf ranging from vmin to vmax, at distance r in Hill radii'''
+def MakeEjecShellObjList(whichdir='In/',cent='Mars', n=100, r=1.01, 
+		mass='default', dens=3., vmin=0.01, vmax=10.): 
+	'''Generate list of n objects with mass (given in mSun) being ejected, 
+	in shell around obj cent, with v_inf ranging from vmin to vmax, at 
+	distance r in Hill radii'''
 
 ### Get coordinates of central object (assumes it is in big.in)
-#	xcent, vcent, scent, mcent
-	CenterOjb = M.ReadObjData(whichdir=whichdir,name=cent)
+	CenterObj = M.ReadObjData(whichdir=whichdir,name=cent)
+	mPl   = CenterObj.mass
+	mCent = CenterObj.mCent
+#	rPl   = ( mPl*mSun/((4/3)*pi*CenterObj.density*1e3) )**(1/3.)
+	a0,   e0   = CenterObj.a(), CenterObj.e()
 
-### Create positions of objects at distance r*rH from center of cent, 
-### at random angles, with v_inf pulled randomly from [vmin,vmax]
-	if type(CenterObj)=='CartesianObj':
-		CenterObj.pos, CenterObj.vel
-	elif type(CenterObj)=='AsteroidalObj':
-		CenterObj.CalcCartesian()
+	if isinstance(CenterObj,CartesianObj):
+		pos0, vel0 = CenterObj.pos, CenterObj.vel
+	elif isinstance(CenterObj,AsteroidalObj):
+		pos0, vel0 = CenterObj.CalcCartesian()
 	else:
 		raise ValueError('Error: CenterObj type not recognized')
 
-#	a, mass = disk.debris.ListParams()
+### If no mass specified, assume 300cm radius spheres (=> in g, convert to mSun)
+	if (mass=='default'):
+		mass = (4/3)*pi*(300.)**3.*(dens)/1e3/mSun
 
-	digits = str(len(str(len(a))))
+### Create positions of objects at distance r*rH from center of cent, 
+### at random angles, with v_inf pulled randomly from [vmin,vmax]
+	Rh   = a0*(1.-e0)*(mPl/(3.*mCent))**(1./3.)			# Hill radius in AU
+	vesc = ((2*G*mPl*mCent/(r*Rh*AU))**0.5)*day/AU		#escape vel in AU/day
+### Random angles for ejecta positions
+	phi   = np.array([uniform(0.0, 360.0) for i in range(n)])*deg2rad
+	theta = np.array([uniform(0.0, 180.0) for i in range(n)])*deg2rad
+
+### Cartesian coords based on angles
+	x=1.*Rh*cos(phi)*cos(theta)
+	y=1.*Rh*sin(phi)*cos(theta)
+	z=1.*Rh*sin(theta)
+	r=(x**2.+y**2.+z**2.)**0.5	# distances should all be the same
+
+### v_inf (residual velocity after escape, km/s) and v_ej (ejection vel, AU/day)
+	vinf = np.array([uniform(vmin, vmax) for i in range(n)])
+	vej  = sqrt((vinf*1e3*day/AU)**2.+vesc**2.)
+
+### Ejection velocity based on f and angles
+	u=vej*np.cos(phi)*np.cos(theta)
+	v=vej*np.sin(phi)*np.cos(theta)
+	w=vej*np.sin(theta)
+
+#x[j]+planetpos[0][0] etc
+
+### Create template for object names based on number of objects
+	digits = str(len(str(n)))
 	fmt = 'P{0:0'+digits+'}'
 
 ### List of planetesimals on circular co-planar orbits with random phases
 	objlist = []
-	for i in range(len(a)):
-		objlist.append( M.Obj(name=fmt.format(i), mass=mass[i], density=3.,
-		a=a[i], 
-		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
+	for i in range(n):
+		objlist.append( M.CartesianObj(
+			name=fmt.format(i), mass=mass, density=3.,
+			pos = pos0+np.array([x[i], y[i], z[i]]),
+			vel = vel0+np.array([u[i], v[i], w[i]]) ) )
 
 	return objlist
 
@@ -366,15 +423,22 @@ def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 	return objlist
 
 ###############################################################################
-def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big', epoch=0.):
+def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big',
+	epoch=0.):
 	'''Write a big.in or small.in file for mercury'''
 
-### Currently non-variable variable
-	style = 'Asteroidal'
-
-### Make list of object parameters, unless provided
+### If no objlist provided
 	if (objlist=='default'):
-		objlist = M.MakeDiskObjList()
+		raise ValueError('Error: no object list provided')
+#		objlist = M.MakeDiskObjList()
+
+### Determine type of objects
+	if isinstance(objlist[0],CartesianObj):
+		style='Cartesian'
+	elif isinstance(objlist[0],AsteroidalObj):
+		style='Asteroidal'
+	else:
+		raise ValueError('Error: Obj type not recognized')
 
 ### Process big/small differences
 	assert ((infile == 'big') | (infile=='small')), 'invalid infile: must be "big" or "small"'
@@ -389,9 +453,16 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big', epoch=0.)
 +["\n epoch (in days) = {epoch}",""][vers]+ \
 "\n)---------------------------------------------------------------------\n"
 
-	objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
+	if (style == 'Asteroidal'):
+		objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
     {0.a: .18e} {0.e: .18e} {0.i: .18e}
     {0.g: .18e} {0.n: .18e} {0.m: .18e}
+    {0.s[0]: 19.18e} {0.s[1]: 19.18e} {0.s[2]: 19.18e}
+'''
+	elif (style == 'Cartesian'):
+		objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
+    {0.pos[0]: .18e} {0.pos[1]: .18e} {0.pos[2]: .18e}
+    {0.vel[0]: .18e} {0.vel[1]: .18e} {0.vel[2]: .18e}
     {0.s[0]: 19.18e} {0.s[1]: 19.18e} {0.s[2]: 19.18e}
 '''
 
@@ -461,6 +532,105 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 		f.write(text)
 
 
+############################################################################
+def ReadInfo(WhichDir):
+	'''Read the collision info from info.out'''
+
+ 	InfoFile = open(WhichDir+'/Out/info.out','r')
+	InfoLen  = M.FileLength(WhichDir+'/Out/info.out')
+	AllInfo  = InfoFile.readlines()
+	InfoFile.close()
+
+	start = np.array([i for i,l in enumerate(AllInfo) if "Beginning the main integration" in l])
+	ends = np.array([i for i,l in enumerate(AllInfo) if "Integration complete" in l])
+	nloops=len(ends)
+
+	InfoBody = np.array(AllInfo[ (start[0]): ])
+
+	omit = np.array(['Fractional', 'Integration', 'Continuing', 'WARNING:', 'Modify','Beginning']) 
+	# Get any line that isn't blank or boilerplate
+	want = []
+	for i,row in enumerate(InfoBody):
+		if (row != '\n'):
+			if not ( row.split()[0] in omit):
+				want.append(row)
+
+	# Extract name, dest, and time from 'want' section
+	name,dest,time = np.array([]), np.array([]), np.array([])
+	if (len(want)>0):
+		name = np.empty(len(want),'S20')
+		dest = np.empty_like(name)
+		time = np.empty(len(want),'float')
+		for j in range(len(want)):
+			splitline=want[j].split()
+			if len(splitline)==8 and splitline[0]!='Continuing':
+				name[j],dest[j],time[j]=splitline[4],splitline[0],splitline[6]
+			elif len(splitline)==9:
+				name[j],dest[j],time[j]=splitline[0], 'Center',splitline[7]
+			elif len(splitline)==5 and splitline[0]!='Fractional':
+				name[j],dest[j],time[j]=splitline[0],'ejected',splitline[3]
+#	time = time.astype('float')
+
+	return name, dest, time
+
+############################################################################
+def ReadNthLine(fname,n):
+	'''Read the Nth line of a file.'''
+	with open(fname) as f:
+		for i, line in enumerate(f):
+			if i == n:
+				break	
+	return line
+
+############################################################################
+def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
+	'''Read the line preceding Time in Obj's .aei file and return 
+	its position, mass, and the last timestep before then. (If object doesn't
+	survive till Time it will return nothing.)'''
+
+	Time = float(Time)
+	# file name
+	fname = WhichDir+'/Aei/'+Obj+'.aei'
+	# Determine which columns are present, and which has position
+	header = np.array(M.ReadNthLine(fname,3).split())
+	col_a = np.where('a'==header)[0][0] -1
+	col_m = np.where('mass'==header)[0][0] -1
+	# need to add version for Cartesian output sometime...?
+
+	# If object doesn't survive past Time and isn't one of the 
+	# colliding objects, we're done here
+	# (Not sure how better to determine whether last step in this file is
+	# actually the most recent timestep without serious complications)
+#	endtime = float(M.ReadNthLine(fname,AeiLen).split()[0])
+#	if ((iscoll == False) & (endtime < Time)):
+#		return
+
+	### If this is the collision object, take last timestep before Time 
+	### even without another step after it
+	AeiLen  = M.FileLength(fname)
+	if (iscoll == True):
+		line = M.ReadNthLine(fname,AeiLen)
+		return(float(    line.split()[col_a]), 
+			   float(    line.split()[col_m]), 
+			   float(    line.split()[0]) )
+
+	# crawl through until reaching the needed time, return that position
+	with open(fname,'r') as AeiFile:
+		for i,line in enumerate(AeiFile):
+			# Find line after needed time
+			if i > 3:
+				if   float(line.split()[0]) == Time:
+					return(float(    line.split()[col_a]), 
+						   float(    line.split()[col_m]), 
+						   float(    line.split()[0]) )
+				elif float(line.split()[0]) > Time:
+					return(float(lastline.split()[col_a]), 
+						   float(lastline.split()[col_m]), 
+						   float(lastline.split()[0]) )
+				lastline = line
+	### If no match
+	return None,None,None
+
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
 #   units?
@@ -489,7 +659,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 
 ### Extract needed parameters from input list
 	a,e,i,g,n,m = [float(i) for i in el]
-	gm = G_mks*sum(mass)
+	gm = G*sum(mass)
 
 ### Convert input degrees to radians
 #	i, g, n, m = deg2rad*i, deg2rad*g, deg2rad*n, deg2rad*m
@@ -695,7 +865,7 @@ def El2X(el, mass):
 
 ### Extract needed parameters from input list
 	a,e,i,g,la,f = [float(i) for i in el]
-	gm = G_mks*sum(mass)
+	gm = G*sum(mass)
 
 ### Convert input degrees to radians
 #	i, g, la = deg2rad*i, deg2rad*g, deg2rad*la
