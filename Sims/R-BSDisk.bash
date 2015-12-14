@@ -1,7 +1,11 @@
 #!/bin/sh
 ###############################################################################
 # Run the simulation in directory $1, with parameters set below
-# > ./R-BSDisk.bash BS/Prx#/Disk# mA newrun > Dir/run.pipe &
+# > ./R-BSDisk.bash BS/Prx#/Disk# BSDisk.inc > Dir/run.pipe &
+
+# include file
+source $2
+
 # Start time
 t1=$(date +%s)
 machine=$(hostname -s)
@@ -10,41 +14,17 @@ echo $home
 
 ### Simulation parameters
 dir=$1
-mA=$2
-newrun=$3
-
-newmerc=T	# recompile the merc/elem executables?
-vers='ury_TG.for'	# 'merc'+vers = filename for mercury
-
-mintime=1	# = log(years)
-maxtime=3	# = log(years)
-output=1	# = log(years)
-step=0.0003	# = days
-user='yes'	# use user-defined forces?
-alg='bs'	# integrator algorithm
-
-echo $step $alg
-### Range for iterations
-if [ $machine = chloe ]; then
-	timerange=$(jot $(echo "$maxtime-$mintime+1" | bc) $mintime)
-else
-	timerange=$(seq $mintime $maxtime)
-fi
-echo '	timerange '$timerange
+tag=${dir:6:2}
 
 # Compile mercury and element
-if [ $newrun = T ]; then
-	if [ $newmerc = T ]; then
-		gfortran -w -O1 -o $dir/Out/merc_disk Files/merc$vers
-		if [ $machine = chloe ]; then	
-			gfortran-4.2 -w -O1 -o $dir/Out/elem Files/elem.for 	
-				#j in, to fix colors
-		else
-			gfortran -w -O1 -o $dir/Out/elem Files/elem.for 		
-				#j in, to fix colors
-		fi
-	fi
-fi
+#if [ $newrun = T ]; then
+#	if [ $newmerc = T ]; then
+		gfortran -w -O1 -o $dir/Out/merc_$tag Files/merc$vers
+#	fi
+#fi
+	gfortran -w -O1 -o $dir/Out/elem_$tag Files/elem.for 		
+		#j in, to fix colors
+	
 ### Do iterations
 	echo 'DiskRun: '$dir', '$j
 	# Start clock for iteration
@@ -79,10 +59,10 @@ fi
 		fi
 
 		#### Run mercury
-		cd $dir/Out;	./merc_disk;	cd $home
+		cd $dir/Out;	./merc_$tag;	cd $home
 
 		### Run Element to get orbit details
-		cd $dir/Out;	./elem;	cd $home
+		cd $dir/Out;	./elem_$tag;	cd $home
 		\mv $dir/Out/*.aei $dir/Out/AeiOutFiles
 		### Summarize iteration; write if stop conditions reached
 		if [ ${dir: -1:1} = 2 ]; then
