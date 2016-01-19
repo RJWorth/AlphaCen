@@ -531,6 +531,36 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 	with open(fname, 'w') as f:
 		f.write(text)
 
+############################################################################
+#def ReadMCent(WhichDir='',loc = 'In/',fname='param.in'):
+#	'''Read the central body's mass from param.in'''
+
+#	### Location of param.in file
+#	ParamLoc = WhichDir+loc+fname
+#	### Open File, get length, read into list
+#	ParamFile = open(ParamLoc,'r')
+#	ParamLen  = M.FileLength(ParamLoc)
+#	ParamInfo = ParamFile.readlines()
+#	ParamFile.close()
+
+############################################################################
+def ReadMCent(WhichDir='',loc = 'Out/',fname='info.out'):
+	'''Read the central body's mass from info.out'''
+
+	### Location of param.in file
+	InfoLoc = WhichDir+loc+fname
+	### Open File, get length, read into list
+ 	InfoFile = open(InfoLoc,'r')
+	InfoLen  = M.FileLength(InfoLoc)
+	AllInfo  = InfoFile.readlines()
+	InfoFile.close()
+
+	for l in AllInfo: 
+		if "Central mass:" in l:
+			massline = l
+
+	return float(massline.split()[2])
+
 
 ############################################################################
 def ReadInfo(WhichDir):
