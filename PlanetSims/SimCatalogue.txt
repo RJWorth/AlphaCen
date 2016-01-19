@@ -67,6 +67,14 @@ C28       T 3.08  100    0 2.5e3   discontinuities
 C34       T 3.08  100    0   1e7   discontinuities 
 
 
+###############################################################################
+### Binary integrator version
+dir     sig  rtr  rej   iA    tf  outcome
+Bin01     1 2.77  100    0   1e7  9 plts; extended 1e8 18155
+Bin02     1 3.08  100    0   1e7  6 plts; extended 1e8 18156
+Bin02     3 2.77  100    0   1e7  3 plts; extended 1e8 18157
+Bin02     3 3.08  100    0   1e7  5 plts; extended 1e8 18158
+
 
 
 
