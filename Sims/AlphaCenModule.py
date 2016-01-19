@@ -1,3 +1,6 @@
+import os.path
+import re
+
 ###############################################################################
 def FileLength(fname):
 	'''Function to count the number of lines in a file'''
@@ -99,6 +102,7 @@ def GetInfoLastTime(WhichDir):
 	elif (complete == False):
 		LastTime = max(time+[PrevTime])
 
+	print('Info version, ',LastTime)
 	return LastTime
 
 ###############################################################################
@@ -148,7 +152,7 @@ the .aei files. (Requires up-to-date element run for accuracy.)'''
 ### file that is newer than the xv.out file
 	FirstFileName = re.sub('\.aei$', '', FullLengthFiles[0])
 ### Get the maximum time 
-	LastTime = AC.GetT(WhichDir,FirstFileName,-1,-0)
+	LastTime = AC.GetT(WhichDir,FirstFileName,-1,-0)[0]
 
 	return(LastTime)
 
@@ -282,39 +286,41 @@ def GetStellarMasses(WhichDir):
 	import numpy as np
 
 ### Read in param.in and big.in files
-	par=open(WhichDir+'/In/param.in')
+	parampath = WhichDir+'/In/param.'
+	if   os.path.isfile(parampath+'in'):
+		par=open(parampath+'in')
+	elif os.path.isfile(parampath+'dmp'):
+		par=open(parampath+'dmp')
+	else:
+		assert 0==1, 'No param.in or .dmp file found!'
 	parfile=par.readlines()
 	par.close()
 
-	big=open(WhichDir+'/In/big.in')
+	bigpath = WhichDir+'/In/big.in'
+	if   os.path.isfile(bigpath):
+		big=open(bigpath)
+		nbiglines = FileLength(bigpath)
+	elif os.path.isfile(WhichDir+'/Out/big.dmp'):
+		big=open(WhichDir+'/Out/big.dmp')
+		nbiglines = FileLength(WhichDir+'/Out/big.dmp')
+	else:
+		assert 0==1, 'No big.in or .dmp file found!'
 	bigfile=big.readlines()
 	big.close()
-	nbiglines = FileLength(WhichDir+'/In/big.in')
-
 ### Find central body mass
 	for i,row in enumerate(parfile):
 		if (row[0] != ')'):
 			if 'central mass' in row:
 				mstar = [float(row.split()[4])]
 
-### Find header rows for each object in infile
-	# calculate
+### Identify header rows for each object in infile
 	nbig = (nbiglines-6)/4
 	objrows = [6+i*4 for i in range(nbig)]
 
-	# or read from object names
-#	objrows = [0 for i in objs]
-#	for j,obj in enumerate(objs):
-#		for i,row in enumerate(bigfile):
-#			if (row[0] != ')'):
-#				if (row.split()[0] == obj):
-#					objrows[j] = i
-
-### Extract orbital parameters (aei gnM or xyz uvw)
+### Extract masses
 	for j,objrow in enumerate(objrows):
-		for item in bigfile[objrow].split():
-			if ('m=' in item) | ('m =' in item):
-				mstar.append(float(item.strip(' =m')))
+		massword = re.search('m *= *[0-9E+-.]*', bigfile[objrow]).group()
+		mstar.append(float(massword.strip(' =m')))
 
 	return(mstar)
 
@@ -1418,7 +1424,7 @@ def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT,m,mode='triple',Tmax=1e9):
+def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='triple',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
@@ -1428,11 +1434,22 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple',Tmax=1e9):
 	import AlphaCenModule as AC
 	from mks_constants import G, mSun, AU, day
 
+### Calculate default values from data in directory
+	if m == 'dflt':
+		m = AC.GetStellarMasses(WhichDir)
+	assert ( (len(m) == 2) or (len(m)==3) ), 'Wrong # of objs -- designed for 2 or 3!'
 	m  = np.array([i*mSun for i in m])
 	mu = G*sum(m)
 
+	if Tmax == 'dflt':
+		Tmax = AC.GetLastTime(WhichDir)
+	if ThisT == 'dflt':
+		ThisT = Tmax
+	
+
+
 ### Column width in output
-	wn = [9]+2*[9,9,11,9,9,9]
+	wn = [9]+2*[9,9,11,9,9,9,9]
 	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
@@ -1443,6 +1460,9 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple',Tmax=1e9):
 	t, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
 											WhichDir, ThisT, mode, m, Tmax)
 
+	pB = aB*(1-eB)
+	pC = aC*(1-eC)
+
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
 				[(  '%9.3e' % i) for i in     t],
@@ -1452,16 +1472,18 @@ def WriteAEI(WhichDir,ThisT,m,mode='triple',Tmax=1e9):
 				[( '% 9.2f' % i) for i in aB/AU],
 				[(  '%9.5f' % i) for i in    eB],
 				[(  '%9.3f' % i) for i in    iB],
+				[( '% 9.2f' % i) for i in pB/AU],
 				[(  '%9.3f' % i) for i in rC/AU],
 				[(  '%9.2e' % i) for i in    vC],
 				[('% 11.4e' % i) for i in  epsC],
 				[( '% 9.1f' % i) for i in aC/AU],
 				[(  '%9.5f' % i) for i in    eC],
-				[(  '%9.3f' % i) for i in    iC] ]))
+				[(  '%9.3f' % i) for i in    iC],
+				[( '% 9.2f' % i) for i in pC/AU] ]))
 	datalist = [' '.join(row)+'\n' for row in data]
 
-	hdr = np.array(['t','rB', 'vB', 'epsB', 'aB', 'eB', 'iB',
-						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC'])
+	hdr = np.array(['t','rB', 'vB', 'epsB', 'aB', 'eB', 'iB','pB',
+						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC','pC'])
 	hdr = ' '.join([hdr[i].rjust(wn[i]) for i in range(len(hdr))])+'\n'
 
 ### Write data to file

@@ -407,18 +407,18 @@ def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 	digits = str(len(str(len(a))))
 	fmt = 'P{0:0'+digits+'}'
 
-### List of planetesimals on circular co-planar orbits with random phases
 	objlist = []
-	for i in range(len(a)):
-		objlist.append( M.Obj(name=fmt.format(i), mass=mass[i], density=3.,
-		a=a[i], 
-		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
-
 	### Add binary star (AlCenA)
 	if starA==True:
-		objlist.append( M.Obj(name='AlCenA', mass=1.105, density=1.5,
-		a=23.7,               e=0.5179,             i=R.uniform(0.,iMax), 
-		g=R.uniform(0.,360.), n=R.uniform(0.,360.), m=R.uniform(0.,360.)) )
+		objlist.append( M.AsteroidalObj(name='AlCenA', mass=1.105, density=1.5,
+		elements=[ 23.7, 0.5179, R.uniform(0.,iMax),
+				R.uniform(0.,360.), R.uniform(0.,360.), R.uniform(0.,360.)] ))
+
+	### List of planetesimals on circular co-planar orbits with random phases
+	for i in range(len(a)):
+		objlist.append( M.AsteroidalObj(name=fmt.format(i), mass=mass[i], density=3.,
+		elements=[ a[i], 0., 0., 
+				R.uniform(0.,360.), R.uniform(0.,360.), R.uniform(0.,360.)] ))
 
 	return objlist
 
@@ -455,8 +455,8 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big',
 
 	if (style == 'Asteroidal'):
 		objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
-    {0.a: .18e} {0.e: .18e} {0.i: .18e}
-    {0.g: .18e} {0.n: .18e} {0.m: .18e}
+    {0.elements[0]: .18e} {0.elements[1]: .18e} {0.elements[2]: .18e}
+    {0.elements[3]: .18e} {0.elements[4]: .18e} {0.elements[5]: .18e}
     {0.s[0]: 19.18e} {0.s[1]: 19.18e} {0.s[2]: 19.18e}
 '''
 	elif (style == 'Cartesian'):
