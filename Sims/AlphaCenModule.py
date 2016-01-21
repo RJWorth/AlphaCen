@@ -1424,7 +1424,7 @@ def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='triple',Tmax='dflt'):
+def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='default',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
@@ -1446,7 +1446,11 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='triple',Tmax='dflt'):
 	if ThisT == 'dflt':
 		ThisT = Tmax
 	
-
+	if mode == 'default':
+		if 'B-2' in WhichDir:
+			mode = 'binary'
+		else:
+			mode = 'triple'
 
 ### Column width in output
 	wn = [9]+2*[9,9,11,9,9,9,9]
