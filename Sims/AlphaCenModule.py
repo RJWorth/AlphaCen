@@ -128,7 +128,14 @@ the .aei files. (Requires up-to-date element run for accuracy.)'''
 		size.append(os.path.getsize(AeiDir+f))
 	size=np.array(size)
 ### Check which aei files are current (i.e. newer than the xv.out file)
-	xvage = os.path.getmtime(WhichDir+'/Out/xv.out')
+	if os.path.isfile(WhichDir+'/Out/xv.out'):
+		xvage = os.path.getmtime(WhichDir+'/Out/xv.out')
+	elif os.path.isfile(WhichDir+'/Out/info.out'):
+		print('No xv.out; using time from info.out to compare file ages')
+		xvage = os.path.getmtime(WhichDir+'/Out/info.out')
+	else:
+		print('No xv or info.out files to compare ages!')
+		assert 0==1
 	age = []
 	for f in filelist:
 		age.append(os.path.getmtime(AeiDir+f)-xvage)
@@ -1424,7 +1431,7 @@ def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='default',Tmax='dflt'):
+def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
@@ -1446,12 +1453,11 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='default',Tmax='dflt'):
 	if ThisT == 'dflt':
 		ThisT = Tmax
 	
-	if mode == 'default':
+	if mode == 'dflt':
 		if 'B-2' in WhichDir:
 			mode = 'binary'
 		else:
 			mode = 'triple'
-
 ### Column width in output
 	wn = [9]+2*[9,9,11,9,9,9,9]
 	ws = [str(i) for i in wn]
@@ -1463,6 +1469,25 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='default',Tmax='dflt'):
 	aB, eB, iB, aC, eC, iC,	\
 	t, TimeB, DestB, TimeC, DestC = AC.GetFinalData(
 											WhichDir, ThisT, mode, m, Tmax)
+
+	if (mode == 'triple') and (len(aC) < len(aB)):
+		diff = len(rB)-len(rC)
+		rC   = np.concatenate((  rC,[float('NaN') for i in range(diff)]))
+		vC   = np.concatenate((  vC,[float('NaN') for i in range(diff)]))
+		epsC = np.concatenate((epsC,[float('NaN') for i in range(diff)]))
+		aC   = np.concatenate((  aC,[float('NaN') for i in range(diff)]))
+		eC   = np.concatenate((  eC,[float('NaN') for i in range(diff)]))
+		iC   = np.concatenate((  iC,[float('NaN') for i in range(diff)]))
+
+	if mode == 'binary':
+		testnans = [np.isnan(rC), np.isnan(vC), np.isnan(epsC), np.isnan(aC), np.isnan(eC), np.isnan(iC)]
+		assert all(testnans), 'Binary mode but C values not NaN: {}'.format(testnans)
+		rC   = np.array([float('NaN') for i in range(len(rB))])
+		vC   = np.array([float('NaN') for i in range(len(rB))])
+		epsC = np.array([float('NaN') for i in range(len(rB))])
+		aC   = np.array([float('NaN') for i in range(len(rB))])
+		eC   = np.array([float('NaN') for i in range(len(rB))])
+		iC   = np.array([float('NaN') for i in range(len(rB))])
 
 	pB = aB*(1-eB)
 	pC = aC*(1-eC)

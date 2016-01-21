@@ -8,13 +8,26 @@ Dirs2 = ['Proxlike/071714/Prx'+  '{0:}'.format(i) for i in range(1,13)]
 Dirs3 = ['Proxlike/072314/Prx'+'{0:02}'.format(i) for i in range(1,27)]
 Dirs4 = ['Proxlike/081414/Prx'+'{0:02}'.format(i) for i in range(1,9)]
 
-#Dirs = Dirs1+Dirs2+Dirs3+Dirs4
-Dirs = Dirs1+Dirs2+Dirs4 # no subdirs in Dirs3
+Dirs = Dirs1+Dirs2+Dirs3+Dirs4
+Dirs = Dirs3
+
+#Dirs = Dirs1+Dirs2+Dirs4 # no subdirs in Dirs3 on chloe
 #Dirs = [Dirs[0]]
+#Dirs.remove('Proxlike/Prx08')
 
 for i,d in enumerate(Dirs):
+#	thisdir = d+'/Original'
+#	print(thisdir)
+#	AC.WriteAEI(thisdir)	
+
+	thisdir = d+'/DiskB-2'
+	print(thisdir)
+	AC.WriteAEI(thisdir)	
+
 	thisdir = d+'/DiskB-3'
 	print(thisdir)
 	AC.WriteAEI(thisdir)	
+
+
 
 
