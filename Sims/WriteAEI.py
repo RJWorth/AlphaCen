@@ -3,12 +3,6 @@ import numpy as np
 import AlphaCenModule as AC
 import matplotlib.pyplot as plt
 
-### Chloe data locations
-#Dirs1 = [       'Proxlike/Prx'+'{0:02}'.format(i)+'/Original' for i in range(1,35)]
-#Dirs2 = ['Proxlike/071714/Prx'+  '{0:}'.format(i)+'/Original' for i in range(1,13)]
-#Dirs3 = ['Proxlike/072314/Prx'+'{0:02}'.format(i)             for i in range(1,27)]
-#Dirs4 = ['Proxlike/081414/Prx'+'{0:02}'.format(i)+'/Original' for i in range(1,9)]
-
 ### Laptop data locations
 Dirs1 = ['d'+'{0:02}'.format(i) for i in range(1,35)]
 Dirs2 = ['a'+'{0:02}'.format(i) for i in range(1,13)]
