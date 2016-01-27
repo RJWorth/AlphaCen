@@ -144,7 +144,6 @@ minp  = summary['minpC']
 minpO = minp[summary['vers']==0]
 minp3 = minp[summary['vers']==2]
 
-print(summary)
 stats = np.array( [ [np.median(l) for l in [minp, minpO, minp3]],
 					[np.mean(l)   for l in [minp, minpO, minp3]],
 					[np.min(l)    for l in [minp, minpO, minp3]],
