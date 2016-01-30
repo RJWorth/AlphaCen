@@ -1,10 +1,21 @@
+import os, re
 import os.path
-import re
+import numpy as np
+import AlphaCenModule as AC
+from numpy import pi, sin, cos, arccos, exp, log, log10, sqrt
+#from math import pi, sin, cos, sqrt	# some modules used to use these
+from operator import add
+import subprocess
+from mks_constants import G, mSun, mEarth, AU, day, deg2rad, rad2deg
+from random import random, uniform
+from operator import add
+import matplotlib.pyplot as plt
+import matplotlib
+#import rvtest as rv	#what was this for?
 
 ###############################################################################
 def FileLength(fname):
 	'''Function to count the number of lines in a file'''
-	import os
 
 	if os.path.getsize(fname)==0.:
 		i = -2
@@ -32,8 +43,6 @@ def WriteParam(WhichFile, stop, mA=1.105, step=10., user='yes',
 	'''Write param.in or param.dmp with specified parameters'''
 
 	print('	WriteParam,          stop time = {0}'.format(stop))
-
-	import numpy as np
 
 	assert (user == 'yes') | (user == 'no')
 
@@ -70,7 +79,6 @@ def GetLastTime(WhichDir):
 	'''Returns how far a simulation has gotten, based on info and aei.'''
 	
 ### Modules
-	import AlphaCenModule as AC
 
 	AeiTime  = AC.GetAEILastTime(WhichDir)
 	InfoTime = AC.GetInfoLastTime(WhichDir)
@@ -83,10 +91,6 @@ def GetLastTime(WhichDir):
 def GetInfoLastTime(WhichDir):
 	'''Returns how far a simulation has gotten, based on info.out.'''
 	
-### Modules
-	import AlphaCenModule as AC
-	import numpy as np
-
 	name,dest,time,PrevTime,complete = AC.ReadInfo(WhichDir)
 	time = [float(i) for i in time]
 
@@ -109,11 +113,6 @@ def GetInfoLastTime(WhichDir):
 def GetAEILastTime(WhichDir):
 	'''Returns end time of the last completed simulation step based on 
 the .aei files. (Requires up-to-date element run for accuracy.)'''
-
-### Modules
-	import os, re
-	import numpy as np
-	import AlphaCenModule as AC
 
 	AeiDir = WhichDir+'/Out/AeiOutFiles/'
 ### Get list of files in AeiOutDir
@@ -197,14 +196,6 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	print('	MakeBigRand  '+WhichDir+'/In/big.in,                          '+
 		  str(WhichTime))
 
-### Needed modules
-	import AlphaCenModule as AC
-	import os
-	import numpy as np
-	from random import random, uniform
-	from math import pi, sin, cos
-#	from mks_constants import mSun
-
 ### Constants
 #	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
 
@@ -266,8 +257,6 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 ### Get orbital parameters of an object from big.in or small.in
 def GetObjParams(filepath,obj):
 
-	import numpy as np
-
 ### Read in *.in file
 	f=open(filepath)
 	infile=f.readlines()
@@ -289,8 +278,6 @@ def GetObjParams(filepath,obj):
 ###########################################################################
 ### Get orbital parameters of an object from big.in or small.in
 def GetStellarMasses(WhichDir):
-
-	import numpy as np
 
 ### Read in param.in and big.in files
 	parampath = WhichDir+'/In/param.'
@@ -357,12 +344,6 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 #               n = longitude of the ascending node (degrees)
 #               M = mean anomaly (degrees)
 
-### Modules used
-	from AlphaCenModule import Merc_KeplerEllipse
-	import numpy as np
-	from numpy import sqrt, sin, cos
-	from mks_constants import deg2rad,rad2deg, G
-
 ### Extract needed parameters from input list
 	a,e,i,g,n,M = [float(i) for i in el]
 	gm = G*sum(m)
@@ -396,7 +377,7 @@ Based on MCO_EL2X.FOR from J. Chambers' mercury6_2.for:
 	if (e < 1.0):
 	### Ellipse
 		romes = sqrt(1.0 - e*e)
-		temp = Merc_KeplerEllipse(e,M)
+		temp = AC.Merc_KeplerEllipse(e,M)
 		se, ce = sin(temp), cos(temp)
 		z1 = a * (ce - e)
 		z2 = a * romes * se
@@ -441,7 +422,6 @@ def Merc_KeplerEllipse(e,oldl):
   u = eccentric anomaly (   "   )'''
 #------------------------------------------------------------------------------
 
-	from math import pi, exp, log, sin, cos, sqrt
 	twopi = 2.*pi
 	piby2 = pi/2.
 
@@ -572,11 +552,6 @@ def El2X(el, m):
 	x,y,z = Cartesian positions  ( units the same as a )
 	u,v,w =     "     velocities ( units the same as sqrt(mu/a) )'''
 
-### Modules used
-	import numpy as np
-	from numpy import sqrt, sin, cos, pi
-	from mks_constants import deg2rad,rad2deg, G
-
 ### Extract needed parameters from input list
 	a,e,i,g,la,f = [float(i) for i in el]
 	mu = G*sum(m)
@@ -614,13 +589,6 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 
 	print('MakeSmallTestDisk {0}/In/small.in  n={1}'.format(
 			WhichDir, nmax))
-
-### Needed modules
-	import AlphaCenModule as AC
-	import numpy as np
-	from random import random
-	from numpy import pi, sin, cos, log, sqrt
-	from mks_constants import G, AU, day, mSun, mEarth
 
 ### Objects per disk (one disk each around A and B)
 	nmax = int(nmax)
@@ -707,9 +675,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 	vorb_expect = sqrt( G*(mstars[0]+m)/(aspacing*AU))*day/AU
 
 #	print(np.transpose(np.array((vorb_actual,vorb_expect))))
-#	import matplotlib
 #	matplotlib.use('Agg', warn=False)
-#	import matplotlib.pyplot as plt
 
 #	plt.plot(aspacing, vorb_actual, 'b-',
 #			 aspacing, vorb_expect, 'r--',
@@ -750,11 +716,6 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 def InitParams(WhichDir):
 	'''Read initial orbital parameters'''
 
-### Modules needed
-	import numpy as np
-	from operator import add
-	import os 
-
 ### Digits
 	iRnd =[1,3,1, 1,3,1]	# dec places to round starting a/e/i to, for B/C
 	iJst = map(add, [4,2,3, 5,2,4], iRnd) # iRnd+iJst = # char per entry
@@ -782,11 +743,6 @@ def InitParams(WhichDir):
 ###############################################################################
 def Elem(WhichDir):
 	'''Get final orbits from element.out'''
-
-### Modules needed
-	import numpy as np
-	from operator import add
-	import AlphaCenModule as AC
 
 ### Constants
 	fRnd =[2,4,2]			# dec places to round final a/e/i to
@@ -837,17 +793,15 @@ def Elem(WhichDir):
 	return(B, C)
 
 ###############################################################################
-def ReadAei(whichdir, filename, index1=-1, index2=None):
+def ReadAei(WhichDir, filename, index1=-1, index2=None):
 	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
 
-	print('	--ReadAei      '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+	print('	--ReadAei      '+WhichDir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
 
-### Modules needed
-	import numpy as np
 
 ### Get last positions for surviving objects
-	aeiFile=open(whichdir+'/Out/AeiOutFiles/'+filename+'.aei','r')
+	aeiFile=open(WhichDir+'/Out/AeiOutFiles/'+filename+'.aei','r')
 	aei = aeiFile.readlines()
 	if ((index2!=None) & (index1!=None)):
 		xv = aei[index1:index2]
@@ -865,17 +819,14 @@ def ReadAei(whichdir, filename, index1=-1, index2=None):
 	return(xv)
 
 ###############################################################################
-def GetT(whichdir, filename, index1=-1, index2=0):
+def GetT(WhichDir, filename, index1=-1, index2=0):
 	'''Read .aei file to get time array'''
 
-	print('	--GetT         '+whichdir+'/Out/AeiOutFiles/'+filename+', '+\
+	print('	--GetT         '+WhichDir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
 
-### Modules needed
-	import numpy as np
-
 ### Get last positions for surviving objects
-	aeiFile=open(whichdir+'/Out/AeiOutFiles/'+filename+'.aei','r')
+	aeiFile=open(WhichDir+'/Out/AeiOutFiles/'+filename+'.aei','r')
 	aei = aeiFile.readlines()
 	if index2!=0:
 		xv = aei[index1:index2]
@@ -937,9 +888,6 @@ def RAtoV(r, a, mu):
 def AUtoMKS(xv_AU):
 	'''Convert xv in AU, AU/day to mks'''
 
-	import numpy as np
-	from mks_constants import AU, day
-
 	xv_mks = np.zeros_like(xv_AU)
 	
 	if (len(np.shape(xv_AU))==3):
@@ -956,13 +904,8 @@ def FindCM(m, xv):
 	'''Take position and velocity data, 
 	give center of mass/momentum versions'''
 
-	from mks_constants import mSun	
 
 	print('	--FindCM       m = '+str([('% 1.3g' % (i/mSun)) for i in m]))
-
-### Modules needed
-	from operator import add
-	import numpy as np
 
 ### Constants
 	M = sum(m)
@@ -987,10 +930,6 @@ def wrtCM(xv, xvCM):
 
 #	print('	wrtCM')
 
-### Modules needed
-	from operator import add
-	import numpy as np	
-
 ### Number of timesteps being looked at
 	nobjs =xv.shape[0]
 	nsteps=xv.shape[1]
@@ -1011,8 +950,6 @@ def wrtCM(xv, xvCM):
 #	'''Calculate kinetic energy
 #	where r is the distance between two stars, v is the relative velocity'''
 #
-#	import numpy as np
-#
 #	K = [(1./2.)*m[i]*v[i,:]**2. for i in range(len(v[:,0]))]
 #
 #	return(np.array(K))
@@ -1021,8 +958,6 @@ def wrtCM(xv, xvCM):
 #def Potential(m1, m2, r):
 #	'''Calculate potential energy of one object due to another
 #	where r is the distance between two stars, v is the relative velocity'''
-#
-#	from mks_constants import G
 #
 #	U = -G*m1*m2/r
 #	U = U/2.		# correction to avoid counting U twice
@@ -1063,9 +998,6 @@ def uEps(r, mu):
 def mr(m):
 	'''Calculate reduced mass'''
 
-### Needed modules
-	import numpy as np
-
 	m_1  = [1./i for i in m]
 	mr_1 = sum(m_1)
 	mr   = 1./mr_1
@@ -1076,9 +1008,6 @@ def mr(m):
 def h(r, v):
 	'''Calculate angular momentum'''
 
-### Needed modules
-	import numpy as np
-
 	h = np.cross(r,v)
 
 	return(np.array(h))
@@ -1086,9 +1015,6 @@ def h(r, v):
 ###############################################################################
 def a(eps, mu):
 	'''Calculate semimajor axis of an object's orbit'''
-
-### Needed modules
-	import numpy as np
 
 	a = -mu/(2.*eps)
 
@@ -1098,9 +1024,6 @@ def a(eps, mu):
 def e(eps, hbar, mu):
 	'''Calculate eccentricity of an object's orbit'''
 
-### Needed modules
-	import numpy as np
-
 	e = (1.+2.*eps*hbar**2/mu**2)**0.5
 
 	return(np.array(e))
@@ -1108,10 +1031,6 @@ def e(eps, hbar, mu):
 ###############################################################################
 def i(hz, hbar):
 	'''Calculate inclination of an object's orbit (in degrees)'''
-
-### Needed modules
-	import numpy as np
-	from numpy import arccos, pi
 
 	i = arccos(hz/hbar)*180./pi
 
@@ -1123,17 +1042,6 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 	writing/plotting/etc.'''
 
 	print('	-GetFinalData  '+WhichDir)
-
-### Needed modules
-	import numpy as np
-#	import os
-	import AlphaCenModule as AC
-#	from numpy import log10, sqrt, sin, pi
-#	from operator import add
-#	import subprocess
-#	import rvtest as rv
-	from mks_constants import G, mSun, AU, day
-	from numpy import log10
 
 	assert all(m > 10.)	# make sure units are kg, not mSun
 	mu=G*sum(m)
@@ -1347,12 +1255,6 @@ def Binary(m, xv, ind):
 or B & C if they are actually closer. They'll still be referred to as A & B
  here.'''
 
-### Import modules
-	import AlphaCenModule as AC
-	import numpy as np
-	from mks_constants import G, mSun, AU, day
-	from numpy import log10
-
 ### Relative distance/velocity of binary stars
 	r2 = AC.Distance(xv[0,0:ind,:], xv[1,0:ind,:])
 	v2 =    AC.XVtoV(xv[1,0:ind,:]- xv[0,0:ind,:])
@@ -1392,10 +1294,6 @@ or B & C if they are actually closer. They'll still be referred to as A & B
 ####################### Triple system: ########################################
 #------------------------------------------------------------------------------
 def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
-	import AlphaCenModule as AC
-	import numpy as np
-	from mks_constants import G, mSun, AU, day
-	from numpy import log10
 ### 
 	mu = G*sum(m)
 ### Combine xv data into 3D array in binary-triple order (usually ABC):
@@ -1435,11 +1333,6 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
 	print('WriteAEI      '+WhichDir)
-
-### Needed modules
-	import numpy as np
-	import AlphaCenModule as AC
-	from mks_constants import G, mSun, AU, day
 
 ### Calculate default values from data in directory
 	if m == 'dflt':
@@ -1532,16 +1425,6 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 	print('	Summary        '+WhichDir+',                          WhichTime = '+
 		  WhichTime)
 
-### Needed modules
-	import numpy as np
-	import os
-	import AlphaCenModule as AC
-	from numpy import log10, sqrt, sin, pi
-	from operator import add
-	import subprocess
-#	import rvtest as rv
-	from mks_constants import G, mSun, AU, day
-
 	np.set_printoptions(precision=2)
 ### Stellar masses
 	mA, mB, mC = mA*mSun, mB*mSun, mC*mSun
@@ -1573,8 +1456,6 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 				AC.MakePlots('triple',WhichDir, t[0:iTri], epsC, kC, uC,
 								rC, m, suffix='_ABC')
 # Plot energies over time
-			import matplotlib.pyplot as plt
-
 			plt.plot(t[0:iBin], epsB*(m[0]+m[1]),      'r-')
 			plt.plot(t[0:iTri], epsC*(m[0]+m[1]+m[2]), 'b-')
 			plt.xlabel('time (years)')
@@ -1663,15 +1544,6 @@ def Summary(WhichDir,ThisT,Tmax=1e9,WhichTime='1',machine='',
 def ParseDestinations(DestB, DestC, TimeB, TimeC, Tmax):
 	'''Determine what hit what, etc.'''
 
-### Needed modules
-	import numpy as np
-	import AlphaCenModule as AC
-	from numpy import log10, sqrt, sin, pi
-#	from operator import add
-#	import subprocess
-#	import rvtest as rv
-	from mks_constants import AU
-
 ### Write to summary.out, but only if the simulation is ending:
 ### Determine status of each star in each survival criterion,
 ### i.e., whether an object is missing and the run can be ended
@@ -1696,14 +1568,6 @@ def SummaryStatus(WhichDir, WhichTime, Tmax, ThisT, summary, summaryheader,
 				  TimeB, TimeC, DestB, DestC, iBin, imax):
 	'''Determine if simulation is ending, and write data if so	'''
 
-### Needed modules
-	import numpy as np
-	import AlphaCenModule as AC
-	from numpy import log10, sqrt, sin, pi
-#	from operator import add
-#	import subprocess
-#	import rvtest as rv
-	from mks_constants import AU
 
 ### Get flags for various possible fatess
 	isBmaxT, isCmaxT, Bejectd, Cejectd, \
@@ -1817,10 +1681,6 @@ def WriteSummary(WhichDir, summary, summaryheader, stop, bigstop):
 
 #	print('	WriteSummary '+WhichDir)
 
-### Needed modules
-	import os 
-	import AlphaCenModule as AC
-
 	sumpath=WhichDir+'/summary.out'
 
 	if (stop==True | bigstop==True):
@@ -1838,14 +1698,6 @@ def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 	'''Make plots of parameters from this run'''
 
 	print('	-MakePlots     '+WhichDir)
-
-### Modules
-	from mks_constants import G, mSun, AU, day
-	import numpy as np
-	from numpy import sin, pi
-	import matplotlib
-	matplotlib.use('Agg', warn=False)
-	import matplotlib.pyplot as plt
 
 	mu = G*sum(m)
 
@@ -1953,11 +1805,6 @@ def MakePlots(version, WhichDir, t, eps, k, u, r, m, suffix=''):
 def ReadInfo(WhichDir):
 	'''A program to read the collision info from info.out'''
 
-#	import numpy, os
-#	import os 
-	import AlphaCenModule as AC
-	import numpy as np
-
  	InfoFile=open(WhichDir+'/Out/info.out','r')
 	InfoLen=AC.FileLength(WhichDir+'/Out/info.out')
 	AllInfo=InfoFile.readlines()
@@ -2031,10 +1878,6 @@ def ReadInfo(WhichDir):
 ###############################################################################
 def SumAll(WhichDirs,cent,suffix=''):
 	'''Read data from all directories and put in one file'''
-
-#	import numpy, os, AlphaCenModule
-	import os 
-	import AlphaCenModule as AC
 	
 	print('	SumAll SumAll.out: '+", ".join(WhichDirs))
 
@@ -2084,9 +1927,6 @@ def SumAll(WhichDirs,cent,suffix=''):
 ############################################################################
 #def InitSumFile(WhichDir):
 #	'''Create an empty summary.out file if there isn't one'''
-#
-#### Needed modules
-#	import os 
 #
 #	sumpath=WhichDir+'/summary.out'
 #
