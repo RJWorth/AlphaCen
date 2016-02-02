@@ -133,7 +133,8 @@ for i,d in enumerate(Dirs):
 
 	f.subplots_adjust(hspace=0)
 	plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
-	plt.savefig('TimeData/AvsT-'+d+'.png')
+#	plt.savefig('TimeData/AvsT-'+d+'.png')
+	plt.savefig('TimeData/AvsT-'+d+'.eps',format='eps',dpi=1000)
 	plt.clf()
 	plt.close(f)
 
@@ -163,7 +164,8 @@ ax2[1,1].hist(minp3)
 ax2[1,1].set_xlabel('Trip min(pericenter)')
 
 
-plt.savefig('TimeData/Summaries.png')
+#plt.savefig('TimeData/Summaries.png')
+plt.savefig('TimeData/Summaries.eps',format='eps',dpi=1000)
 plt.clf()
 plt.close(f2)
 
