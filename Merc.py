@@ -3,7 +3,6 @@
 from mks_constants import mSun,mEarth,mMoon,mMars,AU,day
 from mks_constants import deg2rad,rad2deg
 from mks_constants import G as G
-import Disks as D
 import Merc
 import random as R
 from random import uniform
@@ -454,7 +453,8 @@ def MakeDiskObjList(rtr = 5., sigC = 10., rh = 10., m = [mMoon/mSun,mMars/mSun],
 	f= [0.5, 0.5], alpha = 1.5, starA=True, iMax=180.):
 	'''Generate list of objects based on the Disks semi-analytic model'''
 
-	disk = D.Disk(r_out=rtr, alpha=alpha, sigC=sigC, rh=rh)
+	import Disks
+	disk = Disks.Disk(r_out=rtr, alpha=alpha, sigC=sigC, rh=rh)
 	disk.DebrisGenM(m,f)
 	a, mass = disk.debris.ListParams()
 
