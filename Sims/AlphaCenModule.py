@@ -134,8 +134,7 @@ the .aei files. (Requires up-to-date element run for accuracy.)'''
 		print('No xv.out; using time from info.out to compare file ages')
 		xvage = os.path.getmtime(WhichDir+'/Out/info.out')
 	else:
-		print('No xv or info.out files to compare ages!')
-		assert 0==1
+		assert 0==1,'No xv or info.out files to compare ages!'
 	age = []
 	for f in filelist:
 		age.append(os.path.getmtime(AeiDir+f)-xvage)
