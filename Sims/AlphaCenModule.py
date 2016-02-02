@@ -1,17 +1,17 @@
+import AlphaCenModule as AC
+import Merc
+from mks_constants import G, mSun, mEarth, AU, day, deg2rad, rad2deg
+import numpy as np
+from numpy import pi, sin, cos, arccos, exp, log, log10, sqrt, linspace
+from random import random, uniform
+import matplotlib
+from matplotlib import cm, colors
 import os, re
 import os.path
-import numpy as np
-import AlphaCenModule as AC
-from numpy import pi, sin, cos, arccos, exp, log, log10, sqrt
-#from math import pi, sin, cos, sqrt	# some modules used to use these
 from operator import add
 import subprocess
-from mks_constants import G, mSun, mEarth, AU, day, deg2rad, rad2deg
-from random import random, uniform
 from operator import add
 import matplotlib.pyplot as plt
-import matplotlib
-#import rvtest as rv	#what was this for?
 
 ###############################################################################
 def FileLength(fname):
@@ -215,7 +215,7 @@ def MakeBigRand(WhichDir,WhichTime, cent,
 	aei = [[aB, eB, iB, gB, nB, MB], 
 		   [aC, eC, iC, gC, nC, MC]]
 
-### Read generic big.in file header	
+### Read generic big.in file header; should move this into the main file	
 	BigHeadFile=open('BigHeader.txt','r')
 	BigHeader=BigHeadFile.readlines()
 	BigHeadFile.close()
@@ -689,7 +689,7 @@ def MakeSmallTestDisk(WhichDir,nmax=100,m='default',amin = 0.1,
 #	plt.savefig('vorb_issue.png')
 #	plt.clf()
 
-### Read generic small.in file header	
+### Read generic small.in file header; should move this into the main file	
 	SmlHeadFile=open('SmlHeader.txt','r')
 	SmlHeader=SmlHeadFile.readlines()
 	SmlHeadFile.close()
@@ -820,7 +820,7 @@ def ReadAei(WhichDir, filename, index1=-1, index2=None):
 
 ###############################################################################
 def GetT(WhichDir, filename, index1=-1, index2=0):
-	'''Read .aei file to get time array'''
+	'''Read .aei file to get time array. For whole file, index1=4'''
 
 	print('	--GetT         '+WhichDir+'/Out/AeiOutFiles/'+filename+', '+\
 		   str(index1)+':'+str(index2))
@@ -1329,10 +1329,10 @@ def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 	return(aC, eC, iC, epsC, kC, uC, rC_AB, vC_AB)
 
 ###############################################################################
-def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
+def WriteTimeData(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
-	print('WriteAEI      '+WhichDir)
+	print('WriteTimeData      '+WhichDir)
 
 ### Calculate default values from data in directory
 	if m == 'dflt':
@@ -1352,7 +1352,7 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 		else:
 			mode = 'triple'
 ### Column width in output
-	wn = [9]+2*[9,9,11,9,9,9,9]
+	wn = [9]+2*[9,9,11,9,9,9,9]+[9]
 	ws = [str(i) for i in wn]
 
 ### Get final orbit data from mercury's .aei files and analysis
@@ -1385,6 +1385,13 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 	pB = aB*(1-eB)
 	pC = aC*(1-eC)
 
+### If disk was simulated, find truncation radius
+	if 'Disk' in WhichDir:
+		dummy,dummy,dummy,rtr = AC.CalcDisk(WhichDir)
+		assert len(rtr)==len(rB) 
+	else:
+		rtr = np.array([float('NaN') for i in range(len(rB))])
+
 ### Make array of the binary and triple parameters over time
 	data   = np.transpose(np.array([
 				[(  '%9.3e' % i) for i in     t],
@@ -1401,11 +1408,12 @@ def WriteAEI(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 				[( '% 9.1f' % i) for i in aC/AU],
 				[(  '%9.5f' % i) for i in    eC],
 				[(  '%9.3f' % i) for i in    iC],
-				[( '% 9.2f' % i) for i in pC/AU] ]))
+				[( '% 9.2f' % i) for i in pC/AU],
+				[( '% 9.2f' % i) for i in   rtr] ]))
 	datalist = [' '.join(row)+'\n' for row in data]
 
 	hdr = np.array(['t','rB', 'vB', 'epsB', 'aB', 'eB', 'iB','pB',
-						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC','pC'])
+						 'rC', 'vC', 'epsC', 'aC', 'eC', 'iC','pC','rtr'])
 	hdr = ' '.join([hdr[i].rjust(wn[i]) for i in range(len(hdr))])+'\n'
 
 ### Write data to file
@@ -1936,6 +1944,202 @@ def SumAll(WhichDirs,cent,suffix=''):
 #		'         rBf          EBf         rCf          ECf'+\
 #		'            tB    destB            tC    destC\n')
 #	SumFile.close()
+###############################################################################
+def ReadDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
+	'''Read in full time-dependent data on all objects from an AC Disk simulation'''
+		
+	print('ReadDisk     '+WhichDir)
+
+	### Get list initial objects
+	objsB = Merc.ReadInObjList(WhichDir+'/In/','big.in')
+	center = objsB[0]   # this is the object the small bodies are orbiting
+	objsS = Merc.ReadInObjList(WhichDir+'/In/','small.in',centerobj=center)
+	namelist = np.array([o.name for o in objsB]+[o.name for o in objsS])
+	alist    = [o.a()  for o in objsS]
+	elist    = [o.e()  for o in objsS]
+	mlist    = [o.mass for o in objsS]
+	# Read in AEI data on disk objects
+	nobjs  = len(namelist)  # big+small
+	nparam = 6              # x y z vx vy vz
+	ntime,time  = AC.GetNTime(WhichDir)     # n timesteps in longest aei file
+	xv = np.empty((nobjs,ntime,nparam))
+	xv.fill(np.nan)
+	for ind, obj in enumerate(namelist):
+		thisxv      = AC.ReadAei(WhichDir, obj, index1=None)
+		xv[ind,0:thisxv.shape[0],:] = thisxv
+
+	return(xv, namelist, time)
+
+###############################################################################
+def CalcDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
+
+	# Read in xv with dims (nobjs, ntime, nparam)
+	xv, namelist, time = AC.ReadDisk(WhichDir)
+	starmask = np.array([n     in ['AlCenA','AlCenB','PrxCen'] for n in namelist])
+	diskmask = np.array([n not in ['AlCenA','AlCenB','PrxCen'] for n in namelist])
+	diskxv = xv[diskmask,:,:]
+
+	nobjs, ntimes, nparams = diskxv.shape
+	# Calculate distance from central body for each obj at each time
+	CentPos = xv[0,:,:]
+	rbin = np.sqrt( sum( [ CentPos[:,i]**2 for i in range(3) ] ) )
+	r = np.sqrt( sum( [ (diskxv[:,:,i]-CentPos[:,i])**2 for i in range(3) ] ) )
+
+	# Arrays for which objects are surviving/stable at each timestep
+	surv = np.zeros((nobjs,ntimes),dtype='int')
+	stab = np.zeros((nobjs,ntimes),dtype='int')
+	for i in range(nobjs):
+		for j in range(ntimes):
+			if ( abs(r[i,j]-r[i,0])/r[i,0] < 0.15):
+				surv[i,j] = 1
+				stab[i,j] = 1
+			elif ( not np.isnan(r[i,j]) ):
+				surv[i,j] = 1
+				stab[i,j] = 0
+			else:
+				surv[i,j] = 0
+				stab[i,j] = 0
+
+	# Calculate percent of objs surviving at each step
+	survper = [sum(surv[surv[:,j]>0, j])/nobjs for j in range(ntimes)]
+	stabper = [sum(stab[stab[:,j]>0, j])/nobjs for j in range(ntimes)]
+	### Calculate truncation radius over time
+	# Calculate avg stability on either side of each obj at each timestep
+	abov = np.zeros((nobjs,ntimes),dtype='float')
+	belw = np.zeros((nobjs,ntimes),dtype='float')
+	for i in range(nobjs):
+		belw[i,:] = np.mean(stab[0:(i+1),:],axis=0)
+		if (i < nobjs-1):
+			abov[i,:] = np.mean(stab[range((i+1),nobjs),:],axis=0)
+		else:
+			abov[i,:] = 0.  # or stab[i,:] ?
+	# how closely does each point fit a solid disk with nothing beyond?
+	sidefits = (1.-belw) + (abov)
+	# smooth fit by taking 3-point moving average
+	smtha = np.array([[np.mean(sidefits[0:2,j])]       for j in range(ntimes)])
+	smthb = np.array( [Merc.MovingAvg(sidefits[:,j],3) for j in range(ntimes)])
+	smthc = np.array([[np.mean(sidefits[-2:,j])]       for j in range(ntimes)])
+	sidesmth = np.transpose(np.concatenate(( smtha, smthb, smthc ),axis=1))
+	# Fit edge of surviving disk
+	edge = np.zeros((ntimes),dtype='int')
+	for j in range(ntimes):
+		if all( sidefits[:,j]==1 ): 
+			edge[j] = nobjs 
+		else:
+			mininds = Merc.which( sidesmth[:,j],min(sidesmth[:,j]) )
+			if len(mininds)>1:
+				print('Multiple minimums: row {0}, inds {1}'.format(j,mininds))
+			edge[j] = np.mean( mininds )
+	# get truncation radius (original orbit of outermost stable particle)
+	rtr = np.array([r[edge[t],0] for t in range(ntimes)])
+
+	return(WhichDir,time,r,rtr)
+
+###############################################################################
+def PlotDisk((WhichDir,time,r,rtr), samprate=1000):
+	'''Plot Disk data. First input is (CalcDisk()) output.'''
+
+	nobjs, ntimes = r.shape
+	
+	### Assign colors for plot based on each object's stability over time
+	# ndisk numbers spaced linearly from 0 to 1
+	colspacing = linspace(0., 1., nobjs) 
+	# use above spacing to generate ndnobjsisk colors from heat colormap
+	disk_cols = np.array([ cm.gist_heat(x) for x in colspacing ])
+	# rgba of needed colors
+	star_col  = colors.hex2color(colors.cnames['blue'])+(1.,)
+	unst_col  = colors.hex2color(colors.cnames['lightgray'])+(1.,)
+	ejec_col  = colors.hex2color(colors.cnames['gray'])+(1.,)
+
+	# fill an array with the color for each object/time
+	cols = np.empty((nobjs,ntimes,4.))
+	for i in range(nobjs):
+		for j in range(ntimes):
+			if ( abs(r[i,j]-r[i,0])/r[i,0] < 0.15):
+				cols[i,j,:] = disk_cols[i]
+			elif ( not np.isnan(r[i,j]) ):
+				cols[i,j,:] = unst_col
+			else:
+				cols[i,j,:] = ejec_col
+
+	# Resample with log10 spacing to plot:
+	# set up time spacing
+	logt_goal = log10(time[1]) + \
+			(log10(time[-1])-log10(time[1]))* \
+			np.array(range(samprate)).astype(float)/(samprate-1.)
+	t_goal = 10.**logt_goal
+	# find indices in old time array that closest match resampled times
+	tind_resamp = np.zeros((samprate),dtype='int')
+	for j in range(samprate):
+		tdist   = np.abs(t_goal[j]-time)
+		tind_resamp[j] = np.array(range(len(time)),dtype='int')[tdist == min(tdist)][0]
+	t_resamp = time[tind_resamp]
+	logt_resamp = np.log10(t_resamp)
+	# find values of other parameters at the resampled times
+	rtr_resamp = rtr[tind_resamp]
+	# Resampled image colors and rtr
+	img = np.empty( (nobjs, samprate, 4) )
+	for i in range(nobjs):
+		for j,t_ind in enumerate(tind_resamp):
+			# find closest value of time to resampt
+			img[i,j,:] = cols[i, t_ind, :]
+
+	# Set up figure
+	f, ax1 = plt.subplots(2,figsize=(6,10))
+	# grid of colors
+	imglims = [ min(logt_resamp), max(logt_resamp), min(r[:,0]), max(r[:,0]) ]
+	ax1[0].imshow(img[:,:], interpolation='nearest', aspect='auto',
+		origin='lower', extent = imglims)
+	ax1[0].set_xlabel('log10(t) (yrs)')
+	ax1[0].set_ylabel('r/p_bin')	# pbin changes over time -- is this final?
+	ax1[0].set_xlim(imglims[:2])
+	ax1[0].set_ylim(imglims[2:])
+
+	# trace truncation radius
+	ax1[0].plot(logt_resamp,rtr_resamp)
+
+	# colored lines
+	for i,ri in enumerate(r):
+		ax1[1].plot(time, ri, color=cols[i,-1,:])
+
+	ax1[1].set_xscale('log')
+#	ax1[1].set_yscale('log')
+
+	ax1[1].set_ylim((0.1,11))
+
+	ax1[1].set_xlabel('t')
+	ax1[1].set_ylabel('a')
+
+#	plt.show()
+	f.savefig(WhichDir+'/Disk.png')
+	f.clf()
+	plt.close(f)
+
+###############################################################################
+def GetNTime(WhichDir,AeiDir='/Out/AeiOutFiles/'):
+	'''Get number of timesteps and the time array from the longest .aei file'''
+
+	AeiDir = WhichDir+AeiDir
+	### Get list of files in AeiOutDir
+	for root, dirs, files in os.walk(AeiDir):
+		filelist=files
+	filelist=np.array(filelist)
+	validname = np.array([('.aei' in i) for i in filelist])
+	filelist = filelist[validname]
+### Get list of file sizes
+	size=[]
+	for f in filelist:
+		size.append(os.path.getsize(AeiDir+f))
+	size=np.array(size)
+	### Get table dimensions of first on the list of max-length .aei files
+	longfiles = filelist[size == np.max(size)]
+	xv = AC.ReadAei(WhichDir, longfiles[0].strip('.aei'), None)
+	ntime=xv.shape[0]
+	# Get time array from this file
+	time = AC.GetT(WhichDir,longfiles[0].strip('.aei'), 4,None)
+
+	return(ntime,time)
+
 ###############################################################################
 
 
