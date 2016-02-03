@@ -4,14 +4,17 @@ from mks_constants import G, mSun, mEarth, AU, day, deg2rad, rad2deg
 import numpy as np
 from numpy import pi, sin, cos, arccos, exp, log, log10, sqrt, linspace
 from random import random, uniform
-import matplotlib
-from matplotlib import cm, colors
 import os, re
 import os.path
 from operator import add
 import subprocess
 from operator import add
-import matplotlib.pyplot as plt
+import socket
+if 'hammer' not in socket.gethostname():
+	print("Warning: hammer doesn't have matplotlib!")
+	import matplotlib
+	from matplotlib import cm, colors
+	import matplotlib.pyplot as plt
 
 ###############################################################################
 def FileLength(fname):
@@ -795,8 +798,8 @@ def Elem(WhichDir):
 def ReadAei(WhichDir, filename, index1=-1, index2=None):
 	'''Read .aei file to get xyz and uvw (in AU and m/s respectively)'''
 
-	print('	--ReadAei      '+WhichDir+'/Out/AeiOutFiles/'+filename+', '+\
-		   str(index1)+':'+str(index2))
+#	print('	--ReadAei      '+WhichDir+'/Out/AeiOutFiles/'+filename+', '+\
+#		   str(index1)+':'+str(index2))
 
 
 ### Get last positions for surviving objects
