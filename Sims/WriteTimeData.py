@@ -15,15 +15,15 @@ Dirs = Dirs1+Dirs2+Dirs3+Dirs4
 for i,d in enumerate(Dirs):
 	thisdir = d+'/Original'
 	print(thisdir)
-	AC.WriteAEI(thisdir)	
+	AC.WriteTimeData(thisdir)	
 
 	thisdir = d+'/DiskB-2'
 	print(thisdir)
-	AC.WriteAEI(thisdir)	
+	AC.WriteTimeData(thisdir)	
 
 	thisdir = d+'/DiskB-3'
 	print(thisdir)
-	AC.WriteAEI(thisdir)	
+	AC.WriteTimeData(thisdir)	
 
 
 
