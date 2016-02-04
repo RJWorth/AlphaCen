@@ -1334,7 +1334,7 @@ def Triple(m, xv, ind, DestB, xvA_AU, xvCM_AB, xvAB):
 def WriteTimeData(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 	'''Get the time-dependent data and write in a usable way to TimeData.txt'''
 		
-	print('WriteTimeData      '+WhichDir)
+	print('        --WriteTimeData      '+WhichDir)
 
 ### Calculate default values from data in directory
 	if m == 'dflt':
@@ -1390,7 +1390,10 @@ def WriteTimeData(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 ### If disk was simulated, find truncation radius
 	if 'Disk' in WhichDir:
 		dummy,dummy,dummy,rtr = AC.CalcDisk(WhichDir)
-		assert len(rtr)==len(rB) 
+		assert len(rtr)>=len(rB),'Disk aei files not full length -- outdated?'
+		if len(rtr)>len(rB):
+			print('Warning: stars live shorter than disk particles; truncating rtr')
+			rtr = rtr[:len(rB)]
 	else:
 		rtr = np.array([float('NaN') for i in range(len(rB))])
 
@@ -1947,10 +1950,10 @@ def SumAll(WhichDirs,cent,suffix=''):
 #		'            tB    destB            tC    destC\n')
 #	SumFile.close()
 ###############################################################################
-def ReadDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
+def ReadDisk(WhichDir):
 	'''Read in full time-dependent data on all objects from an AC Disk simulation'''
 		
-	print('ReadDisk     '+WhichDir)
+	print('        --ReadDisk     '+WhichDir)
 
 	### Get list initial objects
 	objsB = Merc.ReadInObjList(WhichDir+'/In/','big.in')
@@ -1963,7 +1966,7 @@ def ReadDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
 	# Read in AEI data on disk objects
 	nobjs  = len(namelist)  # big+small
 	nparam = 6              # x y z vx vy vz
-	ntime,time  = AC.GetNTime(WhichDir)     # n timesteps in longest aei file
+	ntime,time  = AC.GetNTime(WhichDir,namelist=namelist)     # n timesteps in longest aei file
 	xv = np.empty((nobjs,ntime,nparam))
 	xv.fill(np.nan)
 	for ind, obj in enumerate(namelist):
@@ -1973,7 +1976,7 @@ def ReadDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
 	return(xv, namelist, time)
 
 ###############################################################################
-def CalcDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
+def CalcDisk(WhichDir):
 
 	# Read in xv with dims (nobjs, ntime, nparam)
 	xv, namelist, time = AC.ReadDisk(WhichDir)
@@ -2012,28 +2015,41 @@ def CalcDisk(WhichDir='Proxlike/Prx03/DiskB-3'):
 	for i in range(nobjs):
 		belw[i,:] = np.mean(stab[0:(i+1),:],axis=0)
 		if (i < nobjs-1):
-			abov[i,:] = np.mean(stab[range((i+1),nobjs),:],axis=0)
+			abov[i,:] = np.mean(stab[(i+1):,:],axis=0)
 		else:
 			abov[i,:] = 0.  # or stab[i,:] ?
 	# how closely does each point fit a solid disk with nothing beyond?
 	sidefits = (1.-belw) + (abov)
 	# smooth fit by taking 3-point moving average
-	smtha = np.array([[np.mean(sidefits[0:2,j])]       for j in range(ntimes)])
-	smthb = np.array( [Merc.MovingAvg(sidefits[:,j],3) for j in range(ntimes)])
-	smthc = np.array([[np.mean(sidefits[-2:,j])]       for j in range(ntimes)])
-	sidesmth = np.transpose(np.concatenate(( smtha, smthb, smthc ),axis=1))
+#	smtha = np.array([[np.mean(sidefits[0:2,j])]       for j in range(ntimes)])
+#	smthb = np.array( [Merc.MovingAvg(sidefits[:,j],3) for j in range(ntimes)])
+#	smthc = np.array([[np.mean(sidefits[-2:,j])]       for j in range(ntimes)])
+#	sidesmth = np.transpose(np.concatenate(( smtha, smthb, smthc ),axis=1))
 	# Fit edge of surviving disk
 	edge = np.zeros((ntimes),dtype='int')
 	for j in range(ntimes):
 		if all( sidefits[:,j]==1 ): 
-			edge[j] = nobjs 
+			if all(belw[:,j]==0) and all(abov[:,j]==0):
+				if stab[0,j] == 0:
+					# no disk left
+					edge[j] = -1
+				elif stab[0,j] == 1:
+					# only innermost particle
+					edge[j] = 0
+			elif all(belw[:,j]==1) and all(abov[:,j]==1):
+				# full disk
+				edge[j] = nobjs-1 
+			else:
+				assert 0==1, 'Edge fitting algorithm is broken!'
 		else:
-			mininds = Merc.which( sidesmth[:,j],min(sidesmth[:,j]) )
+			mininds = Merc.which( sidefits[:,j],min(sidefits[:,j]) )
 			if len(mininds)>1:
-				print('Multiple minimums: row {0}, inds {1}'.format(j,mininds))
+				print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,mininds))
 			edge[j] = np.mean( mininds )
 	# get truncation radius (original orbit of outermost stable particle)
-	rtr = np.array([r[edge[t],0] for t in range(ntimes)])
+	# add last row of zeros, for cases with no disk left
+	rbound = np.concatenate(( r, np.zeros((1,ntimes)) ), axis=0 )
+	rtr = np.array([rbound[edge[t],0] for t in range(ntimes)])
 
 	return(WhichDir,time,r,rtr)
 
@@ -2118,16 +2134,20 @@ def PlotDisk((WhichDir,time,r,rtr), samprate=1000):
 	plt.close(f)
 
 ###############################################################################
-def GetNTime(WhichDir,AeiDir='/Out/AeiOutFiles/'):
+def GetNTime(WhichDir,AeiDir='/Out/AeiOutFiles/',namelist='search'):
 	'''Get number of timesteps and the time array from the longest .aei file'''
 
 	AeiDir = WhichDir+AeiDir
-	### Get list of files in AeiOutDir
-	for root, dirs, files in os.walk(AeiDir):
-		filelist=files
-	filelist=np.array(filelist)
-	validname = np.array([('.aei' in i) for i in filelist])
-	filelist = filelist[validname]
+	### If namelist not specified, get list of files in AeiOutDir
+	if np.all(namelist=='search'):
+		for root, dirs, files in os.walk(AeiDir):
+			filelist=files
+		filelist=np.array(filelist)
+		validname = np.array([('.aei' in i) for i in filelist])
+		filelist = filelist[validname]
+	else:
+		filelist = np.array([n+'.aei' for n in namelist])
+
 ### Get list of file sizes
 	size=[]
 	for f in filelist:

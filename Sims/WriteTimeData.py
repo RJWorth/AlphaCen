@@ -11,6 +11,7 @@ Dirs4 = ['Proxlike/081414/Prx'+'{0:02}'.format(i) for i in range(1,9)]
 Dirs = Dirs1+Dirs2+Dirs3+Dirs4
 
 #Dirs = Dirs[0:2]
+Dirs = Dirs[24:]
 
 for i,d in enumerate(Dirs):
 	thisdir = d+'/Original'
