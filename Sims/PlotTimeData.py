@@ -4,7 +4,8 @@ import AlphaCenModule as AC
 import Merc
 import matplotlib.pyplot as plt
 from astropy.io import ascii
-from statsmodels.robust.scale import mad
+from statsmodels.robust.scale import mad as madfn
+import pickle
 
 ### Laptop data locations
 Dirs1 = ['d'+'{0:02}'.format(i) for i in range(1,35)]
@@ -12,50 +13,60 @@ Dirs2 = ['a'+   '{0}'.format(i) for i in range(1,13)]
 Dirs3 = ['b'+'{0:02}'.format(i) for i in range(1,27)]
 Dirs4 = ['c'+'{0:02}'.format(i) for i in range(1,9)]
 
-Dirs = Dirs1+Dirs2+Dirs3+Dirs4
-Dirs = Dirs[0:2]
+Dirs = Dirs2+Dirs3+Dirs4+Dirs1
+#Dirs = Dirs[0:2]
 ndir = len(Dirs)
 
 ### Code for Original, DiskB-2, and DiskB-3 versions of each sim
 vers = ['O','2','3']
 
+### Object class to easily fill one line of data into summary format string
+#-----------------------------------------------------------------------------#
+#class Line(object):
+#	'''Line of data on one sim/vers, for summary.'''
+#	def __init__(self, dr,vrs,tf,
+#				aBf,eBf, aCf,eCf,
+#				minpB,mintB,minpC,mintC,
+#				iMf,rtrf):
+#		self.dr     = dr
+#		self.vrs   = vrs
+#		self.tf     = tf
+#		self.aBf    = aBf
+#		self.eBf    = eBf
+#		self.aCf    = aCf
+#		self.eCf    = eCf
+#		self.minpB  = minpB
+#		self.mintB  = mintB
+#		self.minpC  = minpC
+#		self.mintC  = mintC
+#		self.iMf    = iMf
+#		self.rtrf   = rtrf
+#-----------------------------------------------------------------------------#
+# names of columns in summary
+hdrcols =  ['dr','vrs',  'tf',  'aBf', 'eBf', 'pBf',  'apBf',
+								'aCf', 'eCf', 'pCf',  'apCf',
+					'minpB','mintB','minpC','mintC', 'iMf','rtrf','rpf','rpm']
+# dtype for each column in summary as structured array
+#sumformat= [' >S3',' >S3','9.2e',' 6.2f',' 8.4f',' 6.2f',' 6.2f',
+#				'8.1f','8.4f','8.1f','8.1f',
+#					  '7.2f', '9.2e', '7.2f', '9.2e','6.1f','6.2f','7.4f']
+sumdtype  = {'names':hdrcols, 
+'formats':[ 'S3','S3', 'f', 'f','f','f','f',
+				'f','f','f','f', 
+			'f','f', 'f', 'f','f','f','f','f']}
+# column widths (can this be better extracted from sumdtype?
+widths  =  [   3,    3,     9,      6,      8,      6,      6,    
+									8,     8,       8,      8,      
+					7,      9,     7,   9, 6, 6, 7,7]
+assert len(hdrcols) == len(widths) == len(sumdtype['formats']), \
+	'lengths of format strings not equal! {0} {1} {2}'.format(
+	   len(hdrcols) == len(widths) == len(sumdtype['formats']))
 ### Format string for columns wanted in summary
-fmt =    '{0.dr: >3}'   +' {0.vrs: >3}' +' {0.tf:9.2e}'   +\
-		' {0.aBf: 6.2f}'  +' {0.eBf: 8.4f}'  +' {0.aCf: 8.1f}'  +' {0.eCf: 8.4f}'  +\
-		' {0.minpB:7.2f}'+' {0.mintB:9.2e}'+' {0.minpC:7.2f}'+' {0.mintC:9.2e}'+\
-		' {0.iMf:6.1f}'  +' {0.rtrf:6.2f}'
-### Object class to easily fill one line of data into above
-#-----------------------------------------------------------------------------#
-class Line(object):
-	'''Line of data on one sim/vers, for summary.'''
-	def __init__(self, dr,vrs,tf,
-				aBf,eBf, aCf,eCf,
-				minpB,mintB,minpC,mintC,
-				iMf,rtrf):
-		self.dr     = dr
-		self.vrs   = vrs
-		self.tf     = tf
-		self.aBf    = aBf
-		self.eBf    = eBf
-		self.aCf    = aCf
-		self.eCf    = eCf
-		self.minpB  = minpB
-		self.mintB  = mintB
-		self.minpC  = minpC
-		self.mintC  = mintC
-		self.iMf    = iMf
-		self.rtrf   = rtrf
-#-----------------------------------------------------------------------------#
-### header text for summary file
-#hdr = Line('dr','vrs','tf', 'aBf', 'eBf', 'aCf', 'eCf',
-#						'minpB','mintB','minpC','mintC',
-#						'iMf','rtrf')
-hdrcols = ['dr','vrs','tf', 'aBf', 'eBf', 'aCf', 'eCf', 'minpB','mintB','minpC','mintC','iMf','rtrf']
-widths  = [   3,    3,   9,     6,     8,     8,     8,       7,      9,      7,      9,    6,     6]
+fmt=' '.join( ['{0.[''+hdrcols[i]+'']:'+sumdtype['formats'][i]+'}' for i in range(len(hdrcols)) ] )
+# make header string of column names to print at top of file
 hdrstr = ' '.join(['{0['+str(i)+']: >'+str(w)+'}' for i,w in enumerate(widths)])
 hdr = hdrstr.format(hdrcols)
-#summary=[hdr]
-summary=[]
+summary=np.zeros( (ndir*3), dtype = sumdtype)
 
 for i,d in enumerate(Dirs):
 ### Read in TimeData.txt
@@ -100,8 +111,12 @@ for i,d in enumerate(Dirs):
 		tf    = t[l][-1]
 		aBf   = aB[l][-1]
 		eBf   = eB[l][-1]
+		pBf   = aBf*(1-eBf)
+		apBf  = aBf*(1+eBf)
 		aCf   = aC[l][-1]
 		eCf   = eC[l][-1]
+		pCf   = aCf*(1-eCf)
+		apCf  = aCf*(1+eCf)
 		minpB = min(pB[l])
 		mintB = t[l][Merc.which(pB[l],minpB)]
 		if not all(np.isnan(pC[l])):
@@ -113,14 +128,15 @@ for i,d in enumerate(Dirs):
 			print('Warning: pC = nan, but vers not B-2!')
 		iMf   = iM[l][-1]
 		rtrf  = rtr[l][-1]
+		rpf   = rtrf/pBf
+		rpm   = rtrf/minpB
 		# add to summary
-		line = Line(dr,vrs,tf,aBf,eBf,aCf,eCf,
-						minpB,max(mintB),minpC,max(mintC),iMf,rtrf)
-#		newline = np.array(
-#					[(d, l, minpC[l], max(tmin[l]), iM[l][-1],rtr[l][-1])], 
-#								dtype=summary.dtype)
-#		summary = np.append(summary,newline)
-		summary = np.append(summary, line)
+#		line = np.array([[dr,vrs,tf, aBf,eBf,pBf,apBf,
+#									 aCf,eCf,pCf,apCf,
+#						minpB,max(mintB),minpC,max(mintC),iMf,rtrf]])
+		summary[3*i+l] = dr,vrs,tf, aBf,eBf,pBf,apBf, aCf,eCf,pCf,apCf,\
+						minpB,max(mintB),minpC,max(mintC),iMf,rtrf,rpf,rpm
+
 	### Plot star orbits for Original and DiskB-3
 	for ind,l in enumerate([0,2]):
 		ax[ind].set_xscale('log')
@@ -219,14 +235,104 @@ for i,d in enumerate(Dirs):
 	plt.clf()
 	plt.close(f)
 
+### Convert summary to record array
+summary = np.rec.array(summary)
+from prettytable import PrettyTable
+prettysum = PrettyTable(summary.dtype.names)
+for row in summary:
+	prettysum.add_row(row)
+prettysum.align='r'
+### Save summary in human-readable text file
 sumfile = open('TimeData/DiskSummary.txt','w')
-sumfile.write(hdr+'\n')
-for line in summary:
-	sumfile.write(fmt.format(line)+'\n')
+#sumfile.write(hdr+'\n')
+#for line in summary:
+#	sumfile.write(fmt.format(line)+'\n')
+sumfile.write(str(prettysum))
 sumfile.close()
+### Pick summary to read back into python
+pickle.dump( summary, open('TimeData/DiskSummary.pkl','wb') )
+
 #ascii.write(summary,'TimeData/PeriSummary.txt')
 
-### Array sof data I want stats on
+### Arrays of data I want stats on
+# masks
+prx = np.array(summary['apCf']>10000.)
+v0  = np.array(summary['vrs']=='O')
+v2  = np.array(summary['vrs']=='2')
+v3  = np.array(summary['vrs']=='3')
+sml = np.array(summary['rpf']<0.2)
+
+with open('TimeData/Stats.txt','w') as StatsFile:
+	StatsFile.write('Truncation Radius Statistics for various slices\n')
+
+#-----------------------------------------------------------------------------#
+def PrintStats(x, f=''):
+	if (len(x) ==0):
+		assert 0==1, 'nothing passed to fn'
+	x = np.array(x)
+	nonanx = np.array([~np.isnan(x)])
+	l    = len(x)
+	nnan = sum(np.isnan(x))
+	med  = np.median(x[~np.isnan(x)])
+	mad  = np.median(abs( x[~np.isnan(x)] - med ))/0.6745
+	mean = np.nanmean(x)
+	std  = np.nanstd(x)
+	xmin = np.nanmin(x)
+	xmax = np.nanmax(x)
+	if f=='':
+		print('{l:3} objs, {n:3} nans ({xmin:5.3f}--{xmax:5.3f})\n'.format(
+											l=l,n=nnan,xmin=xmin,xmax=xmax))
+		print('med = {med:5.3f} +- {mad:5.3f}\n'.format(med=med,mad=mad))
+		print('mn  = {mean:5.3f} +- {std:5.3f}\n'.format(mean=mean, std=std))
+	else: 
+		with open('TimeData/Stats.txt','a') as StatsFile:
+			f.write('{l:3} objs, {n:3} nans ({xmin:5.3f}--{xmax:5.3f})\n'.format(
+											l=l,n=nnan,xmin=xmin,xmax=xmax))
+			f.write('med = {med:5.3f} +- {mad:5.3f}\n'.format(med=med,mad=mad))
+			f.write('mn  = {mean:5.3f} +- {std:5.3f}\n'.format(mean=mean, std=std))
+
+#-----------------------------------------------------------------------------#
+with open('TimeData/Stats.txt','a') as StatsFile:
+	StatsFile.write('-------------------rtrf-All-------------------------\n')
+	PrintStats(summary[:]['rtrf'],StatsFile)
+	StatsFile.write('-------------------rtrf-v2--------------------------\n')
+	PrintStats(summary[v2]['rtrf'],StatsFile)
+	StatsFile.write('-------------------rtrf-v3--------------------------\n')
+	PrintStats(summary[v3]['rtrf'],StatsFile)
+	StatsFile.write('-------------------rtrf-v3 & prx--------------------\n')
+	PrintStats(summary[prx & v3]['rtrf'],StatsFile)
+
+	StatsFile.write('\n-------------------rpf---All-------------------------\n')
+	PrintStats(summary[:]['rpf'],StatsFile)
+	StatsFile.write('-------------------rpf---v2--------------------------\n')
+	PrintStats(summary[v2]['rpf'],StatsFile)
+	StatsFile.write('-------------------rpf---v3--------------------------\n')
+	PrintStats(summary[v3]['rpf'],StatsFile)
+	StatsFile.write('-------------------rpf---v3 & prx--------------------\n')
+	PrintStats(summary[prx & v3]['rpf'],StatsFile)
+
+	StatsFile.write('\n-------------------rpm---All-------------------------\n')
+	PrintStats(summary[:]['rpm'],StatsFile)
+	StatsFile.write('-------------------rpm---v2--------------------------\n')
+	PrintStats(summary[v2]['rpm'],StatsFile)
+	StatsFile.write('-------------------rpm---v3--------------------------\n')
+	PrintStats(summary[v3]['rpm'],StatsFile)
+	StatsFile.write('-------------------rpm---v3 & prx--------------------\n')
+	PrintStats(summary[prx & v3]['rpm'],StatsFile)
+
+	StatsFile.write('\n-------------------iM---All-------------------------\n')
+	PrintStats(summary[:]['iMf'],StatsFile)
+	StatsFile.write('-------------------iM---Sml-------------------------\n')
+	PrintStats(summary[sml]['iMf'],StatsFile)
+	StatsFile.write('-------------------iM---Nrm-------------------------\n')
+	PrintStats(summary[~sml]['iMf'],StatsFile)
+
+
+#fmt=' '.join( ['{0.[''+hdrcols[i]+'']:'+sumdtype['formats'][i]+'}' for i in range(len(hdrcols)) ] )
+#summary=np.zeros( (ndir*3), dtype = sumdtype)
+
+
+
 #minp  = summary['minpC']
 #pf    = summary['minpC']
 #minpO = minp[summary['vers']==0]
@@ -249,9 +355,8 @@ sumfile.close()
 #print(np.concatenate( ( np.array([
 #	['med'],['mad'],['mn'],['std'],['min'],['max']], dtype='S6'), 
 #	stats), axis=1) )
-### Plot pericenters
 
-#f2, ax2 = plt.subplots(2,2)
+
 
 #ax2[0,0].set_xscale('log')
 ##ax2[l].set_yscale('log')
@@ -264,10 +369,69 @@ sumfile.close()
 #ax2[1,1].hist(minp3)
 #ax2[1,1].set_xlabel('Trip min(pericenter)')
 
-#plt.savefig('TimeData/Summaries.png')
-##plt.savefig('TimeData/Summaries.eps',format='eps',dpi=1000)
-#plt.clf()
-#plt.close(f2)
+### Plot summary data
+nsamp = 50
+rV2Prx    = summary[v2 &  prx]['rtrf']
+rV2NonPrx = summary[v2 & ~prx]['rtrf']
+rV3Prx    = summary[v3 &  prx]['rtrf']
+rV3NonPrx = summary[v3 & ~prx]['rtrf']
+rbins = np.linspace(np.nanmin(summary['rtrf']), np.nanmax(summary['rtrf']), nsamp+1)
+
+rpV2Prx    = summary[v2 &  prx]['rpf']
+rpV2NonPrx = summary[v2 & ~prx]['rpf']
+rpV3Prx    = summary[v3 &  prx]['rpf']
+rpV3NonPrx = summary[v3 & ~prx]['rpf']
+
+rpbins = np.linspace(np.nanmin(summary['rpf']), np.nanmax(summary['rpf']), nsamp+1)
+
+
+f2, ax2 = plt.subplots(3,2)
+
+# histograms of rtrf (AU) rp (r/pB)
+if len(rV2NonPrx) != 0:
+	ax2[0,0].hist( rV2NonPrx, rbins)
+	ax2[0,0].legend()
+	ax2[0,0].set_title('rTr: B-2')
+if len(rV3Prx) != 0:
+	ax2[1,0].hist( rV3Prx, rbins)
+	ax2[1,0].legend()
+	ax2[1,0].set_title('rTr: B-3, Prx')
+if len(rV3NonPrx) != 0:
+	ax2[2,0].hist( rV3NonPrx, rbins)
+	ax2[2,0].legend()
+	ax2[2,0].set_title('rTr: B-3, Non')
+
+(x1a, x2a) = ax2[0,0].get_xlim()
+(x1b, x2b) = ax2[1,0].get_xlim()
+(x1c, x2c) = ax2[2,0].get_xlim()
+ax2[0,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+ax2[1,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+ax2[2,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+
+if len(rpV2NonPrx) != 0:
+	ax2[0,1].hist( rpV2NonPrx, rpbins)
+	ax2[0,1].legend()
+	ax2[0,1].set_title('rP: B-2')
+if len(rpV3Prx) != 0:
+	ax2[1,1].hist( rpV3Prx, rpbins)
+	ax2[1,1].legend()
+	ax2[1,1].set_title('rP: B-3, Prx')
+if len(rpV3NonPrx) != 0:
+	ax2[2,1].hist( rpV3NonPrx, rpbins)
+	ax2[2,1].legend()
+	ax2[2,1].set_title('rP: B-3, Non')
+
+(x1a, x2a) = ax2[0,1].get_xlim()
+(x1b, x2b) = ax2[1,1].get_xlim()
+(x1c, x2c) = ax2[2,1].get_xlim()
+ax2[0,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+ax2[1,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+ax2[2,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+
+plt.savefig('TimeData/Summaries.png')
+#plt.savefig('TimeData/Summaries.eps',format='eps',dpi=1000)
+plt.clf()
+plt.close(f2)
 
 
 
