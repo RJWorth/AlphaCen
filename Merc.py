@@ -503,10 +503,13 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big',
 	elif (infile == 'small'):
 		vers = 1
 
-	header = ')O+_06 '+['Big','Small'][vers]+ \
-"-body initial data  (WARNING: Do not delete this line!!)\n) Lines beginning with `)' are ignored.\n)---------------------------------------------------------------------\n style (Cartesian, Asteroidal, Cometary) = {style}"\
-+["\n epoch (in days) = {epoch}",""][vers]+ \
-"\n)---------------------------------------------------------------------\n"
+	header = (")O+_06 "+['Big','Small'][vers]+ 
+    "-body initial data  (WARNING: Do not delete this line!!)\n"
+    ") Lines beginning with `)' are ignored.\n"
+    ")---------------------------------------------------------------------\n"
+    " style (Cartesian, Asteroidal, Cometary) = {style}\n"
+    [" epoch (in days) = {epoch}\n",""][vers]+
+    ")---------------------------------------------------------------------\n")
 
 	if (style == 'Asteroidal'):
 		objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
