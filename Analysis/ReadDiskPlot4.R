@@ -4,11 +4,17 @@
 print('Making multiplots')
 options(scipen=0)
 
-for (iter in 1:2)	{
+imgsize = c(4.5,5,150)
+
+for (iter in 1:3)	{
 if (iter==1)	{
-pdf('../Paper/Inserts/DiskSurv.pdf',height=4.5,width=5)
+setEPS(horizontal=F, onefile=F, paper='special')
+postscript('../Paper/Inserts/DiskSurv.eps',height=imgsize[1],width=imgsize[2])
+	} else if (iter==2) {
+pdf('../Paper/Inserts/DiskSurv.pdf',height=imgsize[1],width=imgsize[2])
 	} else {
-png('../Paper/Inserts/DiskSurv.png',height=4.5,width=5,units="in",res=150)
+png('../Paper/Inserts/DiskSurv.png',height=imgsize[1],width=imgsize[2],
+									units="in",res=imgsize[3])
 	}
 #pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=7,width=5)
 ##setEPS()

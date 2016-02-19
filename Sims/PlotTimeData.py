@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from astropy.io import ascii
 from statsmodels.robust.scale import mad as madfn
 import pickle
+#from matplotlib import rcParams
+#rcParams.update({'figure.autolayout': True})
 
 ### Laptop data locations
 Dirs1 = ['d'+'{0:02}'.format(i) for i in range(1,35)]
@@ -15,6 +17,7 @@ Dirs4 = ['c'+'{0:02}'.format(i) for i in range(1,9)]
 
 Dirs = Dirs2+Dirs3+Dirs4+Dirs1
 #Dirs = Dirs[0:2]
+Dirs = ['d05','d10']
 ndir = len(Dirs)
 
 ### Code for Original, DiskB-2, and DiskB-3 versions of each sim
@@ -99,10 +102,6 @@ for i,d in enumerate(Dirs):
 	rtr = [dct[l]['rtr'] for l in range(len(dct))]
 #	mgas = 10. * np.array([ max(1.e-2, (4.4e5-ti)/4.4e5) for ti in t ])
 
-##### Make plots
-	f, ax = plt.subplots(6, sharex=True)
-	axtwin = ['','','']
-
 	# calculate minimum pericenter, last time it happens, and final i
 	for ind,l in enumerate([0,1,2]):
 		# get basic stats of this sim
@@ -137,103 +136,117 @@ for i,d in enumerate(Dirs):
 		summary[3*i+l] = dr,vrs,tf, aBf,eBf,pBf,apBf, aCf,eCf,pCf,apCf,\
 						minpB,max(mintB),minpC,max(mintC),iMf,rtrf,rpf,rpm
 
-	### Plot star orbits for Original and DiskB-3
-	for ind,l in enumerate([0,2]):
-		ax[ind].set_xscale('log')
-		ax[ind].set_yscale('log')
-		ax[ind].text(0.9, 0.95, 'a       e',
-	        verticalalignment='top', horizontalalignment='right',
-	        transform=ax[ind].transAxes,
-	        color='black', fontsize=10)
-	### Outer binary
-		if not any(np.isnan(aC[l])):
-			ax[ind].scatter(t[l][ aC[l] > 0.], aC[l][ aC[l] > 0.],c='black',lw=0)
-			ax[ind].fill_between(t[l], pC[l], apC[l], where=apC[l] > 0.,  
-												facecolor='blue', alpha=0.4)
-			(dummy,y2) = ax[ind].get_ylim()
-			ax[ind].fill_between(t[l], pC[l], y2, where=apC[l] <= 0.,  
-												facecolor='grey', alpha=0.4)
-			ax[ind].text(0.9, 0.85, '{0: 6.0f}  {1:.2f}'.format(aC[l][-1],eC[l][-1]),
-		        verticalalignment='top', horizontalalignment='right',
-		        transform=ax[ind].transAxes,
-		        color='blue', fontsize=10)
-			ax[ind].plot(mintC,[minpC for ti in mintC], 'oy')
-			ax[ind].text(0.05, 0.9, 'min(pC) = {0:.1f}'.format(minpC),
-		        verticalalignment='top', horizontalalignment='left',
-		        transform=ax[ind].transAxes,
-		        color='blue', fontsize=10)
-			ax[ind].text(0.05, 0.8, 'final iM = {0:.2f}'.format(iM[l][-1]),
-		        verticalalignment='top', horizontalalignment='left',
-		        transform=ax[ind].transAxes,
-		        color='blue', fontsize=10)
-	### Inner binary
-		ax[ind].scatter(t[l],aB[l],c='black',lw=0)
-		ax[ind].fill_between(t[l], pB[l], apB[l], facecolor='red', alpha=0.4)
-		ax[ind].text(0.9, 0.75, '{0: 6.1f}  {1:.2f}'.format(aB[l][-1],eB[l][-1]),
-	        verticalalignment='top', horizontalalignment='right',
-	        transform=ax[ind].transAxes,
-	        color='red', fontsize=10)
-	### Finish plot
-		(y1,dummy) = ax[ind].get_ylim()
-		if l == 1:
-			y2 = dummy
-		ax[ind].set_ylim((y1,y2))
-		ax[ind].vlines(x=440000.,ymin=y1,ymax=y2)
-		ax[ind].set_xlabel('Time (yrs)')
-		ax[ind].set_ylabel('Distance (AU)')
-	### Plot i over time
-	ax[2].set_xscale('log')
-	ax[2].plot(t[0], iB[0], 'r-')
-	if not any(np.isnan(aC[0])):
-		ax[2].plot(t[0], iM[0], 'k-',
-					 t[0], iC[0], 'b-')
-	ax[2].plot(t[2], iB[2], 'r--')
-	if not any(np.isnan(aC[2])):
-		ax[2].plot(t[2], iM[2], 'k--',
-					 t[2], iC[2], 'b--')
-	ax[2].set_xlabel('t (yr)')
-	ax[2].set_ylabel('i (deg)')
-	# Plot e
-	ax[3].set_xscale('log')
-	ax[3].plot(t[0], eB[0], 'r-')
-	if not any(np.isnan(aC[0])):
-		ax[3].plot(t[0], eC[0], 'b-')
-	ax[3].plot(t[2], eB[2], 'r--')
-	if not any(np.isnan(aC[2])):
-		ax[3].plot(t[2], eC[2], 'b--')
-	ax[3].set_ylabel('Eccentricity')
+	### Plot in eps, pdf, png
+#	for itr in [1,2,3]:
+	for itr in [2]:
+		##### Make plots
+		f, ax = plt.subplots(3, sharex=True, figsize=(5,5))
+		### Plot star orbits for Original and DiskB-3
+		axtwin = ['','','']
+		for ind,l in enumerate([0]):
+			print(d)
+			ax[ind].set_xscale('log')
+			ax[ind].set_yscale('log')
+			ax[ind].text(0.9, 0.95, 'a       e',
+			    verticalalignment='top', horizontalalignment='right',
+			    transform=ax[ind].transAxes,
+			    color='black', fontsize=10)
+		### Outer binary
+			if not any(np.isnan(aC[l])):
+				ax[ind].scatter(t[l][ aC[l] > 0.], aC[l][ aC[l] > 0.],c='black',lw=0)
+				ax[ind].fill_between(t[l], pC[l], apC[l], where=apC[l] > 0.,  
+													facecolor='blue', alpha=0.4)
+				(dummy,y2) = ax[ind].get_ylim()
+				ax[ind].fill_between(t[l], pC[l], y2, where=apC[l] <= 0.,  
+													facecolor='grey', alpha=0.4)
+				ax[ind].text(0.9, 0.85, '{0: 6.0f}  {1:.2f}'.format(aC[l][-1],eC[l][-1]),
+				    verticalalignment='top', horizontalalignment='right',
+				    transform=ax[ind].transAxes,
+				    color='blue', fontsize=10)
+				ax[ind].plot(mintC,[minpC for ti in mintC], 'oy')
+				ax[ind].text(0.05, 0.9, 'min(pC) = {0:.1f}'.format(minpC),
+				    verticalalignment='top', horizontalalignment='left',
+				    transform=ax[ind].transAxes,
+				    color='blue', fontsize=10)
+				ax[ind].text(0.05, 0.8, 'final iM = {0:.2f}'.format(iM[l][-1]),
+				    verticalalignment='top', horizontalalignment='left',
+				    transform=ax[ind].transAxes,
+				    color='blue', fontsize=10)
+		### Inner binary
+			ax[ind].scatter(t[l],aB[l],c='black',lw=0)
+			ax[ind].fill_between(t[l], pB[l], apB[l], facecolor='red', alpha=0.4)
+			ax[ind].text(0.9, 0.75, '{0: 6.1f}  {1:.2f}'.format(aB[l][-1],eB[l][-1]),
+			    verticalalignment='top', horizontalalignment='right',
+			    transform=ax[ind].transAxes,
+			    color='red', fontsize=10)
+		### Finish plot
+			(y1,dummy) = ax[ind].get_ylim()
+			if l == 1:
+				y2 = dummy
+			ax[ind].set_ylim((y1,y2))
+			ax[ind].vlines(x=440000.,ymin=y1,ymax=y2)
+			ax[ind].set_ylabel('Distance (AU)')
+		### Plot i over time
+		ax[1].set_xscale('log')
+		ax[1].plot(t[0], iB[0], 'r-')
+		if not any(np.isnan(aC[0])):
+			ax[1].plot(t[0], iM[0], 'k-',
+						 t[0], iC[0], 'b-')
+		ax[1].plot(t[2], iB[2], 'r--')
+		if not any(np.isnan(aC[2])):
+			ax[1].plot(t[2], iM[2], 'k--',
+						 t[2], iC[2], 'b--')
+		ax[1].set_xlabel('t (yr)')
+		ax[1].set_ylabel('i (deg)')
+		# Plot e
+		ax[2].set_xscale('log')
+		ax[2].plot(t[0], eB[0], 'r-')
+		if not any(np.isnan(aC[0])):
+			ax[2].plot(t[0], eC[0], 'b-')
+		ax[2].plot(t[2], eB[2], 'r--')
+		if not any(np.isnan(aC[2])):
+			ax[2].plot(t[2], eC[2], 'b--')
+		ax[2].set_ylabel('Eccentricity')
 
-	# Plot rtr
-	ax[4].set_xscale('log')
-	ax[4].plot(t[1], rtr[1], 'r-')
-	if not any(np.isnan(rtr[2])):
-		ax[4].plot(t[2], rtr[2], 'b-')
-		ax[4].set_ylabel('Truncation Radius (AU)')
-	(y4a, y4b) = ax[4].get_ylim()
-	ax[4].set_ylim((0.,y4b))
+	#	# Plot rtr
+	#	ax[4].set_xscale('log')
+	#	ax[4].plot(t[1], rtr[1], 'r-')
+	#	if not any(np.isnan(rtr[2])):
+	#		ax[4].plot(t[2], rtr[2], 'b-')
+	#		ax[4].set_ylabel('Truncation Radius (AU)')
+	#	(y4a, y4b) = ax[4].get_ylim()
+	#	ax[4].set_ylim((0.,y4b))
 
-	# Plot rtr
-	ax[5].set_xscale('log')
-	ax[5].plot(t[1], rtr[1]/pB[1], 'r-')
-	if not any(np.isnan(rtr[2])):
-		ax[5].plot(t[2], rtr[2]/pB[2], 'b-')
-		ax[5].set_ylabel('Truncation Radius/pB)')
-	(y5a, y5b) = ax[5].get_ylim()
-	ax[5].set_ylim((0.,y5b))
+	#	# Plot rtr
+	#	ax[5].set_xscale('log')
+	#	ax[5].plot(t[1], rtr[1]/pB[1], 'r-')
+	#	if not any(np.isnan(rtr[2])):
+	#		ax[5].plot(t[2], rtr[2]/pB[2], 'b-')
+	#		ax[5].set_ylabel('Truncation Radius/pB)')
+	#	(y5a, y5b) = ax[5].get_ylim()
+	#	ax[5].set_ylim((0.,y5b))
 
-	ax[1].yaxis.tick_right()
-	ax[1].yaxis.set_ticks_position('both')
-	ax[1].yaxis.set_label_position("right")
-	ax[3].yaxis.tick_right()
-	ax[3].yaxis.set_ticks_position('both')
-	ax[3].yaxis.set_label_position("right")
+		ax[1].yaxis.tick_right()
+		ax[1].yaxis.set_ticks_position('both')
+		ax[1].yaxis.set_label_position("right")
+	#	ax[3].yaxis.tick_right()
+	#	ax[3].yaxis.set_ticks_position('both')
+	#	ax[3].yaxis.set_label_position("right")
 
-	f.subplots_adjust(hspace=0)
-	plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
-	plt.savefig('TimeData/AvsT-'+d+'.png')
-#	plt.savefig('TimeData/AvsT-'+d+'.eps',format='eps',dpi=1000)
-	plt.clf()
-	plt.close(f)
+		ax[-1].set_xlabel('Time (yrs)')
+	#	plt.gcf().subplots_adjust(bottom=0.15)
+		f.subplots_adjust(hspace=0)
+		plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+		if itr == 1:
+			plt.savefig('../Paper/Inserts/AvsT-'+d+'.eps',format='eps',dpi=1000)
+		elif itr == 2:
+			plt.savefig('../Paper/Inserts/AvsT-'+d+'.pdf')
+		elif itr == 3:
+			plt.savefig('../Paper/Inserts/AvsT-'+d+'.png', dpi=1000)
+		else:
+			assert 0==1, 'invalid iteration, no AvsT plot saved!'
+		plt.clf()
+		plt.close(f)
 
 ### Convert summary to record array
 summary = np.rec.array(summary)
@@ -243,14 +256,15 @@ for row in summary:
 	prettysum.add_row(row)
 prettysum.align='r'
 ### Save summary in human-readable text file
-sumfile = open('TimeData/DiskSummary.txt','w')
-#sumfile.write(hdr+'\n')
-#for line in summary:
-#	sumfile.write(fmt.format(line)+'\n')
-sumfile.write(str(prettysum))
-sumfile.close()
-### Pick summary to read back into python
-pickle.dump( summary, open('TimeData/DiskSummary.pkl','wb') )
+if ndir <= 80:
+	sumfile = open('TimeData/DiskSummary.txt','w')
+	#sumfile.write(hdr+'\n')
+	#for line in summary:
+	#	sumfile.write(fmt.format(line)+'\n')
+	sumfile.write(str(prettysum))
+	sumfile.close()
+	### Pick summary to read back into python
+	pickle.dump( summary, open('TimeData/DiskSummary.pkl','wb') )
 
 #ascii.write(summary,'TimeData/PeriSummary.txt')
 
@@ -385,53 +399,53 @@ rpV3NonPrx = summary[v3 & ~prx]['rpf']
 rpbins = np.linspace(np.nanmin(summary['rpf']), np.nanmax(summary['rpf']), nsamp+1)
 
 
-f2, ax2 = plt.subplots(3,2)
+#f2, ax2 = plt.subplots(3,2)
 
-# histograms of rtrf (AU) rp (r/pB)
-if len(rV2NonPrx) != 0:
-	ax2[0,0].hist( rV2NonPrx, rbins)
-	ax2[0,0].legend()
-	ax2[0,0].set_title('rTr: B-2')
-if len(rV3Prx) != 0:
-	ax2[1,0].hist( rV3Prx, rbins)
-	ax2[1,0].legend()
-	ax2[1,0].set_title('rTr: B-3, Prx')
-if len(rV3NonPrx) != 0:
-	ax2[2,0].hist( rV3NonPrx, rbins)
-	ax2[2,0].legend()
-	ax2[2,0].set_title('rTr: B-3, Non')
+## histograms of rtrf (AU) rp (r/pB)
+#if len(rV2NonPrx) != 0:
+#	ax2[0,0].hist( rV2NonPrx, rbins)
+#	ax2[0,0].legend()
+#	ax2[0,0].set_title('rTr: B-2')
+#if len(rV3Prx) != 0:
+#	ax2[1,0].hist( rV3Prx, rbins)
+#	ax2[1,0].legend()
+#	ax2[1,0].set_title('rTr: B-3, Prx')
+#if len(rV3NonPrx) != 0:
+#	ax2[2,0].hist( rV3NonPrx, rbins)
+#	ax2[2,0].legend()
+#	ax2[2,0].set_title('rTr: B-3, Non')
 
-(x1a, x2a) = ax2[0,0].get_xlim()
-(x1b, x2b) = ax2[1,0].get_xlim()
-(x1c, x2c) = ax2[2,0].get_xlim()
-ax2[0,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
-ax2[1,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
-ax2[2,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#(x1a, x2a) = ax2[0,0].get_xlim()
+#(x1b, x2b) = ax2[1,0].get_xlim()
+#(x1c, x2c) = ax2[2,0].get_xlim()
+#ax2[0,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#ax2[1,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#ax2[2,0].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
 
-if len(rpV2NonPrx) != 0:
-	ax2[0,1].hist( rpV2NonPrx, rpbins)
-	ax2[0,1].legend()
-	ax2[0,1].set_title('rP: B-2')
-if len(rpV3Prx) != 0:
-	ax2[1,1].hist( rpV3Prx, rpbins)
-	ax2[1,1].legend()
-	ax2[1,1].set_title('rP: B-3, Prx')
-if len(rpV3NonPrx) != 0:
-	ax2[2,1].hist( rpV3NonPrx, rpbins)
-	ax2[2,1].legend()
-	ax2[2,1].set_title('rP: B-3, Non')
+#if len(rpV2NonPrx) != 0:
+#	ax2[0,1].hist( rpV2NonPrx, rpbins)
+#	ax2[0,1].legend()
+#	ax2[0,1].set_title('rP: B-2')
+#if len(rpV3Prx) != 0:
+#	ax2[1,1].hist( rpV3Prx, rpbins)
+#	ax2[1,1].legend()
+#	ax2[1,1].set_title('rP: B-3, Prx')
+#if len(rpV3NonPrx) != 0:
+#	ax2[2,1].hist( rpV3NonPrx, rpbins)
+#	ax2[2,1].legend()
+#	ax2[2,1].set_title('rP: B-3, Non')
 
-(x1a, x2a) = ax2[0,1].get_xlim()
-(x1b, x2b) = ax2[1,1].get_xlim()
-(x1c, x2c) = ax2[2,1].get_xlim()
-ax2[0,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
-ax2[1,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
-ax2[2,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#(x1a, x2a) = ax2[0,1].get_xlim()
+#(x1b, x2b) = ax2[1,1].get_xlim()
+#(x1c, x2c) = ax2[2,1].get_xlim()
+#ax2[0,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#ax2[1,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
+#ax2[2,1].set_xlim( (min(x1a,x1b,x1c), max(x2a,x2b,x1c)) )
 
-plt.savefig('TimeData/Summaries.png')
-#plt.savefig('TimeData/Summaries.eps',format='eps',dpi=1000)
-plt.clf()
-plt.close(f2)
+#plt.savefig('TimeData/Summaries.png')
+##plt.savefig('TimeData/Summaries.eps',format='eps',dpi=1000)
+#plt.clf()
+#plt.close(f2)
 
 
 

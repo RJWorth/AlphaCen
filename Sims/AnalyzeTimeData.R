@@ -1,8 +1,10 @@
 
+fname = 'TimeData/DiskSummary-saved.txt'
 
-hdr = read.table('TimeData/DiskSummary.txt',sep='|',strip.white=T,skip=1,nrows=1, stringsAsFactors=F)
+hdr = read.table(fname,sep='|',strip.white=T,skip=1,nrows=1, stringsAsFactors=F)
 
-summary = read.table('TimeData/DiskSummary.txt',sep='|', strip.white=T,skip=3,col.names=as.vector(hdr))
+summary = read.table(fname, sep='|', strip.white=T, skip=3,
+	col.names=as.vector(hdr))
 
 summary = summary[-dim(summary)[1],c(-1,-dim(summary)[2])]
 attach(summary)
@@ -150,52 +152,72 @@ for (j in 1:length(lvls)) {
 
 ACPStats = data.frame( sigmalvls, rtrlvls,nPlts, nHZ, MedMass,MadMass, MeanMass,StDMass )
 
-SigStats = data.frame( nPl=c(  ), 
-	nHZ=, 
-	mass=)
+#SigStats = data.frame( nPl=c(  ), 
+#	nHZ=, 
+#	mass=)
 
 ###############################################################################
 
 #png('../Paper/Inserts/Rtr_vs_minP.png',height=6,width=6,units="in",res=150)
 pdf('../Paper/Inserts/Rtr_vs_minP.pdf',width=5, height=10)
-par(mfrow=c(2,1))
-#par(mfrow=c(2,2),oma=c( 2.75, 2.75, 2.5, 1.5))
+#setEPS(horizontal=F, onefile=F, paper='special')
+#postscript('../Paper/Inserts/Rtr_vs_minP.eps',width=5, height=9)
 
+par(mfrow=c(2,1))
+par(oma=c( 4.75,    0, 2.5, 1.5))
+par(mar=c(    0,  4.5,    0,  0))
 # Plot of rtr vs minpB, col = B-2/3, size = Prx or not
 plot(minpB[stable], rtrf[stable], 
-	pch=20-prx[stable], col=as.numeric(vrs[stable])-1,
-	xlab = 'Minimum binary pericenter (AU)', 
-	ylab = 'Final truncation radius (AU)', main = '')
-fit1 = lm( rtrf[stable] ~ minpB[stable])
-fit2 = lm( rtrf[stable & !outliers] ~ minpB[stable & !outliers])
-fitb = lm( rtrf[stable & v2] ~ minpB[stable & v2])
-fitr1 = lm( rtrf[stable & v3] ~ minpB[stable & v3])
-fitr2 = lm( rtrf[stable & v3 & !outliers] ~ minpB[stable & v3 & !outliers])
+	pch=20-prx[stable], col=as.numeric(vrs[stable])-1, 
+	ylab='',xlab='',main = '')
+mtext(side=2,line=2.5,cex=1.5,expression(r[tr]~'(AU)')) 
+#fit1  = lm( rtrf[stable] ~ minpB[stable])
+#fit2  = lm( rtrf[stable & !outliers] ~ minpB[stable & !outliers])
+#fitr1 = lm( rtrf[stable & v3] ~ minpB[stable & v3])
+x1 = minpB[stable & v2]
+y1 = rtrf[stable & v2]
+fitb  = lm( y1 ~ x1)
+x2 = minpB[stable & v3 & !outliers]
+y2 = rtrf[stable & v3 & !outliers] 
+fitr2 = lm(y2 ~ x2)
+EqnLabs = vector("expression",2)
+	EqnLabs[1] = substitute(expression( r[tr] == a. + b. * p[min]),
+		list(a. = round(fitb$coefficients[1],2),
+			 b. = round(fitb$coefficients[2],2)) )[2]
+	EqnLabs[2] = substitute(expression(r[tr] == a. + b. * p[min]),
+		list(a. = round(fitr2$coefficients[1],2),
+			 b. = round(fitr2$coefficients[2],2)) )[2]
 #abline(fit1, lty=3)
 #abline(fit2, lty=2)
 abline(fitb, col='black')
+text(13,2,adj=c(0,.5),col='black', labels=EqnLabs[1],cex=1.25)
 #abline(fitr1, col='red',lty=3)
 abline(fitr2, col='red',lty=1)
+text(2,6,adj=c(0,.5),col='red', labels=EqnLabs[2],cex=1.25)
 
 plot(minpB[stable], rtrf[stable]/minpB[stable], 
 	pch=20-prx[stable], col=as.numeric(vrs[stable])-1, log='y',
-	xlab = 'Minimum binary pericenter (AU)', 
-	ylab = 'Truncation radius as fraction of min(pericenter)', main = '')
+	ylab='',xlab='',main = '')
+mtext(side=2,line=2.5,cex=1.5,expression(r[tr]/p[bin])) 
+mtext(side=1,outer=T,line=3, expression(p[bin]),cex=1.5,adj=c(.6))
+
 
 dev.off()
 ###############################################################################
 
 #png('../Paper/Inserts/Rtr_vs_minP.png',height=6,width=6,units="in",res=150)
-pdf('../Paper/Inserts/PeriHist.pdf',width=5, height=10)
-par(mfrow=c(2,1))
+pdf('../Paper/Inserts/PeriHist.pdf',width=5, height=9)
+#setEPS(horizontal=F, onefile=F, paper='special')
+#postscript('../Paper/Inserts/PeriHist.eps',width=5, height=9)
+par(mfrow=c(2,1), oma=c(0,0,1,0),mar=c(4.5,4.5,0,1))
 ### Histogram of minimum pericenter as fraction of final pericenter, 
 ### for 3-star simulations which result in proxima-like systems
-hist(PmPf[i3 & Dcase], probability=T, col='gray30', br=10, 
-	xlab = expression(p[min]/p[f]), main='')
+hist(PmPf[i3 & Dcase], probability=F, col='gray30', br=10, 
+	xlab = expression(p[min]/p[f]), main='',ylab='# of Systems',cex.lab=1.5)
 ### Reduction in pericenter of 3-star systems which result in Proxiima-like 
 ### systems, relative to 2-star equivalent, i.e. relative to initial params
-hist(p3p2D, probability=T, col='gray30', br=10, 
-	xlab = expression(p[min]/p[i]), main='')
+hist(p3p2D, probability=F, col='gray30', br=10, 
+	xlab = expression(p[min]/p[i]), main='',ylab='# of Systems',cex.lab=1.5)
 ### Final pericenter as fraction of initial pericenter
 #hist(PfPi, probability=T, col='grey', br=10, 
 #	xlab = expression(p[f]/p[i]), main='')
