@@ -7,8 +7,10 @@ import Merc
 import random as R
 from random import uniform
 import numpy as np
-from numpy import pi, sqrt, sin, cos, arccos, pi
+from numpy import pi, exp, log, sqrt, sin, cos, arccos, pi
+#from math import pi, sin, cos, sqrt
 import re
+import os
 
 ### tolerance for floats to count as 'equal'
 tol = 1.e-15
@@ -291,7 +293,6 @@ def mag(x):
 ###############################################################################
 def FileLength(fname):
 	'''Function to count the number of lines in a file'''
-	import os
 	if os.path.getsize(fname)==0.:
 		i = -2
 	else:
@@ -823,7 +824,6 @@ def Merc_KeplerEllipse(e,oldl):
   u = eccentric anomaly (   "   )'''
 #------------------------------------------------------------------------------
 
-	from math import pi, exp, log, sin, cos, sqrt
 	twopi = 2.*pi
 	piby2 = pi/2.
 
