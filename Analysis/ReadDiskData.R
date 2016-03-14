@@ -1,6 +1,7 @@
 
 print('Reading data')
 ### Generate list of disk particle names (for n particles)
+print(dir)
 n=(length(readLines(paste(dir,'/In/small.in',sep='')))-5)/4
 disknames=rep( 'M', n)
 	if (dir == 'Proxlike/071714/Prx1/Disk4')	{

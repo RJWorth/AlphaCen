@@ -10,8 +10,9 @@ from operator import add
 import subprocess
 from operator import add
 import socket
-if 'hammer' not in socket.gethostname():
+if 'hammer' in socket.gethostname():
 	print("Warning: hammer doesn't have matplotlib!")
+else:
 	import matplotlib
 	from matplotlib import cm, colors
 	import matplotlib.pyplot as plt

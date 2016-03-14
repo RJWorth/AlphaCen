@@ -7,8 +7,10 @@ import Merc
 import random as R
 from random import uniform
 import numpy as np
-from numpy import pi, sqrt, sin, cos, arccos, pi
+from numpy import pi, exp, log, sqrt, sin, cos, arccos, pi
+#from math import pi, sin, cos, sqrt
 import re
+import os
 
 ### tolerance for floats to count as 'equal'
 tol = 1.e-15
@@ -291,7 +293,6 @@ def mag(x):
 ###############################################################################
 def FileLength(fname):
 	'''Function to count the number of lines in a file'''
-	import os
 	if os.path.getsize(fname)==0.:
 		i = -2
 	else:
@@ -503,10 +504,13 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big',
 	elif (infile == 'small'):
 		vers = 1
 
-	header = ')O+_06 '+['Big','Small'][vers]+ \
-"-body initial data  (WARNING: Do not delete this line!!)\n) Lines beginning with `)' are ignored.\n)---------------------------------------------------------------------\n style (Cartesian, Asteroidal, Cometary) = {style}"\
-+["\n epoch (in days) = {epoch}",""][vers]+ \
-"\n)---------------------------------------------------------------------\n"
+	header = (")O+_06 "+['Big','Small'][vers]+ 
+    "-body initial data  (WARNING: Do not delete this line!!)\n"
+    ") Lines beginning with `)' are ignored.\n"
+    ")---------------------------------------------------------------------\n"
+    " style (Cartesian, Asteroidal, Cometary) = {style}\n"
+    [" epoch (in days) = {epoch}\n",""][vers]+
+    ")---------------------------------------------------------------------\n")
 
 	if (style == 'Asteroidal'):
 		objstr = '''  {0.name:16}  m={0.mass}  d={0.density}
@@ -820,7 +824,6 @@ def Merc_KeplerEllipse(e,oldl):
   u = eccentric anomaly (   "   )'''
 #------------------------------------------------------------------------------
 
-	from math import pi, exp, log, sin, cos, sqrt
 	twopi = 2.*pi
 	piby2 = pi/2.
 

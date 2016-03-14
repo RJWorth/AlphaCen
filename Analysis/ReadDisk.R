@@ -12,7 +12,7 @@ if (length(dir) == 0 |
 	readdir=="/usr/lib64/R/bin/exec/R" |
 	readdir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" | 
 	readdir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
-		print('no args')
+		print('No args given: using defaut directory!')
 		readdir='Proxlike/Prx03'	#'Prx02/Disk'
 		}
 	print(readdir)
