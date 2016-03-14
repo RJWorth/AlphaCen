@@ -68,6 +68,7 @@ do
 	# Start running triple and binary sims
 	if [ $machine = 'shapiro' ] || [ $machine = 'chloe' ] || [ ${machine:0:6} = 'hammer' ]; then
 		echo 'using bash script'
+		echo 'pwd = '$(pwd)', inc = '$inc
 		nice -n 10 ./R-BSDisk.bash $j'B-2' $inc > $j'B-2'/run.pipe &
 		echo 'master: '$j'B-2  '$!
 		nice -n 10 ./R-BSDisk.bash $j'B-3' $inc > $j'B-3'/run.pipe &

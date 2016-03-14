@@ -3,7 +3,7 @@
 ### Run where?
 dir1='BS/Prx'
 dir2='/Disk'
-DirNums=(07)
+DirNums=(17 21 28 34)
 echo $dir1 ${DirNums[*]}
 
 ### How clean?

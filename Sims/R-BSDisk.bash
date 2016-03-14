@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 ###############################################################################
 # Run the simulation in directory $1, with parameters set below
 # > ./R-BSDisk.bash BS/Prx#/Disk# BSDisk.inc > Dir/run.pipe &
 
 # include file
-source $2
+inc=$2
+source $inc
 
 # Start time
 t1=$(date +%s)
