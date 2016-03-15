@@ -10,9 +10,9 @@ from operator import add
 import subprocess
 from operator import add
 import socket
-machine = socket.gethostname()
-if (machine in ['hammer','chloe']:
-	print("Warning: {} doesn't have matplotlib!".format(machine))
+machine = socket.gethostname().split('.')[0]
+if (machine in ['hammer','chloe']):
+	print("Warning: {0} doesn't have matplotlib!".format(machine))
 else:
 	import matplotlib
 	from matplotlib import cm, colors
