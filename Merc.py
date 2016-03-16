@@ -11,6 +11,7 @@ from numpy import pi, exp, log, sqrt, sin, cos, arccos, pi
 #from math import pi, sin, cos, sqrt
 import re
 import os
+import pandas
 
 ### tolerance for floats to count as 'equal'
 tol = 1.e-15
@@ -168,11 +169,11 @@ class AsteroidalObj(Obj):
 	def z(self):
 		return(self.CalcCartesian()[0][2])
 	def vx(self):
-		return(self.CalcCartesian()[1][3])
+		return(self.CalcCartesian()[1][0])
 	def vy(self):
-		return(self.CalcCartesian()[1][4])
+		return(self.CalcCartesian()[1][1])
 	def vz(self):
-		return(self.CalcCartesian()[1][5])
+		return(self.CalcCartesian()[1][2])
 
 
 ###############################################################################
@@ -683,6 +684,8 @@ def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
 	# Determine which columns are present, and which has position
 	header = np.array(Merc.ReadNthLine(fname,3).split())
 	col_a = np.where('a'==header)[0][0] -1
+	col_e = np.where('e'==header)[0][0] -1
+	col_i = np.where('i'==header)[0][0] -1
 	col_m = np.where('mass'==header)[0][0] -1
 	# need to add version for Cartesian output sometime...?
 
@@ -700,6 +703,8 @@ def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
 	if (iscoll == True):
 		line = Merc.ReadNthLine(fname,AeiLen)
 		return(float(    line.split()[col_a]), 
+			   float(    line.split()[col_e]), 
+			   float(    line.split()[col_i]), 
 			   float(    line.split()[col_m]), 
 			   float(    line.split()[0]) )
 
@@ -710,15 +715,34 @@ def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
 			if i > 3:
 				if   float(line.split()[0]) == Time:
 					return(float(    line.split()[col_a]), 
+						   float(    line.split()[col_e]), 
+						   float(    line.split()[col_i]), 
 						   float(    line.split()[col_m]), 
 						   float(    line.split()[0]) )
 				elif float(line.split()[0]) > Time:
 					return(float(lastline.split()[col_a]), 
+						   float(lastline.split()[col_e]), 
+						   float(lastline.split()[col_i]), 
 						   float(lastline.split()[col_m]), 
 						   float(lastline.split()[0]) )
 				lastline = line
 	### If no match
 	return None,None,None
+
+###########################################################################
+def ReadAEI(WhichDir, obj):
+	'''Read in an object's .aei file as a pandas dataframe'''
+	# File name
+	fname = WhichDir+'/Aei/'+obj+'.aei'
+	# File length
+	AeiLen  = Merc.FileLength(fname)
+	# Determine which columns are present, and which has position
+	header = np.array(Merc.ReadNthLine(fname,3).split())
+	header[0] = 't'
+	header = header[header!='(years)']
+	# Read in file
+	aei = pd.read_table(fname, sep = ' +', names = header, skiprows = 4)
+	return(aei)
 
 ###########################################################################
 ### Convert from cartesian (xyz uvw) to orbital elements (aei gnM)
