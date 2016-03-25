@@ -727,16 +727,14 @@ def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
 						   float(lastline.split()[0]) )
 				lastline = line
 	### If no match
-	return None,None,None
+	return None,None,None,None,None
 
 ###########################################################################
 def ReadAEI(WhichDir, obj):
 	'''Read in an object's .aei file as a pandas dataframe'''
 	# File name
 	fname = WhichDir+'/Aei/'+obj+'.aei'
-	# File length
-	AeiLen  = Merc.FileLength(fname)
-	# Determine which columns are present, and which has position
+	# Read in table header, and clean column names
 	header = np.array(Merc.ReadNthLine(fname,3).split())
 	header[0] = 't'
 	header = header[header!='(years)']
