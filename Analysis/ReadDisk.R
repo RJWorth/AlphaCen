@@ -13,7 +13,7 @@ if (length(dir) == 0 |
 	readdir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" | 
 	readdir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('No args given: using defaut directory!')
-		readdir='Proxlike/Prx03'	#'Prx02/Disk'
+		readdir='Proxlike/Prx03'
 		}
 	print(readdir)
 
@@ -22,7 +22,8 @@ if (substr(readdir,1,1)=='/') simdir=readdir else {
 	simdir=paste('../Sims/',readdir,sep='') }
 
 #subdirs=c('/DiskA-2','/DiskA-3','/DiskB-2','/DiskB-3')
-subdirs=c('/DiskB-2','/DiskB-3')
+#subdirs=c('/DiskB-2','/DiskB-3')
+subdirs=c('/DiskA-2','/DiskA-3')
 
 ### Load relevant constants/functions etc
 source('../Analysis/DiskUtils.R')

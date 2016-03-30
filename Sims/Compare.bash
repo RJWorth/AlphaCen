@@ -42,9 +42,9 @@ for i in ${Dir[*]}; do
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-2", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="binary", mA=1.105, mB=.934)' >> $d/DiskB-2/run.pipe
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-3", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/DiskB-3/run.pipe
 
-#	R CMD BATCH -$d '../Analysis/ReadDisk.R'
+	R CMD BATCH -$d '../Analysis/ReadDisk.R'
 #	mv ReadDisk.Rout $d
-	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
+#	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
 
 #	python -c 'import AlphaCenModule as AC;print(AC.GetLastTime("'$d'/DiskB-2"))'
 #	python -c 'import AlphaCenModule as AC;print(AC.GetLastTime("'$d'/DiskB-3"))'
@@ -72,6 +72,6 @@ for i in ${Dir[*]}; do
 done
 
 echo 'final i value: '$i
-R CMD BATCH -$i -$hom '../Analysis/CompareProxSurvivals.R'
+#R CMD BATCH -$i -$hom '../Analysis/CompareProxSurvivals.R'
 
 
