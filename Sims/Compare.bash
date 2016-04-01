@@ -54,7 +54,7 @@ for i in ${Dir[*]}; do
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-2", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="binary", mA=1.105, mB=.934)' >> $d/DiskB-2/run.pipe
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-3", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/DiskB-3/run.pipe
 
-#	R CMD BATCH -$d '../Analysis/ReadDisk.R'
+	R CMD BATCH -$d '../Analysis/ReadDisk.R'
 #	mv ReadDisk.Rout $d
 #	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
 
