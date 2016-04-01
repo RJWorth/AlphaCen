@@ -2,9 +2,9 @@
 ###############################################################################
 # compare the orbital parameters in the original and disk triple systems
 
-module load python/2.7.3
-module load gcc/4.7.1
-module load R
+#module load python/2.7.3
+#module load gcc/4.7.1
+#module load R
 
 h=$(pwd)
 echo $h
@@ -31,6 +31,9 @@ for i in ${Dir[*]}; do
 	d=$hom$pre$i
 	echo '--------------------------------'$d'--------------------------------'
 
+### Copy files from hammer to here
+	scp -p rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/DiskSurvA.png' 'Proxlike/DiskSurvImgs/DiskSurv'$i'A.png'
+
 #	cd $d/Original/Out
 #	scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/AeiOutFiles' .
 #	scp -p  rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/info.out' .
@@ -42,7 +45,7 @@ for i in ${Dir[*]}; do
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-2", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="binary", mA=1.105, mB=.934)' >> $d/DiskB-2/run.pipe
 #        python -c 'import AlphaCenModule; AlphaCenModule.Summary("'$d'/DiskB-3", 1e7, WhichTime="Fix", wantsum=False, wantplot=False, mode="triple", mA=1.105, mB=.934)' >> $d/DiskB-3/run.pipe
 
-	R CMD BATCH -$d '../Analysis/ReadDisk.R'
+#	R CMD BATCH -$d '../Analysis/ReadDisk.R'
 #	mv ReadDisk.Rout $d
 #	python -c 'import Compare;Compare.ComparePipedParams("'$d'",cases=["O","B"])'
 
@@ -71,7 +74,7 @@ for i in ${Dir[*]}; do
 #	echo '\cp -p '$d/DiskB-3/Out/Backup/* $d/DiskB-3/Out
 done
 
-echo 'final i value: '$i
+#echo 'final i value: '$i
 #R CMD BATCH -$i -$hom '../Analysis/CompareProxSurvivals.R'
 
 
