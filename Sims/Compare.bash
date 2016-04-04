@@ -27,12 +27,26 @@ Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
 #pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08)
 
+subdirs=(/DiskA-2 /DiskA-3 /DiskB-2 /DiskB-3)
+
 for i in ${Dir[*]}; do
 	d=$hom$pre$i
 	echo '--------------------------------'$d'--------------------------------'
 
+<<<<<<< HEAD
 ### Copy files from hammer to here
 	scp -p rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/DiskSurvA.png' 'Proxlike/DiskSurvImgs/DiskSurv'$i'A.png'
+=======
+	for j in ${subdirs[*]}; do
+	mkdir $d$j
+	mkdir $d$j/In
+	mkdir $d$j/Out
+	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/In/big.in'       $d$j'/In'
+	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/In/small.in'     $d$j'/In'
+	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/Out/info.out'    $d$j'/Out'
+	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/Out/AeiOutFiles' $d$j'/Out'
+	done
+>>>>>>> ff61e8519780b322c3a7815a2912b341fa316c87
 
 #	cd $d/Original/Out
 #	scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/AeiOutFiles' .
