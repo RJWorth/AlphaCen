@@ -14,7 +14,7 @@ import os
 import socket
 machine = socket.gethostname().split('.')[0]
 if (machine in ['hammer','chloe']):
-	print("Warning: {0} doesn't have matplotlib!".format(machine))
+	print("Warning: {0} doesn't have pandas!".format(machine))
 else:
 	import pandas as pd
 
