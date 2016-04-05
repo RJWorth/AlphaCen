@@ -11,7 +11,12 @@ from numpy import pi, exp, log, sqrt, sin, cos, arccos, pi
 #from math import pi, sin, cos, sqrt
 import re
 import os
-import pandas
+import socket
+machine = socket.gethostname().split('.')[0]
+if (machine in ['hammer','chloe']):
+	print("Warning: {0} doesn't have matplotlib!".format(machine))
+else:
+	import pandas as pd
 
 ### tolerance for floats to count as 'equal'
 tol = 1.e-15
