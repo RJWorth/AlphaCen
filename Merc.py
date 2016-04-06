@@ -511,10 +511,10 @@ def WriteObjInFile(objlist='default', loc = 'Merc95/In/',infile='big',
 		vers = 1
 
 	header = (")O+_06 "+['Big','Small'][vers]+ 
-    "-body initial data  (WARNING: Do not delete this line!!)\n"
-    ") Lines beginning with `)' are ignored.\n"
-    ")---------------------------------------------------------------------\n"
-    " style (Cartesian, Asteroidal, Cometary) = {style}\n"
+    "-body initial data  (WARNING: Do not delete this line!!)\n"+
+    ") Lines beginning with `)' are ignored.\n"+
+    ")---------------------------------------------------------------------\n"+
+    " style (Cartesian, Asteroidal, Cometary) = {style}\n"+
     [" epoch (in days) = {epoch}\n",""][vers]+
     ")---------------------------------------------------------------------\n")
 
@@ -541,13 +541,13 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 	ti=0., tf=365.25e3, tOut = 'default', dt=1., acc=1.e-12, 
 	CEstop='no',CE='yes',CEfrag='no',tUnit='years',tRel='yes',prec='medium',
 	rel='no',user='no',
-	rEj=100, rStar=0.005, mStar=1.0, rCE=3.,dtDump='default',dtPer=100):
+	rEj=100, rStar=0.005, mStar=1.0, rCE=3.,dtDmp='default',dtPer=100):
 	'''Write a param.in file for mercury'''
 	
 	if (tOut == 'default'):
 		tOut = tf/1.e3
-	if (dtDump == 'default'):
-		dtDump = int(round(tf/dt/100.))
+	if (dtDmp == 'default'):
+		dtDmp = int(round(tf/dt/10.))
 
 	text = ''')O+_06 Integration parameters  (WARNING: Do not delete this line!!)
 ) Lines beginning with `)' are ignored.
@@ -584,13 +584,13 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
  < not used at present >
  < not used at present >
  Hybrid integrator changeover (Hill radii) = {rCE}
- number of timesteps between data dumps = {dtDump}
+ number of timesteps between data dumps = {dtDmp}
  number of timesteps between periodic effects = {dtPer}
 '''.format(
 	alg=alg, ti=ti, tf=tf, tOut=tOut, dt=dt, acc=acc,
 	CEstop=CEstop, CE=CE, CEfrag=CEfrag, tUnit=tUnit, tRel=tRel,prec=prec,
 	rel=rel, user=user,
-	rEj=rEj, rStar=rStar,mStar=mStar, rCE=rCE, dtDump=dtDump, dtPer=dtPer)
+	rEj=rEj, rStar=rStar,mStar=mStar, rCE=rCE, dtDmp=dtDmp, dtPer=dtPer)
 
 	fname=loc+'param.'+f
 	with open(fname, 'w') as f:
