@@ -1,21 +1,34 @@
 
-fname = 'TimeData/DiskSummary-saved.txt'
+### Read version read in for first submitted paper draft
+fname = 'TimeData/DiskSummary-v1.txt'
 
 hdr = read.table(fname,sep='|',strip.white=T,skip=1,nrows=1, stringsAsFactors=F)
+nlines = length(readLines(fname))
 
-summary = read.table(fname, sep='|', strip.white=T, skip=3,
-	col.names=as.vector(hdr))
+disksum = read.table(fname, sep='|', strip.white=T, skip=3, nrows=nlines-4,
+	col.names=hdr)
 
-summary = summary[-dim(summary)[1],c(-1,-dim(summary)[2])]
-attach(summary)
+disksum = disksum[,c(-1,-dim(disksum)[2])]
+attach(disksum)
 # dr vrs tf aBf eBf pBf apBf aCf eCf pCf apCf minpB mintB minpC mintC iMf rtrf rpf rpm
 
-ncols = dim(summary)[2]
+nrows = dim(disksum)[1]
+ncols = dim(disksum)[2]
+dirnames = dr[1:nrows %% 3 == 0]
 stable = (tf>=1e6) & !( (aBf<0 | is.na(aBf)) | (aCf<0 & !is.na(aCf)) )
-prx = stable & summary$apCf>10000 & !is.na(summary$apCf)
+prx = stable & disksum$apCf>10000 & !is.na(disksum$apCf)
 v2 = (vrs=='2')
 v3 = (vrs=='3')
 Dcase = grepl('d',dr) 
+
+# save list of proxlike sims
+listprox = data.frame( prx[vrs=='O'], prx[vrs=='3'],row.names=dirnames)
+colnames(listprox) = c('O','B3')
+sink('ProxlikeDirs.txt')
+cat('# Disk sim directories which satisfy "Proxima-like" requirements\n')
+cat('# Made by AnalyzeTimeData.R\n')
+print(listprox)
+sink()
 
 # Indices for good B-3 dirs:
 i3 = v3 & prx & stable
@@ -35,7 +48,7 @@ fitMin = lm(rtrf ~ minpB)
 fitcalm= lm(rtrf[v2] ~ minpB[v2])
 
 ### PLOTS
-#pairs(summary[,3:ncols],pch=20,col=prx+1)
+#pairs(disksum[,3:ncols],pch=20,col=prx+1)
 
 # good fit
 #plot(pBf[stable],rtrf[stable], pch=20, col=prx[stable]+1)
@@ -236,7 +249,7 @@ print(paste('HZ Planets per sim (mn/med):',mean(nHZ),median(nHZ)))
 print(paste('Avg planet mass, mEarth (mn/med):',mean(MeanMass),mean(MedMass)))
 
 ###############################################################################
-detach(summary)
+detach(disksum)
 detach(BinPlts)
 
 

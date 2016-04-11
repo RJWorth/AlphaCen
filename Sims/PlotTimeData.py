@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from astropy.io import ascii
 from statsmodels.robust.scale import mad as madfn
 import pickle
+import pandas
 #from matplotlib import rcParams
 #rcParams.update({'figure.autolayout': True})
 
@@ -21,7 +22,7 @@ Dirs = ['d05','d10']
 ndir = len(Dirs)
 
 ### Code for Original, DiskB-2, and DiskB-3 versions of each sim
-vers = ['O','2','3']
+vers = ['O','A2','A3','B2','B3']
 
 ### Object class to easily fill one line of data into summary format string
 #-----------------------------------------------------------------------------#

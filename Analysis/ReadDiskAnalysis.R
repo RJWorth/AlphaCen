@@ -5,7 +5,10 @@ r0=disk[,1,'r']
 aBin = star[2,1,'a']	# initial binary separation
 
 ### Calculate % of disk surviving and location of outer boundary,
-### as f'ns of time
+### as f'ns of time, and try to find the point which best splits the stable and
+### unstable regions of the disk
+
+### Declare variables
 outerbound = min(star[2,,'a'],na.rm=T)
 surviving = matrix(, nrow = length(time), ncol = dim(disk)[1])
 stable    = matrix(, nrow = length(time), ncol = dim(disk)[1])
@@ -23,11 +26,11 @@ for (i in 1:length(disknames)) {
 					 & (abs(disk[i,,'r']-disk[i,1,'r']) <= 1.)
 					 & ((cent==2) | (disk[i,,'a'] >= 0.)))
 	} #i
-# Calculate avg stability on either side of each obj at each timestep
+# Calculate % of objects stable outside and inside of each location at each timestep
 for (i in 1:length(disknames)) {
 for (j in 1:length(time))	{
 	below[j,i] = mean(stable[j,1:i])
-	if (i < n)	above[j,i] = mean(stable[j,(i+1):n]) else {
+	if (i < n) above[j,i] = mean(stable[j,(i+1):n]) else {
 		if (stable[j,i]==TRUE) above[j,i]=1 else above[j,i]=0 }
 	} #j
 	} #i
@@ -39,8 +42,10 @@ for (j in 1:length(time)) side.smth[j,] = MovingAvg(side.fits[j,],1)
 for (j in 1:length(time))	{
 	surv.per[j] = sum(surviving[j,])/n
 	stab.per[j] = sum(   stable[j,])/n
-	if ( all( side.fits[j,]==1 )) edge[j]=100 else{
-	edge[j]     = mean( which( side.smth[j,]==min(side.smth[j,],na.rm=T) ) ) }
+	if        ( all( side.fits[j,]==1 )) { edge[j]=100 
+	} else if ( all( side.fits[j,]==0 )) { edge[j]=1 
+	} else {
+	edge[j] = mean( which( side.smth[j,]==min(side.smth[j,],na.rm=T) ) ) }
 	} #j
 #extent=max(abs(c(disk[,,4:5],star[,,4:5])),na.rm=T)
 extent=max(abs(c(disk[,1,4:5],star[,,4:5])),na.rm=T)

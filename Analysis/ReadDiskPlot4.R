@@ -9,6 +9,7 @@ imgsize = c(4.5,5,150)
 imgname = paste(simdir,'/DiskSurvA.',sep='')
 print(imgname)
 
+### Make ps, pdf, and/or png versions of this plot
 for (iter in c(3))	{
 if (iter==1)	{
 setEPS(horizontal=F, onefile=F, paper='special')
@@ -19,14 +20,14 @@ pdf(paste(imgname,'pdf',sep=''),height=imgsize[1],width=imgsize[2])
 png(paste(imgname,'png',sep=''),height=imgsize[1],width=imgsize[2],
 									units="in",res=imgsize[3])
 	}
-#pdf(paste(simdir,'/DiskSurv.pdf',sep=''), height=7,width=5)
-##setEPS()
-##postscript(paste('../Paper/Inserts','/DiskSurv.eps',sep=''), height=3.75,width=5)
+### Two plots stacked vertically
 par(mfrow=c(2,1), oma=c(3,2,0,0) )
 
+### Top vs bottom plot margins
 marlist=list( c(0.5, 2., 0.5, 1.5), 
 	          c(0.5, 2., 0.5, 1.5) )
 
+### Loop over subdirectories
 for (i in 1:length(subdirs))	{
 
 	par(mar=marlist[[i]])
@@ -40,13 +41,8 @@ for (i in 1:length(subdirs))	{
 
 ### Plot background image
 image(diskimg,col=c(heat,'lightgray','darkgray'), axes=FALSE)
-#axis(4, col='red',col.axis="red", lwd=2,las=1,
-#	labels = AxLabs,
-#	at     = AxLocs)
-#mtext(4,text="Disk particle semimajor axis (AU)",line=2.25,col='red')
 SimID = paste(substr(    simdir, nchar(    simdir)-1, nchar(    simdir) ),'/',
 	      substr(subdirs[i], nchar(subdirs[i])-2, nchar(subdirs[i]) ),sep='' )
-#plottitle = paste(SimID,': ',stab.per[length(time)]*100,'% of disk remains stable',sep='')
 plottitle = 'Disk Stability: Binary vs. Triple Systems'
 
 ### Plot lines over the top
@@ -65,19 +61,13 @@ plot(time[-1],r0[edge[-1]]  , lwd=1, lty=1,col='black',
 
 ### Add labels to the outer edges of plot
 mtext(side=2,'Disk Radius (AU)',       outer=TRUE, line=0.5,cex=1.25,col='black')
-#mtext(side=2,'Fraction of disk',       outer=TRUE, line=0.5,cex=1.25,col='black')
-#mtext(side=4,expression('Disk particle a/a'[bin]*''),
-#	outer=TRUE, line=0.75,cex=1.25,col='red')
 
 ### Depending on whether it's the top or bottom plot, add axes/labels
 axis(2,lwd=2)
 if (i==1)	{
 axis(1,labels=FALSE)
-#axis(2,at=c(0., .2, .4, .6, .8, 1.0), lwd=2, col='blue',col.axis='blue',las=1)
-#mtext(2,text='Surviving fraction', line=2.25)
-#mtext(3,text='Disk Stability Without and With Proxima', line=1,cex=1.25)
-#mtext(3,text=plottitle, 
-#	line=1,cex=1.25)
+
+### Make plot legend
 legend('bottomleft',bty='n',
 	legend=c('Unstable','Ejected/accreted'),
 	pch=c(15,15),pt.cex=2,
@@ -85,14 +75,10 @@ legend('bottomleft',bty='n',
 	} else {
 axis(1)
 mtext(1,text='Time (yrs)', line=2.25, cex=1.25)
-#axis(2,     at=c( 0.0,  0.2,  0.4,  0.6,  0.8, 1.0),
-#	labels=c('0.0','0.2','0.4','0.6','0.8', ''), 
-#	col='blue',col.axis='blue',lwd=2,las=1)
 legend('bottomleft',bty='n',
 	legend=c('Truncation Radius'),
 	pch=c(NA),pt.cex=2,
 	lty=c(1),col=c('black'),lwd=1)
-#mtext(2,text='Surviving fraction', line=2.25)
 
 	}
 	}	# i in 4
