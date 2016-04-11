@@ -10,43 +10,39 @@ h=$(pwd)
 echo $h
 
 hom='Proxlike/'
+tag='d'
 pre='Prx'
-Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
-##Dir=(01 03 05 06 07 09 10 11 12 13 14 15 16 17 19 20 21 22 23 24 26 33)
-##Dir=(02 04 08 18 25 27 28 29 30 31 32 34)
+Dir=(01) #02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
 
 #hom='Proxlike/071714/'
+#tag='a'
 #pre='Prx'
 #Dir=(1 2 3 4 5 6 7 8 9 10 11 12)
 
 #hom='Proxlike/072314/'
+#tag='b'
 #pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
 
 #hom='Proxlike/081414/'
+#tag='c'
 #pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08)
 
-subdirs=(/DiskA-2 /DiskA-3 /DiskB-2 /DiskB-3)
+subdirs=(/Original /DiskA-2 /DiskA-3 /DiskB-2 /DiskB-3)
 
 for i in ${Dir[*]}; do
 	d=$hom$pre$i
 	echo '--------------------------------'$d'--------------------------------'
 
-<<<<<<< HEAD
-### Copy files from hammer to here
-	scp -p rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d'/DiskSurvA.png' 'Proxlike/DiskSurvImgs/DiskSurv'$i'A.png'
-=======
-	for j in ${subdirs[*]}; do
-	mkdir $d$j
-	mkdir $d$j/In
-	mkdir $d$j/Out
-	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/In/big.in'       $d$j'/In'
-	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/In/small.in'     $d$j'/In'
-	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/Out/info.out'    $d$j'/Out'
-	scp -rp rjw274@hammer10.rcc.psu.edu:'~/work/AlphaCen/Sims/'$d$j'/Out/AeiOutFiles' $d$j'/Out'
-	done
->>>>>>> ff61e8519780b322c3a7815a2912b341fa316c87
+	scp -rp rjw274@chloe.astro.psu.edu:'/Volumes/Macintosh\ HD\ 2/rjw/AlphaCen/Sims/'$d'/Original/Out/AeiOutFiles/TimeData.txt' TimeData/TimeData-$tag$i-O.txt
+	scp -rp rjw274@chloe.astro.psu.edu:'/Volumes/Macintosh\ HD\ 2/rjw/AlphaCen/Sims/'$d'/DiskA-2/Out/AeiOutFiles/TimeData.txt' TimeData/TimeData-$tag$i-A2.txt
+	scp -rp rjw274@chloe.astro.psu.edu:'/Volumes/Macintosh\ HD\ 2/rjw/AlphaCen/Sims/'$d'/DiskA-3/Out/AeiOutFiles/TimeData.txt' TimeData/TimeData-$tag$i-A3.txt
+	scp -rp rjw274@chloe.astro.psu.edu:'/Volumes/Macintosh\ HD\ 2/rjw/AlphaCen/Sims/'$d'/DiskB-2/Out/AeiOutFiles/TimeData.txt' TimeData/TimeData-$tag$i-B2.txt
+	scp -rp rjw274@chloe.astro.psu.edu:'/Volumes/Macintosh\ HD\ 2/rjw/AlphaCen/Sims/'$d'/DiskB-3/Out/AeiOutFiles/TimeData.txt' TimeData/TimeData-$tag$i-B3.txt
+
+#	for j in ${subdirs[*]}; do
+#	done
 
 #	cd $d/Original/Out
 #	scp -rp rjw274@shapiro.astro.psu.edu:'~/AlphaCen/Sims/'$d'/Original/Out/AeiOutFiles' .
