@@ -111,7 +111,7 @@ def GetInfoLastTime(WhichDir):
 	elif (complete == False):
 		LastTime = max(time+[PrevTime])
 
-	print('Info version, ',LastTime)
+	print('          Info time: {}'.format(LastTime))
 	return LastTime
 
 ###############################################################################
@@ -1060,7 +1060,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 ### Number of objects
 	nobjs=len(filenames)+1
-	print('nobjs = ',nobjs)
+	print('            nobjs = {}'.format(nobjs))
 ### Number of timesteps
 	ntB=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[0]+'.aei')-4
 	if (mode == 'triple'):
@@ -1242,7 +1242,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 #------------------------------------------------------------------------------
 	if (mode=='binary'):
 		rC_AB,vC_AB, dEpsC, epsC, kC, uC,aC, eC, iC = [float('NaN')]*9
-		print(TimeC, DestC)
+#		print(TimeC, DestC)
 ### Return all the data
 	return	m, iBin, iTri, imin, imax, MercNanError,\
 	   rB,    vB, dEpsB, epsB, kB, uB, \
@@ -2045,18 +2045,26 @@ def CalcDisk(WhichDir):
 				assert 0==1, 'Edge fitting algorithm is broken!'
 		else:
 			mininds = Merc.which( sidefits[:,j],min(sidefits[:,j]) )
-			if len(mininds)>1:
-				print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,mininds))
-			edge[j] = np.mean( mininds )
-	# get truncation radius (original orbit of outermost stable particle)
-	# add last row of zeros, for cases with no disk left
+			if len(mininds)==1:
+				edge[j] = mininds[0]
+			elif len(mininds)>1:
+				# if multiple minimums, take 5-point means around each and use lower
+				nearmin = np.array([np.mean( sidefits[(ind-2):(ind+3),j] ) for ind in mininds])
+				reallyMinInds = np.array(Merc.which( nearmin, min(nearmin) ))
+				if len(reallyMinInds) == 1:
+					edge[j] = mininds[reallyMinInds[0]]
+				elif len(reallyMinInds)>1:
+					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallymininds))
+					edge[j] = np.mean( mininds )
+	# get truncation radius (original orbit of outermost particle in stable region
+	# add last row of zeros, for cases with no disk left (edge=-1)
 	rbound = np.concatenate(( r, np.zeros((1,ntimes)) ), axis=0 )
 	rtr = np.array([rbound[edge[t],0] for t in range(ntimes)])
 
 	return(WhichDir,time,r,rtr)
 
 ###############################################################################
-def PlotDisk((WhichDir,time,r,rtr), samprate=1000):
+def PlotDisk((WhichDir,time,r,rtr), samprate=1000, edgeline=True):
 	'''Plot Disk data. First input is (CalcDisk()) output.'''
 
 	nobjs, ntimes = r.shape
@@ -2105,7 +2113,7 @@ def PlotDisk((WhichDir,time,r,rtr), samprate=1000):
 			img[i,j,:] = cols[i, t_ind, :]
 
 	# Set up figure
-	f, ax1 = plt.subplots(2,figsize=(6,10))
+	f, ax1 = plt.subplots(2,figsize=(6,9))
 	# grid of colors
 	imglims = [ min(logt_resamp), max(logt_resamp), min(r[:,0]), max(r[:,0]) ]
 	ax1[0].imshow(img[:,:], interpolation='nearest', aspect='auto',
@@ -2116,7 +2124,8 @@ def PlotDisk((WhichDir,time,r,rtr), samprate=1000):
 	ax1[0].set_ylim(imglims[2:])
 
 	# trace truncation radius
-	ax1[0].plot(logt_resamp,rtr_resamp)
+	if edgeline==True:
+		ax1[0].plot(logt_resamp,rtr_resamp)
 
 	# colored lines
 	for i,ri in enumerate(r):
