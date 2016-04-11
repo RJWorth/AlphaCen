@@ -1351,7 +1351,7 @@ def WriteTimeData(WhichDir,ThisT='dflt',m='dflt',mode='dflt',Tmax='dflt'):
 		ThisT = Tmax
 	
 	if mode == 'dflt':
-		if 'B-2' in WhichDir:
+		if '-2' in WhichDir:
 			mode = 'binary'
 		else:
 			mode = 'triple'
