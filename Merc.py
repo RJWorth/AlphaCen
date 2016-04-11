@@ -13,7 +13,7 @@ import re
 import os
 import socket
 machine = socket.gethostname().split('.')[0]
-if (machine in ['hammer','chloe']):
+if (machine in ['hammer']):
 	print("Warning: {0} doesn't have pandas!".format(machine))
 else:
 	import pandas as pd

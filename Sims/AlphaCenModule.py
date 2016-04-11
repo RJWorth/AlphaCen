@@ -11,7 +11,7 @@ import subprocess
 from operator import add
 import socket
 machine = socket.gethostname().split('.')[0]
-if (machine in ['hammer','chloe']):
+if (machine in ['hammer']):
 	print("Warning: {0} doesn't have matplotlib!".format(machine))
 else:
 	import matplotlib
