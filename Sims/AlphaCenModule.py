@@ -284,11 +284,10 @@ def GetObjParams(filepath,obj):
 def GetStellarMasses(WhichDir):
 
 ### Read in param.in and big.in files
-	parampath = WhichDir+'/In/param.'
-	if   os.path.isfile(parampath+'in'):
-		par=open(parampath+'in')
-	elif os.path.isfile(parampath+'dmp'):
-		par=open(parampath+'dmp')
+	if   os.path.isfile(WhichDir+'/In/param.in'):
+		par=open(WhichDir+'/In/param.in')
+	elif os.path.isfile(WhichDir+'/Out/param.dmp'):
+		par=open(WhichDir+'/Out/param.dmp')
 	else:
 		assert 0==1, 'No param.in or .dmp file found!'
 	parfile=par.readlines()
@@ -309,7 +308,7 @@ def GetStellarMasses(WhichDir):
 	for i,row in enumerate(parfile):
 		if (row[0] != ')'):
 			if 'central mass' in row:
-				mstar = [float(row.split()[4])]
+				mstar = [float(row.split()[-1])]
 
 ### Identify header rows for each object in infile
 	nbig = (nbiglines-6)/4
@@ -1861,7 +1860,10 @@ def ReadInfo(WhichDir):
 
 	# Find the start time of the last iteration
 	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
-	if (len(CompleteInd) == 1):
+	if len(CompleteInd)==0:
+		PrevTime = max(np.log10(FindTime))
+		complete = False
+	elif(len(CompleteInd) == 1):
 		PrevTime = 0.
 		complete = True
 #		print('First iteration, no time written'.format(PrevTime))
@@ -2054,7 +2056,7 @@ def CalcDisk(WhichDir):
 				if len(reallyMinInds) == 1:
 					edge[j] = mininds[reallyMinInds[0]]
 				elif len(reallyMinInds)>1:
-					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallymininds))
+					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
 					edge[j] = np.mean( mininds )
 	# get truncation radius (original orbit of outermost particle in stable region
 	# add last row of zeros, for cases with no disk left (edge=-1)
