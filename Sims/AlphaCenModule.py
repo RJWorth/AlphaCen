@@ -1860,7 +1860,10 @@ def ReadInfo(WhichDir):
 	# Find the start time of the last iteration
 	FindTime = [float(InfoBody[i].split()[6]) for i in FindTimeInd]
 	if len(CompleteInd)==0:
-		PrevTime = max(np.log10(FindTime))
+		if len(FindTime)>0:
+			PrevTime = np.log10(max(FindTime))
+		else:
+			PrevTime = 0.
 		complete = False
 	elif(len(CompleteInd) == 1):
 		PrevTime = 0.
