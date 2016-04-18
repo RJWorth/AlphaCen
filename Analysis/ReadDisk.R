@@ -22,8 +22,8 @@ if (substr(readdir,1,1)=='/') simdir=readdir else {
 	simdir=paste('../Sims/',readdir,sep='') }
 
 #subdirs=c('/DiskA-2','/DiskA-3','/DiskB-2','/DiskB-3')
-#subdirs=c('/DiskB-2','/DiskB-3')
-subdirs=c('/DiskA-2','/DiskA-3')
+subdirs=c('/DiskB-2','/DiskB-3')
+#subdirs=c('/DiskA-2','/DiskA-3')
 
 ### Load relevant constants/functions etc
 source('../Analysis/DiskUtils.R')

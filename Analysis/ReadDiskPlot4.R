@@ -6,7 +6,7 @@ options(scipen=0)
 
 imgsize = c(4.5,5,150)
 #imgname = '../Paper/Inserts/DiskSurv.'
-imgname = paste(simdir,'/DiskSurvA.',sep='')
+imgname = paste(simdir,'/DiskSurvB-line.',sep='')
 print(imgname)
 
 ### Make ps, pdf, and/or png versions of this plot
@@ -55,6 +55,7 @@ plot(time[-1],r0[edge[-1]]  , lwd=1, lty=1,col='black',
 	xlim=c(min(time[-1]),max(time)),ylim=c(0,max(r0)),
 	ylab='',xlab='',
 	main='')
+
 #lines(time,surv.per, lwd=2)
 #lines(time,stab.per, lwd=3, lty=3,col='blue')
 #lines(time,edge/n  , lwd=2, lty=2,col='black')
