@@ -1,6 +1,12 @@
 #!/bin/bash
 ###############################################################################
-# compare the orbital parameters in the original and disk triple systems
+### Compare the orbital parameters in the original and disk triple systems
+### Pipeline: simulations run on hammer
+#             important files copied onto chloe's local director
+#             WriteTimeData.py runs AlphaCenModule.WriteTimeData on each directory
+#             Compare.bash copies the TimeData.txt files from chloe to laptop
+#             ReadAllTimeDatas.py reads the TimeData.txt files and creates DiskSummary.txt
+#             ReadDiskSum.py reads DiskSummary.txt and does analysis on it
 
 #module load python/2.7.3
 #module load gcc/4.7.1
@@ -9,10 +15,10 @@
 h=$(pwd)
 echo $h
 
-#hom='Proxlike/'
-#tag='d'
-#pre='Prx'
-#Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
+hom='Proxlike/'
+tag='d'
+pre='Prx'
+Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34)
 
 #hom='Proxlike/071714/'
 #tag='a'
@@ -24,10 +30,10 @@ echo $h
 #pre='Prx'
 #Dir=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
 
-hom='Proxlike/081414/'
-tag='c'
-pre='Prx'
-Dir=(01 02 03 04 05 06 07 08)
+#hom='Proxlike/081414/'
+#tag='c'
+#pre='Prx'
+#Dir=(01 02 03 04 05 06 07 08)
 
 subdirs=(/Original /DiskA-2 /DiskA-3 /DiskB-2 /DiskB-3)
 

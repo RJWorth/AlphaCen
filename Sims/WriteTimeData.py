@@ -1,3 +1,10 @@
+### Create TimeData.txt files from each simulation
+### Pipeline: simulations run on hammer
+#             important files copied onto chloe's local director
+#             WriteTimeData.py runs AlphaCenModule.WriteTimeData on each directory
+#             Compare.bash copies the TimeData.txt files from chloe to laptop
+#             ReadAllTimeDatas.py reads the TimeData.txt files and creates DiskSummary.txt
+#             ReadDiskSum.py reads DiskSummary.txt and does analysis on it
 
 import numpy as np
 import AlphaCenModule as AC
