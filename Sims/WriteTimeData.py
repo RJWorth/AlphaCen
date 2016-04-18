@@ -11,9 +11,8 @@ Dirs4 = ['Proxlike/081414/Prx'+'{0:02}'.format(i) for i in range(1,9)]
 #Dirs = Dirs1+Dirs2+Dirs3+Dirs4
 Dirs = Dirs1+Dirs4
 
-Dirs=[Dirs[0]]
-
-subdirs = ['Original','DiskA-2','DiskA-3','DiskB-2','DiskB-3']
+#subdirs = ['Original','DiskA-2','DiskA-3','DiskB-2','DiskB-3']
+subdirs = ['DiskA-2','DiskA-3']
 
 ### Write TimeData.txt file for each Dir and subdir
 for i,d in enumerate(Dirs):
