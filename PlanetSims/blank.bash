@@ -4,7 +4,7 @@
 machine=$(hostname -s)
 
 if [ $machine = Mirka ]; then
-Dirs=(C41)
+Dirs=(Bin14 Bin15 Bin16 Bin17 Bin18 Bin19 Bin20 Bin21 Bin22 Bin23 Bin24)
 elif [ $machine = chloe ];then
 Dirs=()
 elif [ $machine = shapiro ]; then
@@ -15,11 +15,6 @@ for i in ${Dirs[*]}
 do	
 
 	echo $i
-
-	mkdir $i
-	mkdir $i/In
-	mkdir $i/Out
-	mkdir $i/Aei
 
 	./pipe.bash $i
 
