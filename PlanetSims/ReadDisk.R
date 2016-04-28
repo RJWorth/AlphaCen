@@ -268,7 +268,7 @@ vsT = function(ycol,lg='x'){
 
 #-----------------------------------------------------------------------------#
 #Function to make barplot of a parameter showing fates of objs
-library(plotrix)
+#library(plotrix)
 #fatebars = function(xcol)	{
 #	xmin = min(aei[ !isstar, 1, xcol ], na.rm=T)
 #	xmax = max(aei[ !isstar, 1, xcol ], na.rm=T)

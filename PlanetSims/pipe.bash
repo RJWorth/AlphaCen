@@ -2,27 +2,25 @@
 ##############################################################################
 
 machine=rjw274@chloe.astro.psu.edu
-dir=$1
+dir=Data/$1
 
-mkdir $dir
-mkdir $dir/In
-mkdir $dir/Out
+### make directories for this sim
+#mkdir $dir
+#mkdir $dir/In
+#mkdir $dir/Out
 
-scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/In/big.in' $dir/In
-scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/info.out' $dir/Out
-scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Out/element.out' $dir/Out
+### download individual files for each sim, if not already present
+files=(In/big.in In/small.in In/param.in Out/info.out Out/element.out Out/param.dmp)
+for f in ${files[*]}; do
+	if [ ! -f $dir/$f ];then
+#	scp -p  $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/'$f $dir/$f
+	echo $dir'/'$f 'missing'
+	fi
+done
 
-### download all, or a subset, of the .aei files
-
-if [ $dir = 'C01' ];then
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/AlCenA.aei' $dir/Aei
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/P0018.aei' $dir/Aei
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/P0053.aei' $dir/Aei
-elif [ $dir = 'C06' ];then
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/AlCenA.aei' $dir/Aei
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/P0003.aei' $dir/Aei
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei/P0911.aei' $dir/Aei
-else
-	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei' $dir
+### download the .aei directory, if not already present
+if [ ! -f $dir/Aei/AlCenB.aei ];then
+#	scp -rp $machine:'/Volumes/Macintosh\ HD\ 2/rjw/ACPltSims/'$dir'/Aei' $dir
+	echo $dir/aei missing
 fi
 
