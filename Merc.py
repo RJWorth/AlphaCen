@@ -544,11 +544,15 @@ def WriteParamInFile(loc = 'Merc95/In/', f = 'in', alg='hybrid',
 	rEj=100, rStar=0.005, mStar=1.0, rCE=3.,dtDmp='default',dtPer=100):
 	'''Write a param.in file for mercury'''
 	
+	#### Calculate default values scaled to the simulation length
 	if (tOut == 'default'):
 		tOut = tf/1.e3
 	if (dtDmp == 'default'):
 		dtDmp = int(round(tf/dt/10.))
+	### Too large of dtDmp value will cause integration errors
+	dtDmp = int(np.min((1e8, dtDmp)))
 
+	### Plug variables into form text
 	text = ''')O+_06 Integration parameters  (WARNING: Do not delete this line!!)
 ) Lines beginning with `)' are ignored.
 )---------------------------------------------------------------------
