@@ -191,224 +191,224 @@ print(mass.fracs,digits=2)
 sink()
 #-----------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------#
-### Function to plot the specified column vs. time
-vsT = function(ycol,lg='x'){
+#### Function to plot the specified column vs. time
+#vsT = function(ycol,lg='x'){
 
-	if ('AlCenA' %in% dimnames(aei)[[1]])	{
-		ind=which(dimnames(aei)[[1]]=='AlCenA')	
-	} else if ('AlCenB' %in% dimnames(aei)[[1]])	{
-		ind=which(dimnames(aei)[[1]]=='AlCenB')
-	} else {
-		ind=length(names)
-	}
-
-	xlims = c(minT,maxT)
-	if (ycol == 'e') {
-		ylims = c(0,1) 
-	} else if (ycol == 'i') {
-		ylims = c(0,180)
-	} else if (ycol == 'v') {
-		ylims = c(0,max(aei[2,,ycol]))
-	} else {
-		ylims = c(0, max(aei[ind,-1,ycol],na.rm=T))
-		}
-
-	lines= aei[ind,,'t'] > 0.
-
-#	plot(aei[ind,lines,'t'], aei[ind,lines,ycol], 
-#	log=lg, xlim=xlims, ylim=ylims, xlab='',ylab=ycol,xaxt='n',
-#	pch=20,col=fcol[ind])
-	
-#	counts=sort(summary(as.factor(fcol)),decreasing=T)
-#	for (j in 1:length(counts)){
-#		for (i in 1:length(files))	{
-#			if (fcol[i] == attributes(counts)[[1]][j])	{
-#				t = aei[i,-1,'t']
-#				y = aei[i,-1,ycol]
-#				e = aei[i,-1,'e']
-#				points(t[e<=1.0], y[e<=1.0],pch=20,cex=.2,col=fcol[i])
-#			}
-#		}
-#	}
-}
-#-----------------------------------------------------------------------------#
-### Plot semimajor axis, eccentricity, pericenter, and apocenter vs. time
-#pdf(paste(dir,'Tchanges.pdf',sep=''),width=10,height=10)
-#png(paste(dir,'Tchanges.png',sep=''), res = 200, width = 10, height = 10, units = "in")
-#par(mfrow=c(5,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
-#vsT('a')
-#vsT('e')
-#vsT('i')
-#vsT('p')
-#vsT('ap')
-#axis(1)
-#dev.off()
-#-----------------------------------------------------------------------------#
-
-### Plot a-e
-#pdf(paste(dir,'a-e.pdf',sep=''),width=10,height=10)
-#plot(aei[1,,'a'], aei[1,,'e'], 
-#	xlim=c( 0., 10. ), 
-#	ylim=c( 0., 1.), 
-#	pch=20,col=fcol[1])
-
-#for (i in 2:length(files))	{
-#	if (fcol[i] == 'gray')	{
-#		a = aei[i,-1,'a']
-#		e = aei[i,-1,'e']
-#		points( a[e<=1.], e[e<=1.],pch=20,cex=.2, col=fcol[i])
-#	}}
-#for (i in 2:length(files))	{
-#	if (fcol[i] != 'gray')	{
-#		a = aei[i,-1,'a']
-#		e = aei[i,-1,'e']
-#		points( a[e<=1.], e[e<=1.],pch=20,cex=.2, col=fcol[i])
-#	}}
-#dev.off()
-
-#-----------------------------------------------------------------------------#
-#Function to make barplot of a parameter showing fates of objs
-#library(plotrix)
-#fatebars = function(xcol)	{
-#	xmin = min(aei[ !isstar, 1, xcol ], na.rm=T)
-#	xmax = max(aei[ !isstar, 1, xcol ], na.rm=T)
-#	if (xcol!='mass') {
-#		nbr  = 30
-#		brk  = xmin + (0:nbr)*((xmax-xmin)/nbr)
+#	if ('AlCenA' %in% dimnames(aei)[[1]])	{
+#		ind=which(dimnames(aei)[[1]]=='AlCenA')	
+#	} else if ('AlCenB' %in% dimnames(aei)[[1]])	{
+#		ind=which(dimnames(aei)[[1]]=='AlCenB')
 #	} else {
-#		lvls = as.numeric(levels(as.factor(aei[ !isstar, 1, xcol ])))
-#		nbr = length(lvls)
-#		brk = c(lvls[1]*.99,lvls*1.01)
+#		ind=length(names)
 #	}
 
-#	h=array( dim=c( length(allfates), nbr ),dimnames=list(allfates,NULL) )
-#	for (j in 1:length(allfates))	{
-##		h[j,]=hist( aei[ ((ult==allfates[j]) & !isstar), 1, xcol ],
-##			br=brk, plot=F)$counts
-#		h[j,]=weighted.hist( x=aei[ ((ult==allfates[j]) & !isstar), 1, xcol ],
-#			w=aei[ ((ult==allfates[j]) & !isstar), 1, 'mass' ],	
-#			br=brk, plot=F)$counts
+#	xlims = c(minT,maxT)
+#	if (ycol == 'e') {
+#		ylims = c(0,1) 
+#	} else if (ycol == 'i') {
+#		ylims = c(0,180)
+#	} else if (ycol == 'v') {
+#		ylims = c(0,max(aei[2,,ycol]))
+#	} else {
+#		ylims = c(0, max(aei[ind,-1,ycol],na.rm=T))
 #		}
-#	barplot(h, space=0, xlab=xcol, legend.text=T, 
-#		col=c('black',rainbow(length(allfates)-1)), 
-#		args.legend=list(x='top',ncol=2) )
-#	axvals = axisTicks( c(xmin,xmax), log=F)
-#	axlocs = (nbr+1)*(axvals-xmin)/(xmax-xmin)
-#	axis(side=1,at=axlocs,labels=axvals)
-##	return(h)
-#	}
-#fatebars('a')
-#-----------------------------------------------------------------------------#
-### Where mass from initial disk ends up
 
-plotprms = c('a','mass')
+#	lines= aei[ind,,'t'] > 0.
 
-n=ceiling(sqrt(length(plotprms)))
-if (length(plotprms) <= n*(n-1)) m=n-1 else m=n
-
-#pdf(paste(dir,'massfates.pdf',sep=''),height=m*6,width=n*6)
-#par(mfrow=c(m,n), mar=c(5.1,2.1,1.1,1.1))
-
-#for (i in 1:length(plotprms))	{
-#	print(plotprms[i])
-#	fatebars(plotprms[i])
-#	}
+##	plot(aei[ind,lines,'t'], aei[ind,lines,ycol], 
+##	log=lg, xlim=xlims, ylim=ylims, xlab='',ylab=ycol,xaxt='n',
+##	pch=20,col=fcol[ind])
 #	
-#dev.off()
+##	counts=sort(summary(as.factor(fcol)),decreasing=T)
+##	for (j in 1:length(counts)){
+##		for (i in 1:length(files))	{
+##			if (fcol[i] == attributes(counts)[[1]][j])	{
+##				t = aei[i,-1,'t']
+##				y = aei[i,-1,ycol]
+##				e = aei[i,-1,'e']
+##				points(t[e<=1.0], y[e<=1.0],pch=20,cex=.2,col=fcol[i])
+##			}
+##		}
+##	}
+#}
 ##-----------------------------------------------------------------------------#
-### Distance from center and velocity vs. time
-#if (form=='long')	{
-#	png(paste(dir,'CartData.png',sep=''), res = 200, width = 10, height = 5, units = "in")
-#	par(mfrow=c(2,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
-#	vsT('r',lg='')
-#	vsT('v',lg='')
-#	axis(1)
-#	dev.off()
+#### Plot semimajor axis, eccentricity, pericenter, and apocenter vs. time
+##pdf(paste(dir,'Tchanges.pdf',sep=''),width=10,height=10)
+##png(paste(dir,'Tchanges.png',sep=''), res = 200, width = 10, height = 10, units = "in")
+##par(mfrow=c(5,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
+##vsT('a')
+##vsT('e')
+##vsT('i')
+##vsT('p')
+##vsT('ap')
+##axis(1)
+##dev.off()
+##-----------------------------------------------------------------------------#
+
+#### Plot a-e
+##pdf(paste(dir,'a-e.pdf',sep=''),width=10,height=10)
+##plot(aei[1,,'a'], aei[1,,'e'], 
+##	xlim=c( 0., 10. ), 
+##	ylim=c( 0., 1.), 
+##	pch=20,col=fcol[1])
+
+##for (i in 2:length(files))	{
+##	if (fcol[i] == 'gray')	{
+##		a = aei[i,-1,'a']
+##		e = aei[i,-1,'e']
+##		points( a[e<=1.], e[e<=1.],pch=20,cex=.2, col=fcol[i])
+##	}}
+##for (i in 2:length(files))	{
+##	if (fcol[i] != 'gray')	{
+##		a = aei[i,-1,'a']
+##		e = aei[i,-1,'e']
+##		points( a[e<=1.], e[e<=1.],pch=20,cex=.2, col=fcol[i])
+##	}}
+##dev.off()
+
+##-----------------------------------------------------------------------------#
+##Function to make barplot of a parameter showing fates of objs
+##library(plotrix)
+##fatebars = function(xcol)	{
+##	xmin = min(aei[ !isstar, 1, xcol ], na.rm=T)
+##	xmax = max(aei[ !isstar, 1, xcol ], na.rm=T)
+##	if (xcol!='mass') {
+##		nbr  = 30
+##		brk  = xmin + (0:nbr)*((xmax-xmin)/nbr)
+##	} else {
+##		lvls = as.numeric(levels(as.factor(aei[ !isstar, 1, xcol ])))
+##		nbr = length(lvls)
+##		brk = c(lvls[1]*.99,lvls*1.01)
+##	}
+
+##	h=array( dim=c( length(allfates), nbr ),dimnames=list(allfates,NULL) )
+##	for (j in 1:length(allfates))	{
+###		h[j,]=hist( aei[ ((ult==allfates[j]) & !isstar), 1, xcol ],
+###			br=brk, plot=F)$counts
+##		h[j,]=weighted.hist( x=aei[ ((ult==allfates[j]) & !isstar), 1, xcol ],
+##			w=aei[ ((ult==allfates[j]) & !isstar), 1, 'mass' ],	
+##			br=brk, plot=F)$counts
+##		}
+##	barplot(h, space=0, xlab=xcol, legend.text=T, 
+##		col=c('black',rainbow(length(allfates)-1)), 
+##		args.legend=list(x='top',ncol=2) )
+##	axvals = axisTicks( c(xmin,xmax), log=F)
+##	axlocs = (nbr+1)*(axvals-xmin)/(xmax-xmin)
+##	axis(side=1,at=axlocs,labels=axvals)
+###	return(h)
+##	}
+##fatebars('a')
+##-----------------------------------------------------------------------------#
+#### Where mass from initial disk ends up
+
+#plotprms = c('a','mass')
+
+#n=ceiling(sqrt(length(plotprms)))
+#if (length(plotprms) <= n*(n-1)) m=n-1 else m=n
+
+##pdf(paste(dir,'massfates.pdf',sep=''),height=m*6,width=n*6)
+##par(mfrow=c(m,n), mar=c(5.1,2.1,1.1,1.1))
+
+##for (i in 1:length(plotprms))	{
+##	print(plotprms[i])
+##	fatebars(plotprms[i])
+##	}
+##	
+##dev.off()
+###-----------------------------------------------------------------------------#
+#### Distance from center and velocity vs. time
+##if (form=='long')	{
+##	png(paste(dir,'CartData.png',sep=''), res = 200, width = 10, height = 5, units = "in")
+##	par(mfrow=c(2,1), oma=c(5,0,1,0), mar=c(0,4,0,1))
+##	vsT('r',lg='')
+##	vsT('v',lg='')
+##	axis(1)
+##	dev.off()
+##	}
+##-----------------------------------------------------------------------------#
+#### Get track of star over time
+#if ('AlCenA' %in% names)	{
+
+#A=aei['AlCenA',,]
+#Ais= ((A[,'a'] != 0.) | is.na(A[,'a']))
+
+##pdf(paste(dir,'AlCenApos.pdf',sep=''), width=10, height=10)
+##par(mfrow=c(2,2))
+
+##plot(A[Ais,'x'],A[Ais,'y'],type='l')
+##points(A[Ais,'x'],A[Ais,'y'],pch=20,col='blue')
+##points(0.,0., pch=19, col='orange')
+
+##plot(A[Ais,'x'],A[Ais,'z'],type='l')
+##points(A[Ais,'x'],A[Ais,'z'],pch=20,col='blue')
+##points(0.,0., pch=19, col='orange')
+
+##plot(A[Ais,'y'],A[Ais,'z'],type='l')
+##points(A[Ais,'y'],A[Ais,'z'],pch=20,col='blue')
+##points(0.,0., pch=19, col='orange')
+
+##dev.off()
+##-----------------------------------------------------------------------------#
+
+#r=A[Ais,'r']
+#t=A[Ais,'t']*365.25
+#v=A[Ais,'v']
+
+##r=r[5:length(r)]
+##t=t[5:length(t)]
+##v=v[5:length(v)]
+
+
+#dr=array()
+#dt=array()
+#dv=array()
+
+#for (i in 1:(length(r)-1))	{
+#	dr[i]=r[i+1]-r[i]
+#	dt[i]=t[i+1]-t[i]
+#	dv[i]=v[i+1]-v[i]
 #	}
-#-----------------------------------------------------------------------------#
-### Get track of star over time
-if ('AlCenA' %in% names)	{
 
-A=aei['AlCenA',,]
-Ais= ((A[,'a'] != 0.) | is.na(A[,'a']))
-
-#pdf(paste(dir,'AlCenApos.pdf',sep=''), width=10, height=10)
-#par(mfrow=c(2,2))
-
-#plot(A[Ais,'x'],A[Ais,'y'],type='l')
-#points(A[Ais,'x'],A[Ais,'y'],pch=20,col='blue')
-#points(0.,0., pch=19, col='orange')
-
-#plot(A[Ais,'x'],A[Ais,'z'],type='l')
-#points(A[Ais,'x'],A[Ais,'z'],pch=20,col='blue')
-#points(0.,0., pch=19, col='orange')
-
-#plot(A[Ais,'y'],A[Ais,'z'],type='l')
-#points(A[Ais,'y'],A[Ais,'z'],pch=20,col='blue')
-#points(0.,0., pch=19, col='orange')
-
-#dev.off()
-#-----------------------------------------------------------------------------#
-
-r=A[Ais,'r']
-t=A[Ais,'t']*365.25
-v=A[Ais,'v']
-
-#r=r[5:length(r)]
-#t=t[5:length(t)]
-#v=v[5:length(v)]
+#drt=abs(dr/dt)
+#dv=abs(dv)
 
 
-dr=array()
-dt=array()
-dv=array()
-
-for (i in 1:(length(r)-1))	{
-	dr[i]=r[i+1]-r[i]
-	dt[i]=t[i+1]-t[i]
-	dv[i]=v[i+1]-v[i]
-	}
-
-drt=abs(dr/dt)
-dv=abs(dv)
+#up=(abs(dt-4.)<.1)
+#dn=(abs(dt-3.)<.1)
 
 
-up=(abs(dt-4.)<.1)
-dn=(abs(dt-3.)<.1)
+#if (dir %in% c('C01/','C06/','C26/','C28/')) {
 
+#if (dir=='C01/') {
+#xl=c(5.21e4,5.28e4)
+#yl1=c(0,20)
+#yl2=c(0,0.05)
+#} else if (dir=='C06/') {
+#xl=c(2.294e5,2.34e5)
+#yl1=c(0,100)
+#yl2=c(0,0.03)
+#} else if (dir=='C26/') {
+#xl=c(365.25e3,1200000)	# t scale
+#yl1=c(0,50)			# r scale
+#yl2=c(0,0.01)			# v scale
+#} else if (dir=='C28/') {
+#xl=c(.9e6,1.1e6)
+#yl1=c(0,50)			# r scale
+#yl2=c(0,0.01)
+#} else if (dir=='C11/') {
+#xl=c(2.5e4,3e4)
+#yl1=c(0,75)			# r scale
+#yl2=c(0,0.04)
+#}
 
-if (dir %in% c('C01/','C06/','C26/','C28/')) {
+##pdf(paste(dir,'weirdness.pdf',sep=''),width=10,height=10)
+##par(mfrow=c(4,1))
+##plot(    t,   r, pch=20, xlim=xl, ylim=yl1)
+##plot(    t,   v, pch=20, xlim=xl, ylim=yl2)
+##plot(t[-1], drt, pch=20, xlim=xl, ylim=yl2)
+##plot(t[-1], drt, pch=20, xlim=xl)
+##dev.off()
 
-if (dir=='C01/') {
-xl=c(5.21e4,5.28e4)
-yl1=c(0,20)
-yl2=c(0,0.05)
-} else if (dir=='C06/') {
-xl=c(2.294e5,2.34e5)
-yl1=c(0,100)
-yl2=c(0,0.03)
-} else if (dir=='C26/') {
-xl=c(365.25e3,1200000)	# t scale
-yl1=c(0,50)			# r scale
-yl2=c(0,0.01)			# v scale
-} else if (dir=='C28/') {
-xl=c(.9e6,1.1e6)
-yl1=c(0,50)			# r scale
-yl2=c(0,0.01)
-} else if (dir=='C11/') {
-xl=c(2.5e4,3e4)
-yl1=c(0,75)			# r scale
-yl2=c(0,0.04)
-}
-
-#pdf(paste(dir,'weirdness.pdf',sep=''),width=10,height=10)
-#par(mfrow=c(4,1))
-#plot(    t,   r, pch=20, xlim=xl, ylim=yl1)
-#plot(    t,   v, pch=20, xlim=xl, ylim=yl2)
-#plot(t[-1], drt, pch=20, xlim=xl, ylim=yl2)
-#plot(t[-1], drt, pch=20, xlim=xl)
-#dev.off()
-
-	}	# if C01 or 6
-}	#if star exists
+#	}	# if C01 or 6
+#}	#if star exists
 

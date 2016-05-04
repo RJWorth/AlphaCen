@@ -70,58 +70,51 @@ C34       T 3.08  100    0   1e7   discontinuities
 ###############################################################################
 ### Binary integrator version
 dir   alpha  sig  rtr  rej   iA    tf  outcome
-Bin03   1.5    3 2.77  100    0   1e7  3 plts; extended 1e8 3 plts
-Bin04   1.5    3 3.08  100    0   1e7  5 plts; extended 1e8 4 plts
-Bin09   1.5    3 2.77  100    0   1e8  3 plts                    
-Bin10   1.5    3 3.08  100    0   1e8  3 plts                   
-
 Bin01   1.5    1 2.77  100    0   1e7  9 plts; extended 1e8 8 plts
 Bin02   1.5    1 3.08  100    0   1e7  6 plts; extended 1e8 4 plts
-Bin07   1.5    1 2.77  100    0   1e8  4 plts                    
-Bin08   1.5    1 3.08  100    0   1e8  5 plts                    
-
+Bin03   1.5    3 2.77  100    0   1e7  3 plts; extended 1e8 3 plts
+Bin04   1.5    3 3.08  100    0   1e7  5 plts; extended 1e8 4 plts
 Bin05   1.5   .3 2.77  100    0   1e8  10 plts                   
 Bin06   1.5   .3 3.08  100    0   1e8  5 plts                   
+Bin07   1.5    1 2.77  100    0   1e8  4 plts                    
+Bin08   1.5    1 3.08  100    0   1e8  5 plts                    
+Bin09   1.5    3 2.77  100    0   1e8  3 plts                    
+Bin10   1.5    3 3.08  100    0   1e8  3 plts                   
 Bin11   1.5   .3 2.77  100    0   1e8  7 plts; recent colls
 Bin12   1.5   .3 3.08  100    0   1e8  4 plts                   
 
-Bin15   1.0    3 2.77  100    0   1e8  4 plts 
-Bin13   1.0    3 3.08  100    0   1e8  4 plts 
-Bin16   1.0    3 2.77  100    0   1e8  6 plts 
+
+Bin13   1.0    3 3.08  100    0   1e8  2 plts
 Bin14   1.0    3 3.08  100    0   1e8  5 plts 
-
-Bin17   1.0    1 2.77  100    0   1e8  7 plts 
-Bin19   1.0    1 3.08  100    0   1e8  3 plts 
-Bin18   1.0    1 2.77  100    0   1e8  11 plts
-Bin20   1.0    1 3.08  100    0   1e8  4 plts
-
-Bin21   1.0   .3 2.77  100    0   1e8  5 plts 
-Bin23   1.0   .3 3.08  100    0   1e8  6 plts 
+Bin15   1.0    3 2.77  100    0   1e8  3 plts
+Bin16   1.0    3 2.77  100    0   1e8  6 plts 
+Bin17   1.0    1 2.77  100    0   1e8  6 plts 
+Bin18   1.0    1 2.77  100    0   1e8  9 plts
+Bin19   1.0    1 3.08  100    0   1e8  3 plts
+Bin20   1.0    1 3.08  100    0   1e8  4 plts 
+Bin21   1.0   .3 2.77  100    0   1e8  4 plts 
 Bin22   1.0   .3 2.77  100    0   1e8  6 plts 
-Bin24   1.0   .3 3.08  100    0   1e8  4 plts 
+Bin23   1.0   .3 3.08  100    0   1e8  5 plts 
+Bin24   1.0   .3 3.08  100    0   1e8  3 plts 
+
+
+Bin25   1.5    3 2.54  100    0   1e8  4 plts 
+Bin26   1.5    3 2.54  100    0   1e8  4 plts --
+Bin27   1.5    1 2.54  100    0   1e8  _ plts --32780
+Bin28   1.5    1 2.54  100    0   1e8  _ plts --40507
+Bin29   1.5   .3 2.54  100    0   1e8  _ plts --48609
+Bin30   1.5   .3 2.54  100    0   1e8  _ plts --48643
+
+Bin31   1.0    3 2.54  100    0   1e8  _ plts --31320
+Bin32   1.0    3 2.54  100    0   1e8  _ plts --31321
+Bin33   1.0    1 2.54  100    0   1e8  _ plts --31568
+Bin34   1.0    1 2.54  100    0   1e8  _ plts --31570
+Bin35   1.0   .3 2.54  100    0   1e8  _ plts --31795
+Bin36   1.0   .3 2.54  100    0   1e8  _ plts --32489
 
 
 
-
-Bin25   1.5    3 2.54  100    0   1e8  _ plts
-Bin26   1.5    3 2.54  100    0   1e8  _ plts                    
-
-Bin27   1.5    1 2.54  100    0   1e8  _ plts
-Bin28   1.5    1 2.54  100    0   1e8  _ plts                    
-
-Bin29   1.5   .3 2.54  100    0   1e8  _ plts                   
-Bin30   1.5   .3 2.54  100    0   1e8  _ plts
-
-Bin31   1.0    3 2.54  100    0   1e8  _ plts 
-Bin32   1.0    3 2.54  100    0   1e8  _ plts 
-
-Bin33   1.0    1 2.54  100    0   1e8  _ plts 
-Bin34   1.0    1 2.54  100    0   1e8  _ plts
-
-Bin35   1.0   .3 2.54  100    0   1e8  _ plts 
-Bin36   1.0   .3 2.54  100    0   1e8  _ plts 
-
-Bin05, 06, 11, 12 have lower density, slower convergence => extend again? 1e9?
+sigma = 0.3 have slower convergence => extend again? 1e9?
 
 
 
