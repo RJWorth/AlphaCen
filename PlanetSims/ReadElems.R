@@ -153,9 +153,10 @@ source('PltFns.R')
 ### Plot planet systems
 # one plot for each rtr value
 for (j in levels(simparams$rtr)) {
-	pdf(paste(tag,'PltSystems-',j,'.pdf',sep=''), width=6., height=6.)
+	plottag = sub('.','_',j, fixed=T)
+	pdf(paste(tag,'PltSystems-',plottag,'.pdf',sep=''), width=6.5, height=5.)
 	nplots = length(which(simparams$rtr == j))
-	par(mfrow=c((nplots+2)/2,2), oma=c(5,5,5,2))
+	par(mfrow=c((nplots+2)/2,2), oma=c(5,5,1,2))
 	# iterate through each sigma level
 	for (k in sort(levels(simparams$sig),decreasing=T)) {
 		# alternate alpha levels (L/R on plot)
