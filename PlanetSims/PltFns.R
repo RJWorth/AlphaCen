@@ -109,8 +109,8 @@ PlotLegend = function() {
 MarginText = function() {
 	mtext(side=1,line=3,outer=T,'a (AU)')
 	mtext(side=2,line=3,outer=T,'e')
-	maintext = bquote( 'Planetary Systems Formed, ' ~ r[tr] == .(rtr[i]) )
-	mtext(side=3,line=1,outer=T,
-		text=maintext )
+#	maintext = bquote( 'Planetary Systems Formed, ' ~ r[tr] == .(rtr[i]) )
+#	mtext(side=3,line=1,outer=T,
+#		text=maintext )
 }
 
