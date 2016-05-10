@@ -739,7 +739,7 @@ def ReadAeiLine(WhichDir,Obj,Time,iscoll=False):
 	return None,None,None,None,None
 
 ###########################################################################
-def ReadAEI(WhichDir, obj):
+def ReadAEI(WhichDir, obj, nrows=None):
 	'''Read in an object's .aei file as a pandas dataframe'''
 	# File name
 	fname = WhichDir+'/Aei/'+obj+'.aei'
@@ -748,7 +748,8 @@ def ReadAEI(WhichDir, obj):
 	header[0] = 't'
 	header = header[header!='(years)']
 	# Read in file
-	aei = pd.read_table(fname, sep = ' +', names = header, skiprows = 4)
+	aei = pd.read_table(fname, sep = ' +', engine='python', 
+				names = header, skiprows = 4, nrows=nrows)
 	return(aei)
 
 ###########################################################################
