@@ -13,7 +13,7 @@ if (length(dir) == 0 |
 	readdir=="/usr/global/R/3.0.1/lib64/R/bin/exec/R" | 
 	readdir=="/Library/Frameworks/R.framework/Resources/bin/exec/x86_64/R") {
 		print('No args given: using defaut directory!')
-		readdir='Proxlike/Prx03'
+		readdir='Proxlike/072314/Prx24'
 		}
 	print(readdir)
 
