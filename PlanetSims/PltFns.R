@@ -17,7 +17,7 @@ SimLabs = vector("expression",length(dirs))
 for (i in 1:length(dirs)) { 
 #	quote1 = bquote( r[tr] == .(rtr[i])*',' ~ c[sigma] == .(sig[i]) )
 	SimLabs[i] = substitute(
-        expression( alpha == a. ~ ',' ~ c[sigma] == s.),
+        expression( alpha == a. ~ ',' ~ sigma[0] == s.),
         list(a. = alpha[i] , s. = sig[i]))[2]
 }
 
