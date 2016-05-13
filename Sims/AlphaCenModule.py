@@ -2022,53 +2022,10 @@ def CalcDisk(WhichDir,center='default'):
 				surv[i,j] = 0
 				stab[i,j] = 0
 
-	# Calculate percent of objs surviving at each step
-#	survper = [sum(surv[surv[:,j]>0, j])/nobjs for j in range(ntimes)]
-#	stabper = [sum(stab[stab[:,j]>0, j])/nobjs for j in range(ntimes)]
-
 	### Calculate truncation radius over time
 	# get index of last particle in disk at each timestep
-#	edge = AC.CalcDiskEdge2D(stab)
-	# Calculate avg stability on either side of each obj at each timestep
-	abov = np.zeros((nobjs,ntimes),dtype='float')
-	belw = np.zeros((nobjs,ntimes),dtype='float')
-	for i in range(nobjs):
-		belw[i,:] = np.mean(stab[0:(i+1),:],axis=0)
-		if (i < nobjs-1):
-			abov[i,:] = np.mean(stab[(i+1):,:],axis=0)
-		else:
-			abov[i,:] = 0.
-	# how closely does each point fit a solid disk with nothing beyond?
-	error = (1.-belw) + (abov)
-	# Fit edge of surviving disk
-	edge = np.zeros((ntimes),dtype='int')
-	for j in range(ntimes):
-		if all( error[:,j]==1 ): 
-			if all(belw[:,j]==0) and all(abov[:,j]==0):
-				if stab[0,j] == 0:
-					# no disk left
-					edge[j] = -1
-				elif stab[0,j] == 1:
-					# only innermost particle
-					edge[j] = 0
-			elif all(belw[:,j]==1) and all(abov[:,j]==1):
-				# full disk
-				edge[j] = nobjs-1 
-			else:
-				assert 0==1, 'Edge fitting algorithm is broken!'
-		else:
-			mininds = Merc.which( error[:,j],min(error[:,j]) )
-			if len(mininds)==1:
-				edge[j] = mininds[0]
-			elif len(mininds)>1:
-				# if multiple minimums, take 5-point means around each and use lower
-				nearmin = np.array([np.mean( error[(ind-2):(ind+3),j] ) for ind in mininds])
-				reallyMinInds = np.array(Merc.which( nearmin, min(nearmin) ))
-				if len(reallyMinInds) == 1:
-					edge[j] = mininds[reallyMinInds[0]]
-				elif len(reallyMinInds)>1:
-					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
-					edge[j] = np.mean( mininds )
+	edge = np.array([AC.CalcDiskEdge(stab[:,i]) for i in range(ntimes)])
+
 	# get truncation radius (original orbit of outermost particle in stable region
 	# add last row of zeros, for cases with no disk left (edge=-1)
 	rbound = np.concatenate(( r, np.zeros((1,ntimes)) ), axis=0 )
@@ -2077,56 +2034,60 @@ def CalcDisk(WhichDir,center='default'):
 	return(WhichDir,time,r,rtr)
 
 ###############################################################################
-def CalcDiskEdge2D(x, makeplot=False):
-	'''Takes an array of 0's and 1's and tries to fit a model in which the inner
-	part of the disk is mostly filled and the outer part is mostly empty. Returns
-	the index of the array which makes the best dividing point between them.'''
+### Commenting this function in favor of the next one.
+### Doing these calculations with the whole array is more computationally
+### efficient, but less intuitive, and I don't want to have multiple versions
+### that could accidentally diverge with future editing
+#def CalcDiskEdge2D(x, makeplot=False):
+#	'''Takes an array of 0's and 1's and tries to fit a model in which the inner
+#	part of the disk is mostly filled and the outer part is mostly empty. Returns
+#	the index of the array which makes the best dividing point between them.'''
 
-	x = np.array(x)
-	nobjs  = x.shape[0]
-	ntimes = x.shape[1]
-	# Calculate avg stability on either side of each obj at each timestep
-	abov = np.zeros((nobjs,ntimes),dtype='float')
-	belw = np.zeros((nobjs,ntimes),dtype='float')
-	for i in range(nobjs):
-		belw[i,:] = np.mean(x[0:(i+1),:],axis=0)
-		if (i < nobjs-1):
-			abov[i,:] = np.mean(x[(i+1):,:],axis=0)
-		else:
-			abov[i,:] = 0.
-	# how closely does each point fit a solid disk with nothing beyond?
-	error = (1.-belw) + (abov)
-	# Fit edge of surviving disk
-	edge = np.zeros((ntimes),dtype='int')
-	for j in range(ntimes):
-		if all( error[:,j]==1 ): 
-			if all(belw[:,j]==0) and all(abov[:,j]==0):
-				if x[0,j] == 0:
-					# no disk left
-					edge[j] = -1
-				elif x[0,j] == 1:
-					# only innermost particle
-					edge[j] = 0
-			elif all(belw[:,j]==1) and all(abov[:,j]==1):
-				# full disk
-				edge[j] = nobjs-1 
-			else:
-				assert 0==1, 'Edge fitting algorithm is broken!'
-		else:
-			mininds = Merc.which( error[:,j],min(error[:,j]) )
-			if len(mininds)==1:
-				edge[j] = mininds[0]
-			elif len(mininds)>1:
-				# if multiple minimums, take 5-point means around each and use lower
-				nearmin = np.array([np.mean( error[(ind-2):(ind+3),j] ) for ind in mininds])
-				reallyMinInds = np.array(Merc.which( nearmin, min(nearmin) ))
-				if len(reallyMinInds) == 1:
-					edge[j] = mininds[reallyMinInds[0]]
-				elif len(reallyMinInds)>1:
-					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
-					edge[j] = np.mean( mininds )
-	return(edge)
-	
+#	x = np.array(x)
+#	nobjs  = x.shape[0]
+#	ntimes = x.shape[1]
+#	# Calculate avg stability on either side of each obj at each timestep
+#	abov = np.zeros((nobjs,ntimes),dtype='float')
+#	belw = np.zeros((nobjs,ntimes),dtype='float')
+#	for i in range(nobjs):
+#		belw[i,:] = np.mean(x[0:(i+1),:],axis=0)
+#		if (i < nobjs-1):
+#			abov[i,:] = np.mean(x[(i+1):,:],axis=0)
+#		else:
+#			abov[i,:] = 0.
+#	# how closely does each point fit a solid disk with nothing beyond?
+#	error = (1.-belw) + (abov)
+#	# Fit edge of surviving disk
+#	edge = np.zeros((ntimes),dtype='int')
+#	for j in range(ntimes):
+#		if all( error[:,j]==1 ): 
+#			if all(belw[:,j]==0) and all(abov[:,j]==0):
+#				if x[0,j] == 0:
+#					# no disk left
+#					edge[j] = -1
+#				elif x[0,j] == 1:
+#					# only innermost particle
+#					edge[j] = 0
+#			elif all(belw[:,j]==1) and all(abov[:,j]==1):
+#				# full disk
+#				edge[j] = nobjs-1 
+#			else:
+#				assert 0==1, 'Edge fitting algorithm is broken!'
+#		else:
+#			mininds = Merc.which( error[:,j],min(error[:,j]) )
+#			if len(mininds)==1:
+#				edge[j] = mininds[0]
+#			elif len(mininds)>1:
+#				# if multiple minimums, take 5-point means around each and use lower
+#				nearmin = np.array([np.mean( error[(ind-2):(ind+3),j] ) for ind in mininds])
+#				reallyMinInds = np.array(Merc.which( nearmin, min(nearmin) ))
+#				if len(reallyMinInds) == 1:
+#					edge[j] = mininds[reallyMinInds[0]]
+#				elif len(reallyMinInds)>1:
+#					print('Finding Rtr: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
+#					edge[j] = np.mean( mininds )
+#	return(edge)
+#	
 ###############################################################################
 def CalcDiskEdge(x, makeplot=False):
 	'''Takes an array of 0's and 1's and tries to fit a model in which the inner
@@ -2146,15 +2107,13 @@ def CalcDiskEdge(x, makeplot=False):
 			abov[i] = np.mean(x[(i+1):])
 		else:
 			abov[i] = 0.
+	### Find fraction of filled slots above this point compared to below
+	nAbv = np.array([np.sum(x[(i+1): ]) for i in range(nobjs)], dtype='float')
+	nBlw = np.array([np.sum(x[0:(i+1)]) for i in range(nobjs)], dtype='float')
+	nTot = np.sum(x)
+	ratio = nAbv/nBlw
 	# how closely does each point fit a solid disk with nothing beyond?
-	error = (1.-belw) + (abov)
-	if (makeplot==True):
-		print(error)
-		plt.clf()
-		plt.plot(error, label='error')
-		plt.plot(abov,'g', label='abov')
-		plt.plot(1.-belw,'r', label='belw')
-		plt.legend()
+	error = (1.-belw) + (abov) + nAbv/nTot
 	# Fit edge of surviving disk
 	if all( error==1 ): 
 		if all(belw==0) and all(abov==0):
@@ -2171,7 +2130,6 @@ def CalcDiskEdge(x, makeplot=False):
 			assert 0==1, 'Edge fitting algorithm is broken!'
 	else:
 		mininds = Merc.which( error ,min(error) )
-		print(mininds)
 		if len(mininds)==1:
 			edge = mininds[0]
 		elif len(mininds)>1:
@@ -2183,6 +2141,16 @@ def CalcDiskEdge(x, makeplot=False):
 			elif len(reallyMinInds)>1:
 				print('AC.CalcDiskEdge: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
 				edge = np.mean( mininds )
+	### Plot error f'ns and selected point, if requested
+	if (makeplot==True):
+		print(error)
+		plt.clf()
+		plt.plot(    error,'k',  label='error')
+		plt.plot(     abov,'g',  label='abov')
+		plt.plot(  1.-belw,'r',  label='belw')
+		plt.plot(nAbv/nTot,'b',  label='ratio')
+		plt.plot(edge, error[edge], 'ko', ms=10, label='edge')
+		plt.legend()
 
 	return(edge)
 
@@ -2194,7 +2162,7 @@ def PlotDisk((WhichDir,time,r,rtr), samprate=1000, edgeline=True):
 	
 	### Assign colors for plot based on each object's stability over time
 	# ndisk numbers spaced linearly from 0 to 1
-	colspacing = linspace(0., 1., nobjs) 
+	colspacing = linspace(1./3., 1., nobjs)
 	# use above spacing to generate ndnobjsisk colors from heat colormap
 	disk_cols = np.array([ cm.gist_heat(x) for x in colspacing ])
 	# rgba of needed colors
@@ -2236,7 +2204,7 @@ def PlotDisk((WhichDir,time,r,rtr), samprate=1000, edgeline=True):
 			img[i,j,:] = cols[i, t_ind, :]
 
 	# Set up figure
-	f, ax1 = plt.subplots(2,figsize=(6,9))
+	f, ax1 = plt.subplots(2,figsize=(7,9))
 	# grid of colors
 	imglims = [ min(logt_resamp), max(logt_resamp), min(r[:,0]), max(r[:,0]) ]
 	ax1[0].imshow(img[:,:], interpolation='nearest', aspect='auto',
