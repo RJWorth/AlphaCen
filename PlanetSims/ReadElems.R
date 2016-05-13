@@ -28,7 +28,7 @@
 
 ### Read in sim names and parameters
 simparams = read.table('BinSimCatalogue.txt',header=T, as.is=T)
-simparams = simparams[1:24,] # they don't all exist yet
+#simparams = simparams[1:24,] # they don't all exist yet
 dirs  = simparams$dir
 alpha = simparams$alpha
 sig   = simparams$sig
