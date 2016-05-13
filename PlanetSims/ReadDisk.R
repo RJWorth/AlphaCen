@@ -1,7 +1,7 @@
 
 #dir='C22/'
 aeidir=paste(dir,'Aei/',sep='')
-cent='B'
+cent='AlCenB'
 
 #
 mSun   = 1.9891e33	# g
@@ -101,31 +101,38 @@ isstar = names %in% c('AlCenA','AlCenB')
 
 #-----------------------------------------------------------------------------#
 ### Determine fate of each object and assign plot color based on it
-info = read.table(paste(dir,'Out/info.out',sep=''), sep='\n',stringsAsFactors=F)
-interactions = data.frame(  obj  = character(),
-							fate = character(),
-							time = double(), stringsAsFactors=FALSE)
-
+# skip lines starting with these words
 ignorekeys = c('Fractional','Integration','Continuing','WARNING:','Modify',
 	'Beginning','----------------------','-------------------','Algorithm:',
 	'Output','Initial','Accuracy','Central',
-	'J_2:','J_4:','J_6:','Ejection','Radius','Includes','Number','Integrating')
+	'J_2:','J_4:','J_6:','Ejection','Radius','Includes','Number','Integrating',
+	'ERROR:', 'Check')
+# get full info.out file
+info = read.table(paste(dir,'Out/info.out',sep=''), sep='\n',stringsAsFactors=F)
+# contents of info.out will be parsed into this data frame
+interactions = data.frame(  obj  = character(),
+							fate = character(),
+							time = double(), stringsAsFactors=FALSE)
 count = 0
 for (i in 1:dim(info)[1])	{
 	words = strsplit(info[i,],split='\\s+')[[1]][-1]
 	if (!(words[1] %in% ignorekeys)) {
 		count = count+1
-		if (length(words)==8) interactions[count,]=c(words[5],words[1],words[7])
-		if (length(words)==9) interactions[count,]=c(words[1],'AlCenB',words[8])
-		if (length(words)==5) interactions[count,]=c(words[1],'ejectd',words[4])
-	}
-}
+		if        (length(words)==8) {interactions[count,]=c(words[5],words[1],words[7])
+		} else if (length(words)==5) {interactions[count,]=c(words[1],'ejectd',words[4])
+		} else if (length(words)==9) {interactions[count,]=c(words[1],    cent,words[8])
+		} else {
+			print(info[i,])
+			stop('ERROR: unrecognized line in info.out file:')
+		} # 'if # words' clauses
+	} # 'if word not ignored' clause
+} # i, lines of info
 interactions$time = as.numeric(interactions$time)
 
 ### Find numer of objects between each colliding pair
 dn = array(dim=dim(interactions)[1])
 for (i in 1:length(dn))	{
-	if ( length(grep('P[[:digit:]]{4}',interactions[i,'fate']))>0) {
+	if ( length(grep(Pcode,interactions[i,'fate']))>0) {
 		this = as.numeric(sub('P','',interactions[i, 'obj']))
 		that = as.numeric(sub('P','',interactions[i,'fate']))
 		dn[i] = this-that
