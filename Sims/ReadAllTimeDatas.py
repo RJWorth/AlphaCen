@@ -25,7 +25,7 @@ Dirs4 = ['c'+'{0:02}'.format(i) for i in range(1,9)]
 
 #Dirs = Dirs2+Dirs3+Dirs4+Dirs1
 Dirs = Dirs4+Dirs1+Dirs2+Dirs3
-#Dirs = ['d01']
+Dirs = ['b24','d15']
 ndir = len(Dirs)
 
 ### Code for Original, DiskB-2, and DiskB-3 versions of each sim
