@@ -4,7 +4,7 @@
 machine=$(hostname -s)
 
 if [ $machine = Mirka ]; then
-Dirs=(Bin14 Bin15 Bin16 Bin17 Bin18 Bin19 Bin20 Bin21 Bin22 Bin23 Bin24)
+Dirs=(Bin25 Bin26 Bin27 Bin28 Bin29 Bin30 Bin31 Bin32 Bin33 Bin34 Bin35 Bin36)
 elif [ $machine = chloe ];then
 Dirs=()
 elif [ $machine = shapiro ]; then
