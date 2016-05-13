@@ -146,11 +146,11 @@ def DiskTable():
 	rice    = np.array([ 2.5, 2.7, 3.])
 	sigcoef = np.array([1/3.,  1., 3.])
 	alpha   = np.array([  1., 1.5])
-	rtr     = np.array([2.77,3.08])
+	rtr     = np.array([2.54, 2.77])
 
 ### Make 3x3x2x2 array, fill with mDust for above parameters
-	ind = np.zeros(shape=(2,2,3,3))
-	M = np.zeros(shape=(2,2,3,3))
+	ind = np.zeros( shape=( len(rtr), len(alpha), len(sigcoef), len(rice) ) )
+	M   = np.zeros( shape=( len(rtr), len(alpha), len(sigcoef), len(rice) ) )
 	counter=0
 	for l in range(len(rtr)):
 		for k in range(len(alpha)):
@@ -162,32 +162,14 @@ def DiskTable():
 				ro=rtr[l], alpha=alpha[k],sigcoef=sigcoef[j],rice=rice[i])
 					M[l,k,j,i] = mTot[0]+mTot[1]
 
-### Add empty column in middle?
-	Mstr = M
-#	Mstr = M.astype('str')
-#	a1 = Mstr[0,:,:,2]
-#	a2 = np.ones_like(a1)
-#	for x in np.nditer(a2, op_flags=['readwrite']):
-#		x[...] = ' & '
-#	fl = np.core.defchararray.add(a1, a2)
-#	Mstr[0,:,:,2] = fl
-
 ### Collapse over two dimensions
-	Mstr = np.hstack(( Mstr[:,0,:,:], Mstr[:,1,:,:] )) 
-	Mstr = np.hstack(( Mstr[0,:,:],   Mstr[1,:,:]   )) 
+	M = np.hstack(( M[:,0,:,:], M[:,1,:,:] )) 
+	M = np.hstack(( M[0,:,:],   M[1,:,:]   )) 
 
-### Add blank line? Is this helpful?
-#	Mstr = np.vstack((Mstr[0:3,:],np.array(['','','','','','']),Mstr[3:6,:]))
-
-	np.savetxt("../Paper/Inserts/DiskMassTable.tex", Mstr, 
+	np.savetxt("../Paper/Inserts/DiskMassTable.tex", M, 
 		fmt = '%2.2f', delimiter=' & ', newline=' \\\\\n')
 
-	return(Mstr)
-
-
-
-
-
+	return(M)
 
 
 
