@@ -2096,39 +2096,27 @@ def CalcDiskEdge(x, makeplot=False):
 
 	x = np.array(x)
 	assert len(x.shape)==1,'Array with more than one dimension supplied! x.shape = {}'.format(x.shape)
-	nobjs = len(x)
+	nObjs = len(x)    # count initial objects
+	nTot  = np.sum(x) # count surviving objects
 	### Calculate truncation radius over time
 	# Calculate avg stability on either side of each obj at each timestep
-	abov = np.zeros(nobjs,dtype='float')
-	belw = np.zeros(nobjs,dtype='float')
-	for i in range(nobjs):
+	abov = np.zeros(nObjs,dtype='float')
+	belw = np.zeros(nObjs,dtype='float')
+	for i in range(nObjs):
 		belw[i] = np.mean(x[0:(i+1)])
-		if (i < nobjs-1):
+		if (i < nObjs-1):
 			abov[i] = np.mean(x[(i+1):])
 		else:
 			abov[i] = 0.
 	### Find fraction of filled slots above this point compared to below
-	nAbv = np.array([np.sum(x[(i+1): ]) for i in range(nobjs)], dtype='float')
-	nBlw = np.array([np.sum(x[0:(i+1)]) for i in range(nobjs)], dtype='float')
-	nTot = np.sum(x)
+	nAbv = np.array([np.sum(x[(i+1): ]) for i in range(nObjs)], dtype='float')
+	nBlw = np.array([np.sum(x[0:(i+1)]) for i in range(nObjs)], dtype='float')
 	ratio = nAbv/nBlw
 	# how closely does each point fit a solid disk with nothing beyond?
 	error = (1.-belw) + (abov) + nAbv/nTot
 	# Fit edge of surviving disk
-	if all(error==1):
-		if all(belw==0) and all(abov==0):
-			if x[0] == 0:
-				# no disk left
-				edge = -1
-			elif x[0] == 1:
-				# only innermost particle
-				edge = 0
-		elif all(belw==1) and all(abov==1):
-			# full disk
-			edge = nobjs-1 
-		else:
-			assert 0==1, 'Edge fitting algorithm is broken!'
-	else:
+	if nTot > 1:
+		# find lowest point(s) in error f'n
 		mininds = Merc.which( error ,min(error) )
 		if len(mininds)==1:
 			edge = mininds[0]
@@ -2141,13 +2129,32 @@ def CalcDiskEdge(x, makeplot=False):
 			elif len(reallyMinInds)>1:
 				print('AC.CalcDiskEdge: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
 				edge = np.mean( mininds )
+	elif nTot == 1:
+		# only one surviving object
+		if x[0] == 1:
+			# if in lowest orbit, it counts as a disk
+			edge = 0
 		else:
-			print(belw)
-			print(abov)
-			print(nAbv)
-			print(nTot)
-			print(min(error))
-			print(mininds)
+			# if somewhere higher, ignore it (this is to override the too-high 
+			# weight from ratio when there's only one object in the denominator
+			edge = -1
+	else:
+		# no surviving objects
+		edge = -1
+#		if all(belw==0) and all(abov==0):
+#			if x[0] == 0:
+#				# no disk left
+#				edge = -1
+#			elif x[0] == 1:
+#				# only innermost particle
+#				edge = 0
+#		elif all(belw==1) and all(abov==1):
+#			# full disk
+#			edge = nObjs-1 
+#		else:
+#			assert 0==1, 'Edge fitting algorithm is broken!'
+
+
 	### Plot error f'ns and selected point, if requested
 	if (makeplot==True):
 		print(error)
