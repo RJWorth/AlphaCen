@@ -11,7 +11,7 @@ import subprocess
 from operator import add
 import socket
 machine = socket.gethostname().split('.')[0]
-if (machine in ['hammer']):
+if ('hammer' in machine):
 	print("Warning: {0} doesn't have matplotlib!".format(machine))
 else:
 	from matplotlib import cm, colors
@@ -110,7 +110,7 @@ def GetInfoLastTime(WhichDir):
 	elif (complete == False):
 		LastTime = max(time+[PrevTime])
 
-	print('          Info time: {}'.format(LastTime))
+	print('          Info time: {0}'.format(LastTime))
 	return LastTime
 
 ###############################################################################
@@ -1058,7 +1058,7 @@ def GetFinalData(WhichDir,ThisT,mode, m, Tmax):
 
 ### Number of objects
 	nobjs=len(filenames)+1
-	print('            nobjs = {}'.format(nobjs))
+	print('            nobjs = {0}'.format(nobjs))
 ### Number of timesteps
 	ntB=AC.FileLength(WhichDir+'/Out/AeiOutFiles/'+filenames[0]+'.aei')-4
 	if (mode == 'triple'):
@@ -2115,7 +2115,7 @@ def CalcDiskEdge(x, makeplot=False):
 	# how closely does each point fit a solid disk with nothing beyond?
 	error = (1.-belw) + (abov) + nAbv/nTot
 	# Fit edge of surviving disk
-	if all( error==1 ): 
+	if all(error==1):
 		if all(belw==0) and all(abov==0):
 			if x[0] == 0:
 				# no disk left
@@ -2141,6 +2141,13 @@ def CalcDiskEdge(x, makeplot=False):
 			elif len(reallyMinInds)>1:
 				print('AC.CalcDiskEdge: multiple minimums in row {0}, inds {1}'.format(j,reallyMinInds))
 				edge = np.mean( mininds )
+		else:
+			print(belw)
+			print(abov)
+			print(nAbv)
+			print(nTot)
+			print(min(error))
+			print(mininds)
 	### Plot error f'ns and selected point, if requested
 	if (makeplot==True):
 		print(error)
